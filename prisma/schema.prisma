@@ -7,21 +7,720 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Role {
-  id    Int    @id @default(autoincrement())
-  name  String
-  users User[]
+model attendance {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  checkIn   String?
+  checkOut  String?
+  status    String?
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      user     @relation(fields: [userId], references: [id], onDelete: NoAction, map: "Attendance_userId_fkey")
+
+  @@index([userId], map: "Attendance_userId_fkey")
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  status    Boolean  @default(true)
+model boq {
+  id            Int             @id @default(autoincrement())
+  itemName      String
+  unit          String?
+  quantity      Float?
+  rate          Float?
+  total         Float?
+  description   String?
+  contractId    Int
+  createdAt     DateTime        @default(now())
+  contract      contract        @relation(fields: [contractId], references: [id], onDelete: NoAction, map: "Boq_contractId_fkey")
+  purchaseorder purchaseorder[]
 
-  roleId    Int
-  role      Role     @relation(fields: [roleId], references: [id])
+  @@index([contractId], map: "Boq_contractId_fkey")
+}
+
+model client {
+  id              Int               @id @default(autoincrement())
+  companyName     String
+  ownerName       String?
+  email           String?
+  phone           String?
+  gstNumber       String?
+  address         String?
+  status          String?           @default("Active")
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  project         project[]
+  invoice         Invoice[]
+  payment         payment[]
+  changeorder     changeorder[]
+  progressbilling progressbilling[]
+}
+
+model contract {
+  id            Int      @id @default(autoincrement())
+  title         String
+  contractValue Float?
+  startDate     String?
+  endDate       String?
+  status        String?
+  description   String?
+  projectId     Int
+  vendorId      Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+  boq           boq[]
+  project       project  @relation(fields: [projectId], references: [id], onDelete: NoAction, map: "Contract_projectId_fkey")
+  vendor        vendor   @relation(fields: [vendorId], references: [id], onDelete: NoAction, map: "Contract_vendorId_fkey")
+
+  @@index([projectId], map: "Contract_projectId_fkey")
+  @@index([vendorId], map: "Contract_vendorId_fkey")
+}
+
+model inventory {
+  id              Int            @id @default(autoincrement())
+  materialName    String
+  quantity        Float?
+  unit            String?
+  minStock        Float?
+  status          String?
+  vendorId        Int?
+  projectId       Int?
+  purchaseOrderId Int?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  project         project?       @relation(fields: [projectId], references: [id], map: "Inventory_projectId_fkey")
+  purchaseorder   purchaseorder? @relation(fields: [purchaseOrderId], references: [id], map: "Inventory_purchaseOrderId_fkey")
+  vendor          vendor?        @relation(fields: [vendorId], references: [id], map: "Inventory_vendorId_fkey")
+
+  @@index([projectId], map: "Inventory_projectId_fkey")
+  @@index([purchaseOrderId], map: "Inventory_purchaseOrderId_fkey")
+  @@index([vendorId], map: "Inventory_vendorId_fkey")
+}
+
+model payroll {
+  id          Int      @id @default(autoincrement())
+  month       String
+  basicSalary Float
+  overtime    Float?   @default(0)
+  deductions  Float?   @default(0)
+  finalSalary Float
+  status      String?  @default("Paid")
+  userId      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        user     @relation(fields: [userId], references: [id], onDelete: NoAction, map: "Payroll_userId_fkey")
+
+  @@index([userId], map: "Payroll_userId_fkey")
+}
+
+model project {
+  id              Int               @id @default(autoincrement())
+  name            String
+  description     String?
+  budget          Float?
+  status          String?
+  userId          Int?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  clientId        Int?
+  contract        contract[]
+  inventory       inventory[]
+  user            user?             @relation(fields: [userId], references: [id], map: "Project_userId_fkey")
+  client          client?           @relation(fields: [clientId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_client_project")
+  purchaseorder   purchaseorder[]
+  invoice         Invoice[]
+  document        document[]
+  dailylog        dailylog[]
+  grn             grn[]
+  milestone       milestone[]
+  rfi             rfi[]
+  changeorder     changeorder[]
+  progressbilling progressbilling[]
+  inspection      inspection[]
+  incident        incident[]
+  equipment       equipment[]
+
+  @@index([userId], map: "Project_userId_fkey")
+  @@index([clientId], map: "fk_client_project")
+}
+
+model purchaseorder {
+  id          Int     @id @default(autoincrement())
+  quantity    Float?
+  rate        Float?
+  total       Float?
+  status      String?
+  description String?
+  poNumber    String?
+
+  receivedQty Float @default(0)
+
+  pendingQty Float       @default(0)
+  vendorId   Int
+  projectId  Int
+  boqId      Int
+  updatedAt  DateTime    @updatedAt
+  createdAt  DateTime    @default(now())
+  inventory  inventory[]
+  grn        grn[]
+  boq        boq         @relation(fields: [boqId], references: [id], onDelete: NoAction, map: "PurchaseOrder_boqId_fkey")
+  project    project     @relation(fields: [projectId], references: [id], onDelete: NoAction, map: "PurchaseOrder_projectId_fkey")
+  vendor     vendor      @relation(fields: [vendorId], references: [id], onDelete: NoAction, map: "PurchaseOrder_vendorId_fkey")
+
+  @@index([boqId], map: "PurchaseOrder_boqId_fkey")
+  @@index([projectId], map: "PurchaseOrder_projectId_fkey")
+  @@index([vendorId], map: "PurchaseOrder_vendorId_fkey")
+}
+
+model role {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique(map: "Role_name_key")
+  createdAt DateTime @default(now())
+  user      user[]
+}
+
+model user {
+  id              Int               @id @default(autoincrement())
+  name            String
+  email           String            @unique(map: "User_email_key")
+  password        String
+  status          Boolean           @default(true)
+  roleId          Int
+  createdAt       DateTime          @default(now())
+  address         String?
+  department      String?
+  designation     String?
+  phone           String?
+  profileImage    String?
+  salary          Float?
+  updatedAt       DateTime          @default(now()) @updatedAt
+  attendance      attendance[]
+  payroll         payroll[]
+  project         project[]
+  dailylog        dailylog[]
+  rfi             rfi[]
+  changeorder     changeorder[]
+  progressbilling progressbilling[]
+  inspection      inspection[]
+  incident        incident[]
+  equipment       equipment[]
+  role            role              @relation(fields: [roleId], references: [id], onDelete: NoAction, map: "User_roleId_fkey")
+
+  @@index([roleId], map: "User_roleId_fkey")
+}
+
+model vendor {
+  id            Int             @id @default(autoincrement())
+  companyName   String
+  ownerName     String?
+  phone         String?
+  email         String?
+  gstNumber     String?
+  address       String?
+  bankDetails   String?
+  createdAt     DateTime        @default(now())
+  contract      contract[]
+  inventory     inventory[]
+  purchaseorder purchaseorder[]
+  grn           grn[]
+  updatedAt     DateTime        @default(now()) @updatedAt
+}
+
+model Invoice {
+  id Int @id @default(autoincrement())
+
+  invoiceNumber String @unique
+
+  amount      Float
+  gst         Float?
+  totalAmount Float
+
+  status String? @default("Pending")
+
+  issueDate String?
+  dueDate   String?
+
+  notes String?
+
+  clientId Int
+  client   client @relation(fields: [clientId], references: [id])
+
+  projectId Int
+  project   project @relation(fields: [projectId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  payment   payment[]
+}
+
+model expense {
+  id Int @id @default(autoincrement())
+
+  title String
+
+  category String?
+
+  amount Float
+
+  date String?
+
+  status String? @default("Paid")
+
+  notes String?
 
   createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model payment {
+  id Int @id @default(autoincrement())
+
+  amount Float
+
+  paymentMethod String?
+
+  paymentDate String?
+
+  status String? @default("Completed")
+
+  notes String?
+
+  invoiceId Int
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+
+  clientId Int
+  client   client @relation(fields: [clientId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model transaction {
+  id Int @id @default(autoincrement())
+
+  title String
+
+  type String
+
+  amount Float
+
+  reference String?
+
+  date String?
+
+  status String? @default("Completed")
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model document {
+  id Int @id @default(autoincrement())
+
+  title String
+
+  fileUrl String
+
+  fileType String?
+
+  category String?
+
+  remarks String?
+
+  projectId Int?
+
+  project project? @relation(fields: [projectId], references: [id])
+
+  uploadedBy Int?
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model grn {
+  id Int @id @default(autoincrement())
+
+  grnNumber String @unique
+
+  purchaseOrderId Int
+
+  vendorId Int
+
+  projectId Int?
+
+  receivedQty Float
+
+  pendingQty Float?
+
+  remarks String?
+
+  status String? @default("Received")
+
+  receivedDate DateTime @default(now())
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  purchaseorder purchaseorder @relation(fields: [purchaseOrderId], references: [id])
+
+  vendor vendor @relation(fields: [vendorId], references: [id])
+
+  project project? @relation(fields: [projectId], references: [id])
+
+  @@index([purchaseOrderId])
+  @@index([vendorId])
+  @@index([projectId])
+}
+
+model Settings {
+  id Int @id @default(1)
+
+  companyName    String?
+  companyEmail   String?
+  companyPhone   String?
+  companyAddress String?
+  companyLogo    String?
+
+  gstNumber  String?
+  panNumber  String?
+  gstPercent Float?
+
+  currency       String? @default("INR")
+  currencySymbol String? @default("₹")
+
+  invoicePrefix String? @default("INV")
+  poPrefix      String? @default("PO")
+  grnPrefix     String? @default("GRN")
+
+  smtpHost     String?
+  smtpPort     Int?
+  smtpUser     String?
+  smtpPassword String?
+  smtpSecure   Boolean @default(false)
+
+  timezone String? @default("Asia/Kolkata")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model dailylog {
+  id Int @id @default(autoincrement())
+
+  logDate DateTime
+
+  workDone String @db.Text
+
+  labourCount Int?
+
+  materialUsed String? @db.Text
+
+  equipmentUsed String? @db.Text
+
+  issues String? @db.Text
+
+  remarks String? @db.Text
+
+  status String? @default("Open")
+
+  projectId Int
+
+  userId Int
+
+  project project @relation(fields: [projectId], references: [id])
+
+  user user @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([userId])
+}
+
+model milestone {
+  id Int @id @default(autoincrement())
+
+  title String
+
+  description String? @db.Text
+
+  percentage Float? @default(0)
+
+  targetDate DateTime?
+
+  completedDate DateTime?
+
+  status String? @default("Pending")
+
+  projectId Int
+
+  project project @relation(fields: [projectId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  updatedAt       DateTime          @updatedAt
+  progressbilling progressbilling[]
+
+  @@index([projectId])
+}
+
+model rfi {
+  id Int @id @default(autoincrement())
+
+  rfiNumber String @unique
+
+  title String
+
+  description String @db.Text
+
+  response String? @db.Text
+
+  priority String? @default("Medium")
+
+  status String? @default("Open")
+
+  raisedDate DateTime @default(now())
+
+  dueDate DateTime?
+
+  closedDate DateTime?
+
+  projectId Int
+
+  userId Int
+
+  project project @relation(fields: [projectId], references: [id])
+
+  user user @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([userId])
+}
+
+model changeorder {
+  id Int @id @default(autoincrement())
+
+  coNumber String @unique
+
+  title String
+
+  description String? @db.Text
+
+  reason String? @db.Text
+
+  oldAmount Float? @default(0)
+
+  newAmount Float? @default(0)
+
+  differenceAmount Float? @default(0)
+
+  status String? @default("Draft")
+
+  approvedDate DateTime?
+
+  projectId Int
+
+  clientId Int
+
+  userId Int
+
+  project project @relation(fields: [projectId], references: [id])
+
+  client client @relation(fields: [clientId], references: [id])
+
+  user user @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([clientId])
+  @@index([userId])
+}
+
+model progressbilling {
+  id Int @id @default(autoincrement())
+
+  billingNumber String @unique
+
+  billingDate DateTime @default(now())
+
+  contractAmount Float? @default(0)
+
+  previousBilled Float? @default(0)
+
+  currentBillAmount Float? @default(0)
+
+  totalBilled Float? @default(0)
+
+  balanceAmount Float? @default(0)
+
+  percentageComplete Float? @default(0)
+
+  remarks String? @db.Text
+
+  status String? @default("Draft")
+
+  projectId Int
+
+  clientId Int
+
+  milestoneId Int
+
+  userId Int
+
+  project project @relation(fields: [projectId], references: [id])
+
+  client client @relation(fields: [clientId], references: [id])
+
+  milestone milestone @relation(fields: [milestoneId], references: [id])
+
+  user user @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([clientId])
+  @@index([milestoneId])
+  @@index([userId])
+}
+
+model inspection {
+  id Int @id @default(autoincrement())
+
+  inspectionNumber String @unique
+
+  inspectionDate DateTime @default(now())
+
+  inspectionType String?
+
+  location String?
+
+  checklist String? @db.Text
+
+  remarks String? @db.Text
+
+  status String? @default("Open")
+
+  projectId Int
+
+  userId Int
+
+  project project @relation(fields: [projectId], references: [id])
+
+  user     user       @relation(fields: [userId], references: [id])
+  incident incident[]
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([userId])
+}
+
+model incident {
+  id Int @id @default(autoincrement())
+
+  incidentNumber String @unique
+
+  incidentDate DateTime @default(now())
+
+  title String
+
+  description String @db.Text
+
+  incidentType String?
+
+  severity String? @default("Medium")
+
+  location String?
+
+  status String? @default("Open")
+
+  projectId Int
+
+  userId Int
+
+  inspectionId Int?
+
+  project project @relation(fields: [projectId], references: [id])
+
+  user user @relation(fields: [userId], references: [id])
+
+  inspection inspection? @relation(fields: [inspectionId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([inspectionId])
+}
+
+model equipment {
+  id Int @id @default(autoincrement())
+
+  equipmentCode String @unique
+
+  equipmentName String
+
+  category String?
+
+  brand String?
+
+  modelNo String?
+
+  serialNumber String?
+
+  projectId Int?
+
+  userId Int?
+
+  location String?
+
+  purchaseDate DateTime?
+
+  purchaseCost Float?
+
+  currentValue Float?
+
+  totalUsageHours Float? @default(0)
+
+  lastMaintenanceDate DateTime?
+
+  nextMaintenanceDate DateTime?
+
+  maintenanceCost Float? @default(0)
+
+  maintenanceRemarks String? @db.Text
+
+  status String? @default("Available")
+
+  remarks String? @db.Text
+
+  project project? @relation(fields: [projectId], references: [id])
+
+  user user? @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([userId])
 }

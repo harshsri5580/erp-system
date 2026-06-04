@@ -47,3 +47,39 @@ a {
     color-scheme: dark;
   }
 }
+
+.dashboard-content {
+
+  margin-left: 255px;
+
+  min-height: 100vh;
+
+  background: #f5f6fa;
+
+  transition: all 0.3s ease;
+}
+
+/* =========================
+   DASHBOARD PAGE HEADINGS
+========================= */
+
+.page-title {
+  color: #0f172a !important;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+}
+
+.page-subtitle {
+  color: #64748b !important;
+  font-weight: 300;
+}
+.page-title {
+  color: #0f172a !important;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+}
+
+.page-subtitle {
+  color: #64748b !important;
+  font-weight: 300;
+}
