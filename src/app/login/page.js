@@ -2,10 +2,13 @@
 
 import { useState } from "react";
 import axios from "axios";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] =
+    useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -51,10 +54,54 @@ export default function LoginPage() {
         background:
           "linear-gradient(135deg,#0f172a,#111827,#1e293b)",
       }}
-      className="d-flex align-items-center justify-content-center"
     >
-      <div className="container">
-        <div className="row align-items-center">
+      <div className="container py-4">
+
+        {/* Header */}
+        <div className="d-flex justify-content-between align-items-center mb-5">
+
+          <a
+            href="/"
+            style={{
+              textDecoration: "none",
+            }}
+          >
+            <h2
+              className="fw-bold m-0"
+              style={{
+                color: "#ffffff",
+                letterSpacing: "1px",
+              }}
+            >
+              CON
+              <span
+                style={{
+                  color: "#3b82f6",
+                }}
+              >
+                SERP
+              </span>
+            </h2>
+          </a>
+
+          <a
+            href="/"
+            className="btn btn-outline-light"
+            style={{
+              borderRadius: "10px",
+            }}
+          >
+            ← Back Home
+          </a>
+
+        </div>
+
+        <div
+          className="row align-items-center"
+          style={{
+            minHeight: "80vh",
+          }}
+        >
 
           {/* Left Side */}
           <div className="col-lg-6 d-none d-lg-block">
@@ -77,9 +124,12 @@ export default function LoginPage() {
                 fontSize: "1.2rem",
               }}
             >
-              Manage Projects, Clients,
-              Contracts, Inventory,
-              Equipment, Payroll,
+              Manage Projects,
+              Clients,
+              Contracts,
+              Inventory,
+              Equipment,
+              Payroll,
               Progress Billing,
               Inspections and much more
               from one powerful platform.
@@ -181,24 +231,53 @@ export default function LoginPage() {
                       Password
                     </label>
 
-                    <input
-                      type="password"
-                      className="form-control form-control-lg"
-                      value={password}
-                      onChange={(e) =>
-                        setPassword(
-                          e.target.value
-                        )
-                      }
-                      placeholder="••••••••"
-                      style={{
-                        background:
-                          "rgba(255,255,255,0.08)",
-                        border:
-                          "1px solid rgba(255,255,255,0.1)",
-                        color: "#fff",
-                      }}
-                    />
+                    <div
+                      className="input-group"
+                    >
+
+                      <input
+                        type={
+                          showPassword
+                            ? "text"
+                            : "password"
+                        }
+                        className="form-control form-control-lg"
+                        value={password}
+                        onChange={(e) =>
+                          setPassword(
+                            e.target.value
+                          )
+                        }
+                        placeholder="••••••••"
+                        style={{
+                          background:
+                            "rgba(255,255,255,0.08)",
+                          border:
+                            "1px solid rgba(255,255,255,0.1)",
+                          color: "#fff",
+                        }}
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowPassword(!showPassword)
+                        }
+                        style={{
+                          background: "rgba(255,255,255,0.08)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          color: "#fff",
+                          width: "60px",
+                        }}
+                        className="btn"
+                      >
+                        {showPassword ? (
+                          <EyeOff size={20} />
+                        ) : (
+                          <Eye size={20} />
+                        )}
+                      </button>
+                    </div>
 
                   </div>
 
@@ -206,7 +285,8 @@ export default function LoginPage() {
                     type="submit"
                     className="btn btn-primary btn-lg w-100"
                     style={{
-                      borderRadius: "12px",
+                      borderRadius:
+                        "12px",
                       fontWeight: "600",
                     }}
                   >
@@ -233,3 +313,4 @@ export default function LoginPage() {
     </div>
   );
 }
+
