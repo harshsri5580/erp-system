@@ -1,16 +1,38 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET ALL RFI
 // ======================
 
-export async function GET() {
+export async function GET(request) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const rfis =
             await prisma.rfi.findMany({
+
+                where: {
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
 
                 include: {
 
@@ -67,7 +89,18 @@ export async function GET() {
 export async function POST(request) {
 
     try {
-
+        const currentUser = getUser(request);
+        if (!currentUser) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+        }
         const body =
             await request.json();
 
@@ -90,12 +123,73 @@ export async function POST(request) {
             userId,
 
         } = body;
+        const project =
+            await prisma.project.findFirst({
 
+                where: {
+
+                    id:
+                        parseInt(projectId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!project) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Project",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+        const user =
+            await prisma.user.findFirst({
+
+                where: {
+
+                    id:
+                        parseInt(userId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!user) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid User",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         const rfi =
             await prisma.rfi.create({
 
                 data: {
-
+                    company: {
+                        connect: {
+                            id: currentUser.companyId,
+                        },
+                    },
                     rfiNumber,
 
                     title,
@@ -123,14 +217,9 @@ export async function POST(request) {
                     },
 
                     user: {
-
                         connect: {
-
-                            id:
-                                parseInt(userId),
-
+                            id: parseInt(userId),
                         },
-
                     },
 
                 },

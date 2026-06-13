@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 
 
 // GET SINGLE ATTENDANCE
@@ -10,11 +10,27 @@ export async function GET(
 ) {
 
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+
+    }
     const { id } =
       await context.params;
-    const attendance = await prisma.attendance.findUnique({
+    const attendance = await prisma.attendance.findFirst({
       where: {
+
         id: Number(id),
+
+        companyId:
+          currentUser.companyId,
+
       },
 
       include: {
@@ -50,10 +66,77 @@ export async function GET(
 export async function PUT(request, context) {
 
   try {
+    const { id } =
+      await context.params;
 
     const body = await request.json();
+    const currentUser =
+      getUser(request);
 
-    const { id } = await context.params;
+    if (!currentUser) {
+
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+
+    }
+
+    const existingAttendance =
+      await prisma.attendance.findFirst({
+
+        where: {
+
+          id: Number(id),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!existingAttendance) {
+
+      return NextResponse.json(
+        {
+          error:
+            "Attendance not found",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
+    const user =
+      await prisma.user.findFirst({
+
+        where: {
+
+          id:
+            Number(body.userId),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!user) {
+
+      return NextResponse.json(
+        {
+          error:
+            "Invalid User",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
 
     const attendance = await prisma.attendance.update({
       where: {
@@ -91,6 +174,45 @@ export async function DELETE(request, context) {
   try {
     const { id } = await context.params;
 
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+
+    }
+
+    const existingAttendance =
+      await prisma.attendance.findFirst({
+
+        where: {
+
+          id: Number(id),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!existingAttendance) {
+
+      return NextResponse.json(
+        {
+          error:
+            "Attendance not found",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
     await prisma.attendance.delete({
       where: {
         id: Number(id),

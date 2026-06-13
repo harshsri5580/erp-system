@@ -25,7 +25,9 @@ export default function DashboardLayout({
 
         {/* NAVBAR */}
 
-        <Navbar />
+        <div className="no-print">
+          <Navbar />
+        </div>
 
         {/* PAGE */}
 

@@ -1,16 +1,31 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET ALL INCIDENTS
 // ======================
 
-export async function GET() {
+export async function GET(request) {
 
     try {
+        const currentUser = getUser(request);
 
+        if (!currentUser) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+        }
         const incidents =
             await prisma.incident.findMany({
+                where: {
+                    companyId: currentUser.companyId,
+                },
 
                 include: {
 
@@ -64,7 +79,19 @@ export async function GET() {
 export async function POST(request) {
 
     try {
+        const currentUser = getUser(request);
 
+        if (!currentUser) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+        }
         const body =
             await request.json();
 
@@ -94,6 +121,51 @@ export async function POST(request) {
 
         } = body;
 
+
+        if (
+            incidentDate &&
+            new Date(incidentDate) >
+            new Date()
+        ) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Incident date cannot be in the future",
+                },
+                {
+                    status: 400,
+                }
+            );
+
+        }
+
+        const validSeverity = [
+            "Low",
+            "Medium",
+            "High",
+            "Critical",
+        ];
+
+        if (
+            severity &&
+            !validSeverity.includes(severity)
+        ) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid severity level",
+                },
+                {
+                    status: 400,
+                }
+            );
+
+        }
+
         if (
             !projectId ||
             !userId ||
@@ -113,11 +185,128 @@ export async function POST(request) {
 
         }
 
+        const project =
+            await prisma.project.findFirst({
+
+                where: {
+
+                    id: parseInt(projectId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!project) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Invalid Project",
+                },
+                {
+                    status: 404,
+                }
+            );
+        }
+
+        const user =
+            await prisma.user.findFirst({
+
+                where: {
+
+                    id: parseInt(userId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!user) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Invalid User",
+                },
+                {
+                    status: 404,
+                }
+            );
+        }
+
+
+        if (inspectionId) {
+
+            const inspection =
+                await prisma.inspection.findFirst({
+
+                    where: {
+
+                        id: parseInt(inspectionId),
+
+                        companyId:
+                            currentUser.companyId,
+
+                    },
+
+                });
+
+            if (!inspection) {
+
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message:
+                            "Invalid Inspection",
+                    },
+                    {
+                        status: 404,
+                    }
+                );
+
+            }
+
+        }
+        const existingIncident =
+            await prisma.incident.findFirst({
+
+                where: {
+
+                    incidentNumber,
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (existingIncident) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Incident number already exists",
+                },
+                {
+                    status: 400,
+                }
+            );
+
+        }
         const incident =
             await prisma.incident.create({
 
                 data: {
-
+                    company: {
+                        connect: {
+                            id: currentUser.companyId,
+                        },
+                    },
                     incidentNumber,
 
                     incidentDate:
@@ -153,16 +342,9 @@ export async function POST(request) {
                     },
 
                     user: {
-
                         connect: {
-
-                            id:
-                                parseInt(
-                                    userId
-                                ),
-
+                            id: parseInt(userId),
                         },
-
                     },
 
                     ...(inspectionId

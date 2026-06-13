@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET SINGLE USER
 // ======================
@@ -11,12 +11,31 @@ export async function GET(
   context
 ) {
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const { id } =
       await context.params;
     const user =
-      await prisma.user.findUnique({
+      await prisma.user.findFirst({
         where: {
           id: parseInt(id),
+
+          companyId:
+            currentUser.companyId,
         },
 
         include: {
@@ -63,7 +82,6 @@ export async function PUT(
     const { id } =
       await context.params;
     const body = await request.json();
-
     const {
       name,
       email,
@@ -75,6 +93,75 @@ export async function PUT(
       salary,
       roleId,
     } = body;
+
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
+
+    const existingUser =
+      await prisma.user.findFirst({
+
+        where: {
+
+          id: parseInt(id),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!existingUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "User not found",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
+    const role =
+      await prisma.role.findFirst({
+
+        where: {
+          id: parseInt(roleId),
+        },
+
+      });
+
+    if (!role) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Invalid Role",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
 
     let hashedPassword;
 
@@ -140,6 +227,68 @@ export async function DELETE(
   try {
     const { id } =
       await context.params;
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
+
+    const existingUser =
+      await prisma.user.findFirst({
+
+        where: {
+
+          id: parseInt(id),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!existingUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "User not found",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
+    if (
+      existingUser.id ===
+      currentUser.id
+    ) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "You cannot delete your own account",
+        },
+        {
+          status: 400,
+        }
+      );
+
+    }
     await prisma.user.delete({
       where: {
         id: parseInt(id),

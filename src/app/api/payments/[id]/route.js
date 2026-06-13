@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET SINGLE PAYMENT
 // ======================
@@ -11,27 +11,62 @@ export async function GET(
     context
 ) {
     try {
+        const currentUser =
+            getUser(request);
+
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
         const payment =
-            await prisma.payment.findUnique({
+            await prisma.payment.findFirst({
+
 
                 where: {
 
                     id: parseInt(id),
 
-                },
-
-                include: {
-
-                    invoice: true,
-
-                    client: true,
+                    companyId:
+                        currentUser.companyId,
 
                 },
+
+
 
             });
+        if (!payment) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Payment not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+        }
 
+        const invoice = await prisma.invoice.findUnique({
+            where: { id: payment.invoiceId },
+        });
+
+        const client = await prisma.client.findUnique({
+            where: { id: payment.clientId },
+        });
+
+        payment.invoice = invoice;
+        payment.client = client;
         if (!payment) {
 
             return NextResponse.json(
@@ -91,29 +126,144 @@ export async function PUT(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
+
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
 
-        const body =
-            await request.json();
+
+        const body = await request.json();
 
         const {
-
             invoiceId,
-
             clientId,
-
             amount,
-
             paymentMethod,
-
             paymentDate,
-
             status,
-
             notes,
-
         } = body;
+
+        const existingPayment =
+            await prisma.payment.findFirst({
+
+                where: {
+
+                    id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!existingPayment) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Payment not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+        const invoice =
+            await prisma.invoice.findFirst({
+
+                where: {
+
+                    id: parseInt(invoiceId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!invoice) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Invoice",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+
+        const client =
+            await prisma.client.findFirst({
+
+                where: {
+
+                    id: parseInt(clientId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!client) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Client",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+
+        // const body =
+        //     await request.json();
+
+        // const {
+
+        //     invoiceId,
+
+        //     clientId,
+
+        //     amount,
+
+        //     paymentMethod,
+
+        //     paymentDate,
+
+        //     status,
+
+        //     notes,
+
+        // } = body;
 
         const payment =
             await prisma.payment.update({
@@ -137,33 +287,16 @@ export async function PUT(
 
                     notes,
 
-                    invoice: {
-
-                        connect: {
-
-                            id: parseInt(invoiceId),
-
-                        },
-
-                    },
-
-                    client: {
-
-                        connect: {
-
-                            id: parseInt(clientId),
-
-                        },
-
-                    },
+                    invoiceId: parseInt(invoiceId),
+                    clientId: parseInt(clientId),
 
                 },
 
-                include: {
+                // include: {
 
-                    invoice: true,
+                //     invoice: true,
 
-                },
+                // },
 
             });
 
@@ -205,7 +338,7 @@ export async function PUT(
             data: {
 
                 title:
-                    `Payment - ${payment.invoice.invoiceNumber}`,
+                    `Payment - ${invoice.invoiceNumber}`,
 
                 amount:
                     parseFloat(amount),
@@ -265,8 +398,57 @@ export async function DELETE(
 ) {
 
     try {
+
+        const currentUser =
+            getUser(request);
+
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
+
+
+
+
+        const existingPayment =
+            await prisma.payment.findFirst({
+
+                where: {
+
+                    id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!existingPayment) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Payment not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
 
         await prisma.payment.delete({
 

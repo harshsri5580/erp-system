@@ -69,13 +69,13 @@ export default function AddUserPage() {
 
       alert(response.data.message);
 
-      router.push("/users");
+      router.push("/dashboard/users");
     } catch (error) {
       console.log(error);
 
       alert(
         error?.response?.data?.message ||
-          "Something went wrong"
+        "Something went wrong"
       );
     } finally {
       setLoading(false);

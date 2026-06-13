@@ -55,43 +55,59 @@ export default function ViewExpensePage() {
     // ======================
 
     if (loading) {
-
         return (
-            <h4>
-                Loading...
-            </h4>
+            <div className="container-fluid px-4 py-5 text-center">
+                <h5 className="text-muted">
+                    Loading Expense Details...
+                </h5>
+            </div>
         );
     }
 
     // ======================
     // NO EXPENSE
     // ======================
-
     if (!expense) {
-
         return (
-            <h4>
-                Expense not found
-            </h4>
+            <div className="container-fluid px-4 py-5 text-center">
+                <h5 className="text-danger">
+                    Expense not found
+                </h5>
+            </div>
         );
     }
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
+            <div className="mb-4 pb-3 border-bottom">
 
-            <div className="card shadow border-0 rounded-4">
+                <div className="d-flex justify-content-between align-items-center">
 
-                {/* HEADER */}
+                    <div>
 
-                <div className="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <h2
+                            className="fw-bold mb-1"
+                            style={{
+                                color: "#111827",
+                            }}
+                        >
+                            Expense Details
+                        </h2>
 
-                    <h3 className="mb-0">
-                        Expense Details
-                    </h3>
+                        <p
+                            className="mb-0"
+                            style={{
+                                color: "#6B7280",
+                            }}
+                        >
+                            Complete expense information
+                        </p>
+
+                    </div>
 
                     <span
-                        className={`badge ${expense.status === "Paid"
+                        className={`badge px-3 py-2 ${expense.status === "Paid"
                             ? "bg-success"
                             : "bg-warning text-dark"
                             }`}
@@ -100,6 +116,21 @@ export default function ViewExpensePage() {
                     </span>
 
                 </div>
+
+            </div>
+
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1100px",
+                    margin: "0 auto",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
+
+                {/* HEADER */}
+
 
                 {/* BODY */}
 
@@ -111,7 +142,13 @@ export default function ViewExpensePage() {
 
                         <div className="col-md-6 mb-4">
 
-                            <h6 className="text-muted">
+                            <h6
+                                className="mb-2"
+                                style={{
+                                    color: "#6B7280",
+                                    fontWeight: 600,
+                                }}
+                            >
                                 Expense Title
                             </h6>
 
@@ -121,11 +158,35 @@ export default function ViewExpensePage() {
 
                         </div>
 
+                        <div className="col-12 mb-3">
+
+                            <div
+                                className="p-3 rounded-4"
+                                style={{
+                                    background: "#F8FAFC",
+                                    border: "1px solid #E5E7EB",
+                                }}
+                            >
+
+                                <h6 className="fw-bold mb-0">
+                                    Expense Information
+                                </h6>
+
+                            </div>
+
+                        </div>
+
                         {/* CATEGORY */}
 
                         <div className="col-md-6 mb-4">
 
-                            <h6 className="text-muted">
+                            <h6
+                                className="mb-2"
+                                style={{
+                                    color: "#6B7280",
+                                    fontWeight: 600,
+                                }}
+                            >
                                 Category
                             </h6>
 
@@ -139,13 +200,23 @@ export default function ViewExpensePage() {
 
                         <div className="col-md-6 mb-4">
 
-                            <h6 className="text-muted">
-                                Amount
-                            </h6>
+                            <div
+                                className="p-3 rounded-4"
+                                style={{
+                                    background: "#FEF2F2",
+                                    border: "1px solid #FECACA",
+                                }}
+                            >
 
-                            <h4 className="text-danger fw-bold">
-                                ₹{expense.amount}
-                            </h4>
+                                <h6 className="text-muted">
+                                    Amount
+                                </h6>
+
+                                <h3 className="fw-bold text-danger mb-0">
+                                    ₹{expense.amount}
+                                </h3>
+
+                            </div>
 
                         </div>
 
@@ -153,7 +224,13 @@ export default function ViewExpensePage() {
 
                         <div className="col-md-6 mb-4">
 
-                            <h6 className="text-muted">
+                            <h6
+                                className="mb-2"
+                                style={{
+                                    color: "#6B7280",
+                                    fontWeight: 600,
+                                }}
+                            >
                                 Expense Date
                             </h6>
 
@@ -167,7 +244,13 @@ export default function ViewExpensePage() {
 
                         <div className="col-md-6 mb-4">
 
-                            <h6 className="text-muted">
+                            <h6
+                                className="mb-2"
+                                style={{
+                                    color: "#6B7280",
+                                    fontWeight: 600,
+                                }}
+                            >
                                 Status
                             </h6>
 
@@ -184,19 +267,33 @@ export default function ViewExpensePage() {
 
                         {/* NOTES */}
 
-                        <div className="col-md-12 mb-4">
+                        <div className="col-12 mb-4">
 
-                            <h6 className="text-muted">
-                                Notes
-                            </h6>
+                            <div
+                                className="p-4 rounded-4"
+                                style={{
+                                    background: "#F9FAFB",
+                                    border: "1px solid #E5E7EB",
+                                }}
+                            >
 
-                            <p>
+                                <h6
+                                    className="fw-bold mb-3"
+                                    style={{
+                                        color: "#111827",
+                                    }}
+                                >
+                                    Notes
+                                </h6>
 
-                                {expense.notes ||
+                                <p className="mb-0 text-muted">
 
-                                    "No notes available"}
+                                    {expense.notes ||
+                                        "No notes available"}
 
-                            </p>
+                                </p>
+
+                            </div>
 
                         </div>
 
@@ -204,11 +301,21 @@ export default function ViewExpensePage() {
 
                         <div className="col-md-12">
 
-                            <h6 className="text-muted">
+                            <h6
+                                className="mb-2"
+                                style={{
+                                    color: "#6B7280",
+                                    fontWeight: 600,
+                                }}
+                            >
                                 Created At
                             </h6>
-
-                            <p>
+                            <p
+                                className="mb-0 fw-medium"
+                                style={{
+                                    color: "#374151",
+                                }}
+                            >
 
                                 {new Date(
                                     expense.createdAt

@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { ArrowLeft } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function AddDocumentPage() {
 
@@ -121,17 +123,21 @@ export default function AddDocumentPage() {
                     data.success
                 ) {
 
-                    alert(
+                    toast.success(
                         "Document uploaded successfully"
                     );
 
-                    router.push(
-                        "/dashboard/documents"
-                    );
+                    setTimeout(() => {
+
+                        router.push(
+                            "/dashboard/documents"
+                        );
+
+                    }, 1000);
 
                 } else {
 
-                    alert(
+                    toast.error(
                         data.message ||
                         "Failed to upload document"
                     );
@@ -142,7 +148,7 @@ export default function AddDocumentPage() {
 
                 console.log(error);
 
-                alert(
+                toast.error(
                     "Something went wrong"
                 );
 
@@ -156,19 +162,59 @@ export default function AddDocumentPage() {
 
     return (
 
-        <div className="container-fluid p-4">
+        <div className="container-fluid px-4 py-3">
 
-            <div className="card border-0 shadow-sm rounded-4">
+            <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
 
-                <div className="card-header bg-dark text-white">
+                <div>
 
-                    <h3 className="mb-0">
+                    <h2
+                        className="fw-bold mb-1"
+                        style={{
+                            color: "#111827",
+                        }}
+                    >
                         Add Document
-                    </h3>
+                    </h2>
+
+                    <p
+                        className="mb-0"
+                        style={{
+                            color: "#6B7280",
+                        }}
+                    >
+                        Upload and manage project documents
+                    </p>
 
                 </div>
 
-                <div className="card-body">
+                <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={() =>
+                        router.push(
+                            "/dashboard/documents"
+                        )
+                    }
+                >
+                    <ArrowLeft size={16} />
+                </button>
+
+            </div>
+
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1100px",
+                    margin: "0 auto",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
+
+
+
+                <div className="card-body p-4 p-lg-5">
 
                     <form
                         onSubmit={
@@ -182,14 +228,14 @@ export default function AddDocumentPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Document Title
                                 </label>
 
                                 <input
                                     type="text"
                                     required
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.title
                                     }
@@ -208,13 +254,13 @@ export default function AddDocumentPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Category
                                 </label>
 
                                 <select
                                     required
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.category
                                     }
@@ -263,12 +309,12 @@ export default function AddDocumentPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Project
                                 </label>
 
                                 <select
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.projectId
                                     }
@@ -306,13 +352,14 @@ export default function AddDocumentPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Upload File
                                 </label>
 
                                 <input
                                     type="file"
-                                    className="form-control"
+                                    className="form-control rounded-3"
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
                                     onChange={(e) =>
                                         setFormData({
                                             ...formData,
@@ -328,13 +375,14 @@ export default function AddDocumentPage() {
 
                             <div className="col-12 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Remarks
                                 </label>
 
                                 <textarea
-                                    rows="4"
-                                    className="form-control"
+                                    rows="5"
+                                    className="form-control rounded-3"
+                                    placeholder="Document notes or remarks..."
                                     value={
                                         formData.remarks
                                     }
@@ -354,12 +402,12 @@ export default function AddDocumentPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="btn btn-primary"
+                            className="btn btn-dark px-4"
                         >
 
                             {loading
                                 ? "Uploading..."
-                                : "Upload Document"}
+                                : "Save Document"}
 
                         </button>
 

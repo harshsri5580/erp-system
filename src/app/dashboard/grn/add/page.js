@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-
+import { PackageCheck } from "lucide-react";
+import toast from "react-hot-toast";
 export default function AddGRNPage() {
 
     const router =
@@ -129,21 +130,19 @@ export default function AddGRNPage() {
                         formData
                     );
 
-                alert(
-                    response.data.message
+                toast.success(
+                    "GRN created successfully"
                 );
-
-                router.push(
-                    "/dashboard/grn"
-                );
+                setTimeout(() => {
+                    router.push("/dashboard/grn");
+                }, 1200);
 
             } catch (error) {
 
                 console.log(error);
 
-                alert(
-                    error?.response?.data
-                        ?.message ||
+                toast.error(
+                    error?.response?.data?.message ||
                     "Failed to create GRN"
                 );
 
@@ -157,48 +156,81 @@ export default function AddGRNPage() {
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
-            <div className="card border-0 shadow rounded-4">
+            <div className="mb-4 pb-3 border-bottom">
+
+                <h2
+                    className="fw-bold mb-1"
+                    style={{
+                        color: "#111827",
+                    }}
+                >
+                    Create GRN
+                </h2>
+
+                <p
+                    className="mb-0"
+                    style={{
+                        color: "#6B7280",
+                    }}
+                >
+                    Record received materials from purchase orders
+                </p>
+
+            </div>
+
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1100px",
+                    margin: "0 auto",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
                 {/* HEADER */}
 
-                <div className="card-header bg-dark text-white">
-
-                    <h3 className="mb-0">
-                        Create GRN
-                    </h3>
-
-                </div>
 
                 {/* BODY */}
 
                 <div className="card-body">
 
-                    <form
-                        onSubmit={
-                            handleSubmit
-                        }
-                    >
+                    <div className="col-12 mb-3">
 
+                        <div
+                            className="p-3 rounded-4"
+                            style={{
+                                background: "#F8FAFC",
+                                border: "1px solid #E5E7EB",
+                            }}
+                        >
+
+                            <h6 className="fw-bold mb-0 d-flex align-items-center gap-2">
+                                <PackageCheck size={18} />
+                                GRN Information
+                            </h6>
+
+                        </div>
+
+                    </div>
+                    {/* AUTO DETAILS */}
+
+
+                    <form onSubmit={handleSubmit}>
                         <div className="row">
+                            <div className="col-md-12 mb-4">
 
-                            {/* PURCHASE ORDER */}
-
-                            <div className="col-md-6 mb-3">
-
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Purchase Order
                                 </label>
 
                                 <select
-                                    className="form-select"
-                                    value={
-                                        formData.purchaseOrderId
-                                    }
-                                    onChange={
-                                        handlePOChange
-                                    }
+                                    name="purchaseOrderId"
+                                    className="form-select rounded-3"
+                                    value={formData.purchaseOrderId}
+                                    onChange={handlePOChange}
                                     required
                                 >
 
@@ -206,184 +238,163 @@ export default function AddGRNPage() {
                                         Select Purchase Order
                                     </option>
 
-                                    {purchaseOrders.map(
-                                        (po) => (
+                                    {purchaseOrders.map((po) => (
 
-                                            <option
-                                                key={po.id}
-                                                value={po.id}
-                                            >
+                                        <option
+                                            key={po.id}
+                                            value={po.id}
+                                        >
+                                            PO-{po.id} | {po.vendor?.companyName}
+                                        </option>
 
-                                                {po.poNumber ||
-                                                    `PO-${po.id}`}
-
-                                            </option>
-
-                                        )
-                                    )}
+                                    ))}
 
                                 </select>
 
                             </div>
+                            {selectedPO && (
+                                <div className="col-12">
 
-                            {/* RECEIVED QTY */}
+                                    <div
+                                        className="p-4 rounded-4 mb-4"
+                                        style={{
+                                            background: "#F9FAFB",
+                                            border: "1px solid #E5E7EB",
+                                        }}
+                                    >
 
+                                        <h6 className="fw-bold mb-4">
+                                            Purchase Order Details
+                                        </h6>
+
+                                        <div className="row">
+
+                                            <div className="col-md-6 mb-3">
+                                                <label className="form-label fw-semibold text-dark">
+                                                    Vendor
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    className="form-control rounded-3"
+                                                    value={
+                                                        selectedPO.vendor?.companyName || ""
+                                                    }
+                                                    readOnly
+                                                />
+                                            </div>
+
+                                            <div className="col-md-6 mb-3">
+                                                <label className="form-label fw-semibold text-dark">
+                                                    Project
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    className="form-control rounded-3"
+                                                    value={
+                                                        selectedPO.project?.name || ""
+                                                    }
+                                                    readOnly
+                                                />
+                                            </div>
+
+                                            <div className="col-md-4 mb-3">
+                                                <label className="form-label fw-semibold text-dark">
+                                                    Ordered Qty
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    className="form-control rounded-3"
+                                                    value={
+                                                        selectedPO.quantity || 0
+                                                    }
+                                                    readOnly
+                                                />
+                                            </div>
+
+                                            <div className="col-md-4 mb-3">
+                                                <label className="form-label fw-semibold text-dark">
+                                                    Received Qty
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    className="form-control rounded-3"
+                                                    value={
+                                                        selectedPO.receivedQty || 0
+                                                    }
+                                                    readOnly
+                                                />
+                                            </div>
+
+                                            <div className="col-md-4 mb-3">
+                                                <label className="form-label fw-semibold text-dark">
+                                                    Pending Qty
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    className="form-control rounded-3"
+                                                    value={
+                                                        selectedPO.pendingQty || 0
+                                                    }
+                                                    readOnly
+                                                />
+                                            </div>
+
+                                            <div className="col-md-12 mb-3">
+                                                <label className="form-label fw-semibold text-dark">
+                                                    BOQ Item
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    className="form-control rounded-3"
+                                                    value={
+                                                        selectedPO.boq?.itemName || ""
+                                                    }
+                                                    readOnly
+                                                />
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            )}
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Received Quantity
                                 </label>
 
                                 <input
                                     type="number"
-                                    step="0.01"
                                     name="receivedQty"
-                                    className="form-control"
-                                    value={
-                                        formData.receivedQty
-                                    }
-                                    onChange={
-                                        handleChange
-                                    }
+                                    className="form-control rounded-3"
+                                    value={formData.receivedQty}
+                                    onChange={handleChange}
                                     required
                                 />
 
                             </div>
-
-                            {/* AUTO DETAILS */}
-
-                            {selectedPO && (
-
-                                <>
-
-                                    <div className="col-md-6 mb-3">
-
-                                        <label className="form-label">
-                                            Vendor
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={
-                                                selectedPO.vendor
-                                                    ?.companyName ||
-                                                ""
-                                            }
-                                            readOnly
-                                        />
-
-                                    </div>
-
-                                    <div className="col-md-6 mb-3">
-
-                                        <label className="form-label">
-                                            Project
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={
-                                                selectedPO.project
-                                                    ?.name || ""
-                                            }
-                                            readOnly
-                                        />
-
-                                    </div>
-
-                                    <div className="col-md-4 mb-3">
-
-                                        <label className="form-label">
-                                            Ordered Qty
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={
-                                                selectedPO.quantity || 0
-                                            }
-                                            readOnly
-                                        />
-
-                                    </div>
-
-                                    <div className="col-md-4 mb-3">
-
-                                        <label className="form-label">
-                                            Received Qty
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={
-                                                selectedPO.receivedQty || 0
-                                            }
-                                            readOnly
-                                        />
-
-                                    </div>
-
-                                    <div className="col-md-4 mb-3">
-
-                                        <label className="form-label">
-                                            Pending Qty
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={
-                                                selectedPO.pendingQty || 0
-                                            }
-                                            readOnly
-                                        />
-
-                                    </div>
-
-                                    <div className="col-md-12 mb-3">
-
-                                        <label className="form-label">
-                                            BOQ Item
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={
-                                                selectedPO.boq
-                                                    ?.itemName || ""
-                                            }
-                                            readOnly
-                                        />
-
-                                    </div>
-
-                                </>
-
-                            )}
-
                             {/* REMARKS */}
 
                             <div className="col-md-12 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Remarks
                                 </label>
 
                                 <textarea
                                     rows="4"
                                     name="remarks"
-                                    className="form-control"
-                                    value={
-                                        formData.remarks
-                                    }
-                                    onChange={
-                                        handleChange
-                                    }
+                                    className="form-control rounded-3"
+                                    value={formData.remarks}
+                                    onChange={handleChange}
                                 />
 
                             </div>
@@ -394,23 +405,23 @@ export default function AddGRNPage() {
 
                         <button
                             type="submit"
-                            className="btn btn-dark"
+                            className="btn btn-dark px-4 rounded-3"
                             disabled={loading}
                         >
-
                             {loading
                                 ? "Creating..."
                                 : "Create GRN"}
-
                         </button>
 
                     </form>
 
                 </div>
 
-            </div>
+            </div >
 
-        </div>
+        </div >
+
+
 
     );
 

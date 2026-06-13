@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET SINGLE TRANSACTION
 // ======================
@@ -12,14 +12,33 @@ export async function GET(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
+
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
         const transaction =
-            await prisma.transaction.findUnique({
+            await prisma.transaction.findFirst({
 
                 where: {
 
                     id: parseInt(id),
+                    companyId:
+                        currentUser.companyId,
+
 
                 },
 
@@ -89,6 +108,52 @@ export async function PUT(
 
         const body =
             await request.json();
+
+        const currentUser =
+            getUser(request);
+
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
+
+        const existingTransaction =
+            await prisma.transaction.findFirst({
+
+                where: {
+
+                    id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!existingTransaction) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Transaction not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
 
         const {
 
@@ -181,6 +246,51 @@ export async function DELETE(
     try {
         const { id } =
             await context.params;
+        const currentUser =
+            getUser(request);
+
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
+
+        const existingTransaction =
+            await prisma.transaction.findFirst({
+
+                where: {
+
+                    id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!existingTransaction) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Transaction not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         await prisma.transaction.delete({
 
             where: {

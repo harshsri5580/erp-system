@@ -1,13 +1,35 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getUser } from "@/lib/getUser";
 
 // ======================
 // GET ALL PROJECTS
 // ======================
 
-export async function GET() {
+export async function GET(request) {
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const projects = await prisma.project.findMany({
+
+      where: {
+        companyId:
+          currentUser.companyId,
+      },
       include: {
         user: true,
         client: true,
@@ -40,6 +62,22 @@ export async function GET() {
 
 export async function POST(request) {
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const body = await request.json();
 
     const {
@@ -50,9 +88,77 @@ export async function POST(request) {
       userId,
       clientId,
     } = body;
+    if (clientId) {
 
+      const client =
+        await prisma.client.findFirst({
+
+          where: {
+
+            id: parseInt(clientId),
+
+            companyId:
+              currentUser.companyId,
+
+          },
+
+        });
+
+      if (!client) {
+
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              "Invalid Client",
+          },
+          {
+            status: 404,
+          }
+        );
+
+      }
+
+    }
+    if (userId) {
+
+      const user =
+        await prisma.user.findFirst({
+
+          where: {
+
+            id: parseInt(userId),
+
+            companyId:
+              currentUser.companyId,
+
+          },
+
+        });
+
+      if (!user) {
+
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              "Invalid User",
+          },
+          {
+            status: 404,
+          }
+        );
+
+      }
+
+    }
     const project = await prisma.project.create({
       data: {
+        company: {
+          connect: {
+            id: currentUser.companyId,
+          },
+        },
         name,
         description,
         budget: budget

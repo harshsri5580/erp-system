@@ -4,6 +4,17 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+import {
+    Plus,
+    Eye,
+    Pencil,
+    Trash2,
+    FileCheck,
+    Search,
+} from "lucide-react";
+
+import toast from "react-hot-toast";
+
 export default function GRNPage() {
 
     const [grns, setGrns] =
@@ -55,40 +66,28 @@ export default function GRNPage() {
     // DELETE
     // ======================
 
-    const handleDelete =
-        async (id) => {
+    const handleDelete = async (id) => {
+        try {
 
-            const confirmDelete =
-                confirm(
-                    "Delete this GRN?"
-                );
+            await axios.delete(
+                `/api/grn/${id}`
+            );
 
-            if (
-                !confirmDelete
-            )
-                return;
+            toast.success(
+                "GRN deleted successfully"
+            );
 
-            try {
+            fetchGRN();
 
-                await axios.delete(
-                    `/api/grn/${id}`
-                );
+        } catch (error) {
 
-                fetchGRN();
+            toast.error(
+                error?.response?.data?.message ||
+                "Delete failed"
+            );
 
-            } catch (error) {
-
-                console.log(error);
-
-                alert(
-                    error?.response?.data
-                        ?.message ||
-                    "Delete failed"
-                );
-
-            }
-
-        };
+        }
+    };
 
     const filteredGRN =
         grns.filter(
@@ -116,20 +115,31 @@ export default function GRNPage() {
 
                 <div>
 
-                    <h2 className="page-title">
+                    <h2
+                        className="fw-bold mb-1"
+                        style={{
+                            color: "#111827",
+                        }}
+                    >
                         Goods Receipt Notes
                     </h2>
 
-                    <p className="page-subtitle">
-                        Manage received materials
+                    <p
+                        className="mb-0"
+                        style={{
+                            color: "#6B7280",
+                        }}
+                    >
+                        Track and manage received materials
                     </p>
 
                 </div>
 
                 <Link
                     href="/dashboard/grn/add"
-                    className="btn btn-dark"
+                    className="btn btn-dark rounded-3 px-4 d-flex align-items-center gap-2"
                 >
+                    <Plus size={18} />
                     Add GRN
                 </Link>
 
@@ -137,7 +147,13 @@ export default function GRNPage() {
 
             {/* CARD */}
 
-            <div className="card border-0 shadow-sm rounded-4">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
                 <div className="card-body">
 
@@ -145,19 +161,31 @@ export default function GRNPage() {
 
                     <div className="row mb-3">
 
-                        <div className="col-md-4">
+                        <div className="col-md-5">
 
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Search GRN..."
-                                value={search}
-                                onChange={(e) =>
-                                    setSearch(
-                                        e.target.value
-                                    )
-                                }
-                            />
+                            <div className="position-relative">
+
+                                <Search
+                                    size={16}
+                                    className="position-absolute"
+                                    style={{
+                                        left: "14px",
+                                        top: "12px",
+                                        color: "#9CA3AF",
+                                    }}
+                                />
+
+                                <input
+                                    type="text"
+                                    className="form-control rounded-3 ps-5"
+                                    placeholder="Search GRN Number or Vendor..."
+                                    value={search}
+                                    onChange={(e) =>
+                                        setSearch(e.target.value)
+                                    }
+                                />
+
+                            </div>
 
                         </div>
 
@@ -169,7 +197,11 @@ export default function GRNPage() {
 
                         <table className="table table-hover align-middle">
 
-                            <thead className="table-dark">
+                            <thead
+                                style={{
+                                    background: "#F9FAFB",
+                                }}
+                            >
 
                                 <tr>
 
@@ -205,7 +237,9 @@ export default function GRNPage() {
                                             colSpan="9"
                                             className="text-center"
                                         >
-                                            Loading...
+                                            <div className="py-5 text-center">
+                                                Loading GRN Data...
+                                            </div>
                                         </td>
 
                                     </tr>
@@ -216,9 +250,22 @@ export default function GRNPage() {
 
                                         <td
                                             colSpan="9"
-                                            className="text-center"
+                                            className="text-center py-5"
                                         >
-                                            No GRN Found
+
+                                            <FileCheck
+                                                size={45}
+                                                className="mb-3 text-secondary"
+                                            />
+
+                                            <div className="fw-semibold fs-5 mt-2">
+                                                No GRN Records Found
+                                            </div>
+
+                                            <div className="text-muted">
+                                                Create your first GRN entry
+                                            </div>
+
                                         </td>
 
                                     </tr>
@@ -272,7 +319,14 @@ export default function GRNPage() {
 
                                                 <td>
 
-                                                    <span className="badge bg-success">
+                                                    <span
+                                                        className={`badge px-3 py-2 ${grn.status === "Completed"
+                                                            ? "bg-success"
+                                                            : grn.status === "Pending"
+                                                                ? "bg-warning text-dark"
+                                                                : "bg-primary"
+                                                            }`}
+                                                    >
 
                                                         {
                                                             grn.status
@@ -296,27 +350,36 @@ export default function GRNPage() {
 
                                                         <Link
                                                             href={`/dashboard/grn/view/${grn.id}`}
-                                                            className="btn btn-sm btn-info"
+                                                            className="btn btn-outline-info btn-sm d-flex align-items-center gap-1"
                                                         >
-                                                            View
+                                                            <>
+                                                                <Eye size={14} />
+                                                                View
+                                                            </>
                                                         </Link>
 
                                                         <Link
                                                             href={`/dashboard/grn/edit/${grn.id}`}
-                                                            className="btn btn-sm btn-warning"
+                                                            className="btn btn-outline-warning btn-sm d-flex align-items-center gap-1"
                                                         >
-                                                            Edit
+                                                            <>
+                                                                <Pencil size={14} />
+                                                                Edit
+                                                            </>
                                                         </Link>
 
                                                         <button
-                                                            className="btn btn-sm btn-danger"
+                                                            className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
                                                             onClick={() =>
                                                                 handleDelete(
                                                                     grn.id
                                                                 )
                                                             }
                                                         >
-                                                            Delete
+                                                            <>
+                                                                <Trash2 size={14} />
+                                                                Delete
+                                                            </>
                                                         </button>
 
                                                     </div>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
-
+import { toast } from "react-hot-toast";
 export default function EditGRNPage() {
 
     const params =
@@ -116,9 +116,7 @@ export default function EditGRNPage() {
                         formData
                     );
 
-                alert(
-                    response.data.message
-                );
+                toast.success("GRN updated successfully");
 
                 router.push(
                     "/dashboard/grn"
@@ -128,9 +126,8 @@ export default function EditGRNPage() {
 
                 console.log(error);
 
-                alert(
-                    error?.response?.data
-                        ?.message ||
+                toast.error(
+                    error?.response?.data?.message ||
                     "Failed to update GRN"
                 );
 
@@ -146,7 +143,7 @@ export default function EditGRNPage() {
 
         return (
 
-            <div className="container-fluid">
+            <div className="container-fluid px-4 py-3">
 
                 Loading...
 
@@ -158,18 +155,32 @@ export default function EditGRNPage() {
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
-            <div className="card border-0 shadow rounded-4">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1100px",
+                    margin: "0 auto",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
-                <div className="card-header bg-warning">
-
-                    <h3 className="mb-0">
-
+                <div className="card-body border-bottom">
+                    <h2
+                        className="fw-bold mb-1"
+                        style={{ color: "#111827" }}
+                    >
                         Edit GRN
+                    </h2>
 
-                    </h3>
-
+                    <p
+                        className="mb-0"
+                        style={{ color: "#6B7280" }}
+                    >
+                        Update goods receipt details
+                    </p>
                 </div>
 
                 <div className="card-body">
@@ -184,7 +195,7 @@ export default function EditGRNPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     GRN Number
 
@@ -192,7 +203,7 @@ export default function EditGRNPage() {
 
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         grn.grnNumber
                                     }
@@ -203,7 +214,7 @@ export default function EditGRNPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Vendor
 
@@ -211,7 +222,7 @@ export default function EditGRNPage() {
 
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         grn.vendor
                                             ?.companyName || ""
@@ -223,7 +234,7 @@ export default function EditGRNPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Project
 
@@ -231,7 +242,7 @@ export default function EditGRNPage() {
 
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         grn.project
                                             ?.name || ""
@@ -243,7 +254,7 @@ export default function EditGRNPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Purchase Order
 
@@ -251,7 +262,7 @@ export default function EditGRNPage() {
 
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         grn.purchaseOrderId
                                     }
@@ -262,7 +273,7 @@ export default function EditGRNPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Ordered Qty
 
@@ -270,7 +281,7 @@ export default function EditGRNPage() {
 
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         grn.purchaseorder
                                             ?.quantity || 0
@@ -282,7 +293,7 @@ export default function EditGRNPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Received Qty
 
@@ -292,7 +303,7 @@ export default function EditGRNPage() {
                                     type="number"
                                     step="0.01"
                                     name="receivedQty"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.receivedQty
                                     }
@@ -306,7 +317,7 @@ export default function EditGRNPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Pending Qty
 
@@ -314,7 +325,7 @@ export default function EditGRNPage() {
 
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         grn.pendingQty || 0
                                     }
@@ -325,7 +336,7 @@ export default function EditGRNPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Status
 
@@ -333,7 +344,7 @@ export default function EditGRNPage() {
 
                                 <select
                                     name="status"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.status
                                     }
@@ -360,7 +371,7 @@ export default function EditGRNPage() {
 
                             <div className="col-md-12 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Remarks
 
@@ -369,7 +380,7 @@ export default function EditGRNPage() {
                                 <textarea
                                     rows="4"
                                     name="remarks"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.remarks
                                     }
@@ -386,7 +397,7 @@ export default function EditGRNPage() {
 
                             <button
                                 type="submit"
-                                className="btn btn-warning"
+                                className="btn btn-dark px-4"
                                 disabled={loading}
                             >
 
@@ -398,7 +409,7 @@ export default function EditGRNPage() {
 
                             <button
                                 type="button"
-                                className="btn btn-secondary"
+                                className="btn btn-outline-secondary px-4"
                                 onClick={() =>
                                     router.push(
                                         "/dashboard/grn"

@@ -1,16 +1,38 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET ALL GRN
 // ======================
 
-export async function GET() {
+export async function GET(request) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const grns =
             await prisma.grn.findMany({
+
+                where: {
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
 
                 include: {
 
@@ -79,7 +101,22 @@ export async function POST(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const body =
             await request.json();
 
@@ -94,13 +131,16 @@ export async function POST(
         } = body;
 
         const purchaseOrder =
-            await prisma.purchaseorder.findUnique({
+            await prisma.purchaseorder.findFirst({
 
                 where: {
 
                     id: parseInt(
                         purchaseOrderId
                     ),
+
+                    companyId:
+                        currentUser.companyId,
 
                 },
 
@@ -144,12 +184,62 @@ export async function POST(
             totalQty -
             newReceived;
 
+
+        if (
+            newReceived >
+            totalQty
+        ) {
+
+            return NextResponse.json(
+                {
+
+                    success: false,
+
+                    message:
+                        "Received quantity exceeds PO quantity",
+
+                },
+                {
+
+                    status: 400,
+
+                }
+            );
+
+        }
+
+        const boq = await prisma.boq.findFirst({
+            where: {
+                id: purchaseOrder.boqId,
+                companyId: currentUser.companyId,
+            },
+        });
+
+        if (!boq) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "BOQ item not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+        }
+
+
+
         // ======================
         // GET SETTINGS PREFIX
         // ======================
 
         const settings =
-            await prisma.settings.findFirst();
+            await prisma.settings.findFirst({
+                where: {
+                    companyId:
+                        currentUser.companyId,
+                },
+            });
 
         const prefix =
             settings?.grnPrefix || "GRN";
@@ -161,7 +251,12 @@ export async function POST(
             await prisma.grn.create({
 
                 data: {
-
+                    company: {
+                        connect: {
+                            id:
+                                currentUser.companyId,
+                        },
+                    },
                     grnNumber,
 
                     receivedQty:
@@ -210,6 +305,9 @@ export async function POST(
 
                     },
 
+                    // purchaseOrderId:
+                    //     purchaseOrder.id,
+
                 },
 
             });
@@ -251,8 +349,11 @@ export async function POST(
 
                 where: {
 
-                    purchaseOrderId:
-                        purchaseOrder.id,
+                    companyId:
+                        currentUser.companyId,
+
+                    materialName:
+                        boq.itemName,
 
                 },
 
@@ -287,22 +388,30 @@ export async function POST(
 
         } else {
 
-            const boq =
-                await prisma.boq.findUnique({
+            // const boq =
+            //     await prisma.boq.findFirst({
 
-                    where: {
+            //         where: {
 
-                        id:
-                            purchaseOrder.boqId,
+            //             id:
+            //                 purchaseOrder.boqId,
 
-                    },
+            //             companyId:
+            //                 currentUser.companyId,
 
-                });
+            //         },
+
+            //     });
 
             await prisma.inventory.create({
 
                 data: {
-
+                    company: {
+                        connect: {
+                            id:
+                                currentUser.companyId,
+                        },
+                    },
                     materialName:
                         boq?.itemName ||
                         "Material",
@@ -329,7 +438,10 @@ export async function POST(
                                         purchaseOrder.vendorId,
                                 },
                             }
+
                             : undefined,
+                    vendorId:
+                        purchaseOrder.vendorId,
 
                     project:
                         purchaseOrder.projectId
@@ -341,12 +453,16 @@ export async function POST(
                             }
                             : undefined,
 
+                    projectId:
+                        purchaseOrder.projectId,
+
                     purchaseorder: {
                         connect: {
                             id:
                                 purchaseOrder.id,
                         },
                     },
+
 
                 },
 

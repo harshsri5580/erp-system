@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import toast from "react-hot-toast";
+import { Building2 } from "lucide-react";
 export default function SettingsPage() {
 
     const [loading, setLoading] =
@@ -198,15 +199,14 @@ export default function SettingsPage() {
                         formData
                     );
 
-                alert(
+                toast.success(
                     response.data.message
                 );
-
             } catch (error) {
 
                 console.log(error);
 
-                alert(
+                toast.error(
                     "Failed to save settings"
                 );
 
@@ -220,7 +220,7 @@ export default function SettingsPage() {
 
         return (
             <div className="container-fluid">
-                <div className="alert alert-info">
+                <div className="text-center py-5">
                     Loading Settings...
                 </div>
             </div>
@@ -229,23 +229,43 @@ export default function SettingsPage() {
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
-            <div className="card shadow border-0 rounded-4">
+            <div className="mb-4 pb-3 border-bottom">
 
-                {/* HEADER */}
+                <h2
+                    className="fw-bold mb-1"
+                    style={{
+                        color: "#111827",
+                    }}
+                >
+                    System Settings
+                </h2>
 
-                <div className="card-header bg-dark text-white">
+                <p
+                    className="mb-0"
+                    style={{
+                        color: "#6B7280",
+                    }}
+                >
+                    Configure company, tax, finance and email settings
+                </p>
 
-                    <h3>
-                        Settings
-                    </h3>
+            </div>
 
-                </div>
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
+
+
 
                 {/* BODY */}
 
-                <div className="card-body">
+                <div className="card-body p-4 p-lg-5">
 
                     <form
                         onSubmit={
@@ -259,24 +279,33 @@ export default function SettingsPage() {
                             {/* COMPANY INFORMATION */}
                             {/* ========================= */}
 
-                            <div className="col-12">
+                            <div className="d-flex align-items-center gap-2 mb-4">
 
-                                <h5 className="mb-3">
+                                <Building2
+                                    size={20}
+                                    className="text-primary"
+                                />
+
+                                <h5
+                                    className="fw-bold mb-0"
+                                    style={{
+                                        color: "#111827"
+                                    }}
+                                >
                                     Company Information
                                 </h5>
 
                             </div>
-
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Company Name
                                 </label>
 
                                 <input
                                     type="text"
                                     name="companyName"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.companyName
                                     }
@@ -289,14 +318,14 @@ export default function SettingsPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Company Email
                                 </label>
 
                                 <input
                                     type="email"
                                     name="companyEmail"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.companyEmail
                                     }
@@ -309,14 +338,14 @@ export default function SettingsPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Company Phone
                                 </label>
 
                                 <input
                                     type="text"
                                     name="companyPhone"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.companyPhone
                                     }
@@ -329,14 +358,14 @@ export default function SettingsPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Company Logo URL
                                 </label>
 
                                 <input
                                     type="text"
                                     name="companyLogo"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.companyLogo
                                     }
@@ -349,13 +378,13 @@ export default function SettingsPage() {
 
                             <div className="col-md-12 mb-4">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Company Address
                                 </label>
 
                                 <textarea
                                     name="companyAddress"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     rows="3"
                                     value={
                                         formData.companyAddress
@@ -371,11 +400,16 @@ export default function SettingsPage() {
                             {/* TAX */}
                             {/* ========================= */}
 
-                            <div className="col-12">
+                            <div className="col-12 mt-4">
 
-                                <hr />
 
-                                <h5 className="mb-3">
+
+                                <h5
+                                    className="fw-bold mb-4"
+                                    style={{
+                                        color: "#111827",
+                                    }}
+                                >
                                     Tax Information
                                 </h5>
 
@@ -383,14 +417,14 @@ export default function SettingsPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     GST Number
                                 </label>
 
                                 <input
                                     type="text"
                                     name="gstNumber"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.gstNumber
                                     }
@@ -403,7 +437,7 @@ export default function SettingsPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     GST %
                                 </label>
 
@@ -411,7 +445,7 @@ export default function SettingsPage() {
                                     type="number"
                                     step="0.01"
                                     name="gstPercent"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.gstPercent
                                     }
@@ -424,14 +458,14 @@ export default function SettingsPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     PAN Number
                                 </label>
 
                                 <input
                                     type="text"
                                     name="panNumber"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.panNumber
                                     }
@@ -446,11 +480,16 @@ export default function SettingsPage() {
                             {/* CURRENCY */}
                             {/* ========================= */}
 
-                            <div className="col-12">
+                            <div className="col-12 mt-4">
 
-                                <hr />
 
-                                <h5 className="mb-3">
+
+                                <h5
+                                    className="fw-bold mb-4"
+                                    style={{
+                                        color: "#111827",
+                                    }}
+                                >
                                     Currency Settings
                                 </h5>
 
@@ -458,14 +497,14 @@ export default function SettingsPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Currency
                                 </label>
 
                                 <input
                                     type="text"
                                     name="currency"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.currency
                                     }
@@ -478,14 +517,14 @@ export default function SettingsPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Currency Symbol
                                 </label>
 
                                 <input
                                     type="text"
                                     name="currencySymbol"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.currencySymbol
                                     }
@@ -498,14 +537,14 @@ export default function SettingsPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Timezone
                                 </label>
 
                                 <input
                                     type="text"
                                     name="timezone"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.timezone
                                     }
@@ -520,11 +559,16 @@ export default function SettingsPage() {
                             {/* PREFIX */}
                             {/* ========================= */}
 
-                            <div className="col-12">
+                            <div className="col-12 mt-4">
 
-                                <hr />
 
-                                <h5 className="mb-3">
+
+                                <h5
+                                    className="fw-bold mb-4"
+                                    style={{
+                                        color: "#111827",
+                                    }}
+                                >
                                     Numbering Settings
                                 </h5>
 
@@ -532,14 +576,14 @@ export default function SettingsPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Invoice Prefix
                                 </label>
 
                                 <input
                                     type="text"
                                     name="invoicePrefix"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.invoicePrefix
                                     }
@@ -552,14 +596,14 @@ export default function SettingsPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     PO Prefix
                                 </label>
 
                                 <input
                                     type="text"
                                     name="poPrefix"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.poPrefix
                                     }
@@ -572,14 +616,14 @@ export default function SettingsPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     GRN Prefix
                                 </label>
 
                                 <input
                                     type="text"
                                     name="grnPrefix"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.grnPrefix
                                     }
@@ -594,11 +638,16 @@ export default function SettingsPage() {
                             {/* SMTP */}
                             {/* ========================= */}
 
-                            <div className="col-12">
+                            <div className="col-12 mt-4">
 
-                                <hr />
 
-                                <h5 className="mb-3">
+
+                                <h5
+                                    className="fw-bold mb-4"
+                                    style={{
+                                        color: "#111827",
+                                    }}
+                                >
                                     SMTP Settings
                                 </h5>
 
@@ -606,14 +655,14 @@ export default function SettingsPage() {
 
                             <div className="col-md-3 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     SMTP Host
                                 </label>
 
                                 <input
                                     type="text"
                                     name="smtpHost"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.smtpHost
                                     }
@@ -626,14 +675,14 @@ export default function SettingsPage() {
 
                             <div className="col-md-3 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     SMTP Port
                                 </label>
 
                                 <input
                                     type="number"
                                     name="smtpPort"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.smtpPort
                                     }
@@ -646,14 +695,14 @@ export default function SettingsPage() {
 
                             <div className="col-md-3 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     SMTP User
                                 </label>
 
                                 <input
                                     type="text"
                                     name="smtpUser"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.smtpUser
                                     }
@@ -666,14 +715,14 @@ export default function SettingsPage() {
 
                             <div className="col-md-3 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     SMTP Password
                                 </label>
 
                                 <input
                                     type="password"
                                     name="smtpPassword"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.smtpPassword
                                     }
@@ -686,7 +735,12 @@ export default function SettingsPage() {
 
                             <div className="col-md-12 mb-4">
 
-                                <div className="form-check">
+                                <div
+                                    className="form-check p-3 rounded-3"
+                                    style={{
+                                        background: "#F9FAFB",
+                                    }}
+                                >
 
                                     <input
                                         type="checkbox"
@@ -710,24 +764,26 @@ export default function SettingsPage() {
 
                         </div>
 
-                        <button
-                            type="submit"
-                            className="btn btn-dark"
-                            disabled={loading}
-                        >
+                        <div className="mt-4">
 
-                            {loading
-                                ? "Saving..."
-                                : "Save Settings"}
+                            <button
+                                type="submit"
+                                className="btn btn-dark px-4 py-2"
+                                disabled={loading}
+                            >
 
-                        </button>
+                                {loading
+                                    ? "Saving..."
+                                    : "Save Settings"}
 
+                            </button>
+                        </div>
                     </form>
 
                 </div>
 
-            </div>
+            </div >
 
-        </div>
+        </div >
     );
 }

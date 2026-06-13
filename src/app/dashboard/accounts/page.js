@@ -67,21 +67,32 @@ export default function AccountsPage() {
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
             {/* HEADER */}
 
-            <div className="mb-4">
+            <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
 
-                <h2 className="page-title">
-                    Accounts Dashboard
-                </h2>
+                <div>
+                    <h2
+                        className="fw-bold mb-1"
+                        style={{
+                            color: "#111827",
+                            opacity: 1
+                        }}
+                    >
+                        Accounts Dashboard
+                    </h2>
 
-                <p className="page-subtitle">
-                    Financial overview
-                </p>
-
+                    <p className="text-muted mb-0">
+                        Real-time financial overview and business performance
+                    </p>
+                </div>
+                <div className="badge bg-success-subtle text-success px-3 py-2 rounded-pill">
+                    Updated Today
+                </div>
             </div>
+
 
             {/* CARDS */}
 
@@ -91,15 +102,30 @@ export default function AccountsPage() {
 
                 <div className="col-md-3 mb-4">
 
-                    <div className="card shadow border-0 rounded-4">
+                    <div
+                        className="card border-0 rounded-4 h-100"
+                        style={{
+                            background: "#fff",
+                            boxShadow:
+                                "0 10px 30px rgba(0,0,0,0.06)"
+                        }}
+                    >
 
                         <div className="card-body">
 
-                            <h6 className="text-muted">
-                                Total Invoices
-                            </h6>
+                            <div className="d-flex justify-content-between align-items-center mb-3">
 
-                            <h2 className="page-title">
+                                <span className="text-muted fw-semibold">
+                                    Total Invoices
+                                </span>
+
+                                <span className="fs-4">
+                                    📄
+                                </span>
+
+                            </div>
+
+                            <h2 className="fw-bold mb-0">
                                 ₹{stats.totalInvoices}
                             </h2>
 
@@ -113,13 +139,28 @@ export default function AccountsPage() {
 
                 <div className="col-md-3 mb-4">
 
-                    <div className="card shadow border-0 rounded-4">
+                    <div
+                        className="card border-0 rounded-4 h-100"
+                        style={{
+                            background: "#fff",
+                            boxShadow:
+                                "0 10px 30px rgba(0,0,0,0.06)"
+                        }}
+                    >
 
                         <div className="card-body">
 
-                            <h6 className="text-muted">
-                                Payments Received
-                            </h6>
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+
+                                <span className="text-muted fw-semibold">
+                                    Payments Received
+                                </span>
+
+                                <span className="fs-4">
+                                    💰
+                                </span>
+
+                            </div>
 
                             <h2 className="fw-bold text-success">
                                 ₹{stats.totalPayments}
@@ -135,13 +176,28 @@ export default function AccountsPage() {
 
                 <div className="col-md-3 mb-4">
 
-                    <div className="card shadow border-0 rounded-4">
+                    <div
+                        className="card border-0 rounded-4 h-100"
+                        style={{
+                            background: "#fff",
+                            boxShadow:
+                                "0 10px 30px rgba(0,0,0,0.06)"
+                        }}
+                    >
 
                         <div className="card-body">
 
-                            <h6 className="text-muted">
-                                Total Expenses
-                            </h6>
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+
+                                <span className="text-muted fw-semibold">
+                                    Total Expenses
+                                </span>
+
+                                <span className="fs-4">
+                                    📉
+                                </span>
+
+                            </div>
 
                             <h2 className="fw-bold text-danger">
                                 ₹{stats.totalExpenses}
@@ -157,13 +213,28 @@ export default function AccountsPage() {
 
                 <div className="col-md-3 mb-4">
 
-                    <div className="card shadow border-0 rounded-4">
+                    <div
+                        className="card border-0 rounded-4 h-100"
+                        style={{
+                            background: "#fff",
+                            boxShadow:
+                                "0 10px 30px rgba(0,0,0,0.06)"
+                        }}
+                    >
 
-                        <div className="card-body">
+                        <div className="card-body p-4">
 
-                            <h6 className="text-muted">
-                                Net Revenue
-                            </h6>
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+
+                                <span className="text-muted fw-semibold">
+                                    Net Revenue
+                                </span>
+
+                                <span className="fs-4">
+                                    🚀
+                                </span>
+
+                            </div>
 
                             <h2 className="fw-bold text-primary">
                                 ₹{stats.totalRevenue}
@@ -189,9 +260,17 @@ export default function AccountsPage() {
 
                         <div className="card-body">
 
-                            <h5 className="fw-bold mb-3">
-                                Pending Invoice Payments
-                            </h5>
+                            <div className="d-flex justify-content-between align-items-center mb-4">
+
+                                <h5 className="fw-bold mb-0">
+                                    Pending Transactions
+                                </h5>
+
+                                <span className="badge bg-warning-subtle text-warning">
+                                    Action Required
+                                </span>
+
+                            </div>
 
                             {/* <h2 className="text-warning fw-bold mb-4">
                                 ₹{stats.totalPending}
@@ -203,7 +282,13 @@ export default function AccountsPage() {
 
                                 <div className="col-6 mb-3">
 
-                                    <div className="border rounded-3 p-3">
+                                    <div
+                                        className="rounded-4 p-4"
+                                        style={{
+                                            background: "#fff8e1",
+                                            border: "1px solid #ffe082"
+                                        }}
+                                    >
 
                                         <h6 className="text-muted">
                                             Pending Expenses
@@ -219,7 +304,13 @@ export default function AccountsPage() {
 
                                 <div className="col-6 mb-3">
 
-                                    <div className="border rounded-3 p-3">
+                                    <div
+                                        className="rounded-4 p-4"
+                                        style={{
+                                            background: "#fff8e1",
+                                            border: "1px solid #ffe082"
+                                        }}
+                                    >
 
                                         <h6 className="text-muted">
                                             Pending Payments
@@ -265,13 +356,20 @@ export default function AccountsPage() {
 
                         <div className="card-body">
 
-                            <h5 className="fw-bold mb-3">
-                                Finance Summary
-                            </h5>
+                            <div className="d-flex justify-content-between align-items-center mb-4">
 
-                            <ul className="list-group">
+                                <h5 className="fw-bold mb-0">
+                                    Finance Summary
+                                </h5>
 
-                                <li className="list-group-item d-flex justify-content-between">
+                                <span>
+                                    📊
+                                </span>
+
+                            </div>
+                            <ul className="list-group list-group-flush">
+
+                                <li className="list-group-item d-flex justify-content-between align-items-center py-3">
                                     <span>
                                         Total Invoice Amount
                                     </span>
@@ -281,7 +379,7 @@ export default function AccountsPage() {
                                     </strong>
                                 </li>
 
-                                <li className="list-group-item d-flex justify-content-between">
+                                <li className="list-group-item d-flex justify-content-between align-items-center py-3">
                                     <span>
                                         Total Expenses
                                     </span>
@@ -291,7 +389,7 @@ export default function AccountsPage() {
                                     </strong>
                                 </li>
 
-                                <li className="list-group-item d-flex justify-content-between">
+                                <li className="list-group-item d-flex justify-content-between align-items-center py-3">
                                     <span>
                                         Net Revenue
                                     </span>

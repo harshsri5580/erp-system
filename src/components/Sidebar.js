@@ -45,6 +45,10 @@ export default function Sidebar() {
     useState(false);
   const [userRole, setUserRole] =
     useState("");
+  const [companyName, setCompanyName] =
+    useState("");
+  const [userName, setUserName] =
+    useState("");
 
   const [openMenus, setOpenMenus] =
     useState({
@@ -85,13 +89,26 @@ export default function Sidebar() {
         "userRole"
       );
 
+    const company =
+      localStorage.getItem(
+        "companyName"
+      );
+
+    const user =
+      localStorage.getItem(
+        "userName"
+      );
+
     setUserRole(role || "");
+    setCompanyName(company || "");
+    setUserName(user || "");
 
   }, []);
 
+
   const handleLogout = () => {
 
-    localStorage.removeItem("token");
+    localStorage.clear();
 
     router.push("/login");
   };
@@ -350,11 +367,12 @@ export default function Sidebar() {
         .filter(
           (section) =>
             [
+
               "Overview",
-              "Projects",
               "HR Management",
               "Equipment",
               "Documents",
+
             ].includes(
               section.title
             )
@@ -376,7 +394,6 @@ export default function Sidebar() {
                     [
                       "Attendance",
                       "Daily Logs",
-                      "Milestones",
                     ].includes(
                       item.name
                     )
@@ -534,9 +551,11 @@ vh-100
           {!collapsed && (
 
             <div>
-
               <h5 className="fw-bold mb-0 text-white">
-                BuildERP
+                CON
+                <span className="text-primary">
+                  SERP
+                </span>
               </h5>
 
               <small className="text-secondary small">
@@ -587,19 +606,18 @@ vh-100
     `}
         >
 
-          {/* LOGO */}
 
           <div
             className="
-        bg-primary
-        rounded-4
-        d-flex
-        align-items-center
-        justify-content-center
-        fw-bold
-        shadow-sm
-        flex-shrink-0
-      "
+  bg-primary
+  rounded-4
+  d-flex
+  align-items-center
+  justify-content-center
+  fw-bold
+  shadow-sm
+  flex-shrink-0
+"
             style={{
               width: "48px",
               height: "48px",
@@ -607,10 +625,12 @@ vh-100
               fontSize: "18px",
             }}
           >
-            H
+            {(userName || "U")
+              .charAt(0)
+              .toUpperCase()}
           </div>
 
-          {/* COMPANY INFO */}
+
 
           {!collapsed && (
 
@@ -620,30 +640,19 @@ vh-100
                 minWidth: 0,
               }}
             >
-
               <div
-                className="
-            fw-semibold
-            text-white
-            text-truncate
-          "
+                className="fw-semibold text-white text-truncate"
+                title={userName}
                 style={{
-                  fontSize: "15px",
+                  maxWidth: "140px",
                 }}
               >
-                Harsh Builders
+                {userName || "User"}
               </div>
 
-              <small
-                className="
-            text-secondary
-            d-block
-            text-truncate
-          "
-              >
-                Construction ERP
+              <small className="text-secondary">
+                {userRole || "Role"}
               </small>
-
             </div>
           )}
 

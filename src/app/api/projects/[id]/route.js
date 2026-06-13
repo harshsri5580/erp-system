@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getUser } from "@/lib/getUser";
 
 // ======================
 // GET SINGLE PROJECT
@@ -11,14 +12,32 @@ export async function GET(
 ) {
 
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const { id } =
       await context.params;
     const project =
-      await prisma.project.findUnique({
+      await prisma.project.findFirst({
         where: {
           id: parseInt(id),
-        },
 
+          companyId:
+            currentUser.companyId,
+        },
         include: {
           user: true,
           client: true,
@@ -63,6 +82,23 @@ export async function PUT(
 
   try {
 
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
+
     const { id } =
       await context.params;
     const body = await request.json();
@@ -75,6 +111,98 @@ export async function PUT(
       userId,
       clientId,
     } = body;
+
+    const existingProject =
+      await prisma.project.findFirst({
+
+        where: {
+          id: parseInt(id),
+
+          companyId:
+            currentUser.companyId,
+        },
+
+      });
+
+    if (!existingProject) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Project not found",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
+
+    if (clientId) {
+
+      const client =
+        await prisma.client.findFirst({
+
+          where: {
+
+            id: parseInt(clientId),
+
+            companyId:
+              currentUser.companyId,
+
+          },
+
+        });
+
+      if (!client) {
+
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              "Invalid Client",
+          },
+          {
+            status: 404,
+          }
+        );
+
+      }
+
+    }
+    if (userId) {
+
+      const user =
+        await prisma.user.findFirst({
+
+          where: {
+
+            id: parseInt(userId),
+
+            companyId:
+              currentUser.companyId,
+
+          },
+
+        });
+
+      if (!user) {
+
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              "Invalid User",
+          },
+          {
+            status: 404,
+          }
+        );
+
+      }
+
+    }
 
     const project =
       await prisma.project.update({
@@ -143,8 +271,50 @@ export async function DELETE(
 ) {
 
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const { id } =
       await context.params;
+    const existingProject =
+      await prisma.project.findFirst({
+
+        where: {
+          id: parseInt(id),
+
+          companyId:
+            currentUser.companyId,
+        },
+
+      });
+
+    if (!existingProject) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Project not found",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
     await prisma.project.delete({
       where: {
         id: parseInt(id),

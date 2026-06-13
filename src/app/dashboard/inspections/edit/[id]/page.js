@@ -7,6 +7,15 @@ import {
     useRouter,
 } from "next/navigation";
 
+import toast from "react-hot-toast";
+
+import {
+    ClipboardCheck,
+    Save,
+    ArrowLeft,
+    MapPin,
+} from "lucide-react";
+
 export default function EditInspectionPage() {
 
     const params =
@@ -184,19 +193,24 @@ export default function EditInspectionPage() {
                     formData
                 );
 
-                alert(
+                toast.success(
                     "Inspection updated successfully"
                 );
 
-                router.push(
-                    "/dashboard/inspections"
-                );
+                setTimeout(() => {
+
+                    router.push(
+                        "/dashboard/inspections"
+                    );
+
+                }, 1000);
 
             } catch (error) {
 
                 console.log(error);
 
-                alert(
+                toast.error(
+                    error?.response?.data?.message ||
                     "Failed to update inspection"
                 );
 
@@ -212,32 +226,90 @@ export default function EditInspectionPage() {
 
         <div className="container-fluid">
 
-            <div className="card shadow">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1200px",
+                    margin: "0 auto",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
-                <div className="card-body">
+                <div className="card-body p-4 p-lg-5">
+                    <div className="mb-4 pb-3 border-bottom">
 
-                    <h2 className="mb-4">
+                        <div className="d-flex justify-content-between align-items-center">
 
-                        Edit Inspection
+                            <div>
 
-                    </h2>
+                                <h2
+                                    className="fw-bold mb-1"
+                                    style={{
+                                        color: "#111827",
+                                    }}
+                                >
+                                    Edit Inspection
+                                </h2>
+
+                                <p
+                                    className="mb-0"
+                                    style={{
+                                        color: "#6B7280",
+                                    }}
+                                >
+                                    Update inspection information and records
+                                </p>
+
+                            </div>
+
+                            <ClipboardCheck
+                                size={36}
+                                color="#2563EB"
+                            />
+
+                        </div>
+
+                    </div>
 
                     <form
                         onSubmit={
                             handleSubmit
                         }
                     >
+                        <div
+                            className="p-4 rounded-4 mb-4"
+                            style={{
+                                background: "#F8FAFC",
+                                border:
+                                    "1px solid #E5E7EB",
+                            }}
+                        >
 
+                            <h5
+                                className="fw-bold mb-0"
+                                style={{
+                                    color: "#111827",
+                                }}
+                            >
+                                Inspection Information
+                            </h5>
+
+                        </div>
                         <div className="row">
 
                             <div className="col-md-6 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Inspection Number
                                 </label>
 
                                 <input
-                                    className="form-control"
+                                    className="form-control rounded-3"
+                                    style={{
+                                        background: "#F8FAFC",
+                                        fontWeight: "600",
+                                    }}
                                     value={
                                         formData.inspectionNumber
                                     }
@@ -248,14 +320,14 @@ export default function EditInspectionPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Inspection Date
                                 </label>
 
                                 <input
                                     type="date"
                                     name="inspectionDate"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.inspectionDate
                                     }
@@ -268,13 +340,13 @@ export default function EditInspectionPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Project
                                 </label>
 
                                 <select
                                     name="projectId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.projectId
                                     }
@@ -314,13 +386,13 @@ export default function EditInspectionPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Inspector
                                 </label>
 
                                 <select
                                     name="userId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.userId
                                     }
@@ -360,32 +432,54 @@ export default function EditInspectionPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Inspection Type
                                 </label>
 
-                                <input
+                                <select
                                     name="inspectionType"
-                                    className="form-control"
-                                    value={
-                                        formData.inspectionType
-                                    }
-                                    onChange={
-                                        handleChange
-                                    }
-                                />
+                                    className="form-select rounded-3"
+                                    value={formData.inspectionType}
+                                    onChange={handleChange}
+                                >
+
+                                    <option value="Quality">
+                                        Quality
+                                    </option>
+
+                                    <option value="Safety">
+                                        Safety
+                                    </option>
+
+                                    <option value="Material">
+                                        Material
+                                    </option>
+
+                                    <option value="Site">
+                                        Site
+                                    </option>
+
+                                    <option value="Electrical">
+                                        Electrical
+                                    </option>
+
+                                    <option value="Civil">
+                                        Civil
+                                    </option>
+
+                                </select>
 
                             </div>
 
                             <div className="col-md-6 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Status
                                 </label>
 
                                 <select
                                     name="status"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.status
                                     }
@@ -420,33 +514,43 @@ export default function EditInspectionPage() {
 
                             <div className="col-md-12 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Location
                                 </label>
 
-                                <input
-                                    name="location"
-                                    className="form-control"
-                                    value={
-                                        formData.location
-                                    }
-                                    onChange={
-                                        handleChange
-                                    }
-                                />
+                                <div className="position-relative">
+
+                                    <MapPin
+                                        size={18}
+                                        style={{
+                                            position: "absolute",
+                                            left: "14px",
+                                            top: "12px",
+                                            color: "#6B7280",
+                                        }}
+                                    />
+
+                                    <input
+                                        name="location"
+                                        className="form-control rounded-3 ps-5"
+                                        value={formData.location}
+                                        onChange={handleChange}
+                                    />
+
+                                </div>
 
                             </div>
 
                             <div className="col-md-12 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Checklist
                                 </label>
 
                                 <textarea
                                     rows="5"
                                     name="checklist"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.checklist
                                     }
@@ -459,14 +563,14 @@ export default function EditInspectionPage() {
 
                             <div className="col-md-12 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Remarks
                                 </label>
 
                                 <textarea
                                     rows="4"
                                     name="remarks"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.remarks
                                     }
@@ -479,16 +583,38 @@ export default function EditInspectionPage() {
 
                         </div>
 
-                        <button
-                            className="btn btn-primary"
-                            disabled={loading}
-                        >
+                        <div className="d-flex gap-2 mt-4">
 
-                            {loading
-                                ? "Updating..."
-                                : "Update Inspection"}
+                            <button
+                                className="btn btn-dark px-4 rounded-3 d-flex align-items-center gap-2"
+                                disabled={loading}
+                            >
 
-                        </button>
+                                <Save size={16} />
+
+                                {loading
+                                    ? "Updating..."
+                                    : "Update Inspection"}
+
+                            </button>
+
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary px-4 rounded-3 d-flex align-items-center gap-2"
+                                onClick={() =>
+                                    router.push(
+                                        "/dashboard/inspections"
+                                    )
+                                }
+                            >
+
+                                <ArrowLeft size={16} />
+
+                                Back
+
+                            </button>
+
+                        </div>
 
                     </form>
 

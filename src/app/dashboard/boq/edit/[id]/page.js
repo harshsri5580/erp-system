@@ -7,6 +7,11 @@ import {
   useParams,
 } from "next/navigation";
 
+import {
+  ArrowLeft,
+} from "lucide-react";
+import toast from "react-hot-toast";
+
 export default function EditBOQPage() {
 
   const router = useRouter();
@@ -87,9 +92,11 @@ export default function EditBOQPage() {
     };
 
   useEffect(() => {
-    fetchBOQ();
-    fetchContracts();
-  }, []);
+    if (id) {
+      fetchBOQ();
+      fetchContracts();
+    }
+  }, [id]);
 
   // ======================
   // HANDLE CHANGE
@@ -109,9 +116,11 @@ export default function EditBOQPage() {
 
   const handleSubmit =
     async (e) => {
+
       e.preventDefault();
 
       try {
+
         setLoading(true);
 
         const response =
@@ -120,38 +129,93 @@ export default function EditBOQPage() {
             formData
           );
 
-        alert(
-          response.data.message
+        toast.success(
+          response.data.message ||
+          "BOQ updated successfully"
         );
 
-        router.push(
-          "/dashboard/boq"
-        );
+        setTimeout(() => {
+
+          router.push(
+            "/dashboard/boq"
+          );
+
+        }, 1000);
+
       } catch (error) {
+
         console.log(error);
 
-        alert(
+        toast.error(
+          error?.response?.data
+            ?.message ||
           "Failed to update BOQ"
         );
+
       } finally {
+
         setLoading(false);
+
       }
+
     };
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid px-4 py-3">
 
-      <div className="card shadow border-0 rounded-4">
+      <div
+        className="card border-0 rounded-4"
+        style={{
+          maxWidth: "1000px",
+          margin: "0 auto",
+          boxShadow:
+            "0 10px 30px rgba(0,0,0,0.06)",
+        }}
+      >
 
         {/* HEADER */}
 
-        <div className="card-header bg-dark text-white">
-          <h3>Edit BOQ</h3>
-        </div>
+
 
         {/* BODY */}
 
-        <div className="card-body">
+        <div className="card-body p-4 p-lg-5">
+          <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+
+            <div>
+
+              <h2
+                className="fw-bold mb-1"
+                style={{
+                  color: "#111827",
+                }}
+              >
+                Edit BOQ Item
+              </h2>
+
+              <p
+                className="mb-0"
+                style={{
+                  color: "#6B7280",
+                }}
+              >
+                Update bill of quantity item
+              </p>
+
+            </div>
+
+            <button
+              type="button"
+              className="btn btn-outline-secondary d-flex align-items-center gap-2"
+              onClick={() =>
+                router.push("/dashboard/boq")
+              }
+            >
+              <ArrowLeft size={16} />
+              Back
+            </button>
+
+          </div>
 
           <form onSubmit={handleSubmit}>
 
@@ -161,13 +225,13 @@ export default function EditBOQPage() {
 
               <div className="col-md-6 mb-3">
 
-                <label className="form-label">
+                <label className="form-label fw-semibold text-dark">
                   Contract
                 </label>
 
                 <select
                   name="contractId"
-                  className="form-select"
+                  className="form-select rounded-3"
                   value={
                     formData.contractId
                   }
@@ -205,14 +269,14 @@ export default function EditBOQPage() {
 
               <div className="col-md-6 mb-3">
 
-                <label className="form-label">
+                <label className="form-label fw-semibold text-dark">
                   Item Name
                 </label>
 
                 <input
                   type="text"
                   name="itemName"
-                  className="form-control"
+                  className="form-control rounded-3"
                   value={
                     formData.itemName
                   }
@@ -227,14 +291,14 @@ export default function EditBOQPage() {
 
               <div className="col-md-4 mb-3">
 
-                <label className="form-label">
+                <label className="form-label fw-semibold text-dark">
                   Unit
                 </label>
 
                 <input
                   type="text"
                   name="unit"
-                  className="form-control"
+                  className="form-control rounded-3"
                   value={
                     formData.unit
                   }
@@ -249,14 +313,14 @@ export default function EditBOQPage() {
 
               <div className="col-md-4 mb-3">
 
-                <label className="form-label">
+                <label className="form-label fw-semibold text-dark">
                   Quantity
                 </label>
 
                 <input
                   type="number"
                   name="quantity"
-                  className="form-control"
+                  className="form-control rounded-3"
                   value={
                     formData.quantity
                   }
@@ -271,14 +335,14 @@ export default function EditBOQPage() {
 
               <div className="col-md-4 mb-3">
 
-                <label className="form-label">
+                <label className="form-label fw-semibold text-dark">
                   Rate
                 </label>
 
                 <input
                   type="number"
                   name="rate"
-                  className="form-control"
+                  className="form-control rounded-3"
                   value={
                     formData.rate
                   }
@@ -291,15 +355,15 @@ export default function EditBOQPage() {
 
               {/* DESCRIPTION */}
 
-              <div className="col-md-12 mb-3">
+              <div className="col-12 mt-2">
 
-                <label className="form-label">
+                <label className="form-label fw-semibold text-dark">
                   Description
                 </label>
 
                 <textarea
                   name="description"
-                  className="form-control"
+                  className="form-control rounded-3"
                   rows="4"
                   value={
                     formData.description
@@ -315,15 +379,19 @@ export default function EditBOQPage() {
 
             {/* BUTTON */}
 
-            <button
-              type="submit"
-              className="btn btn-dark"
-              disabled={loading}
-            >
-              {loading
-                ? "Updating..."
-                : "Update BOQ"}
-            </button>
+            <div className="d-flex gap-2 mt-4">
+
+              <button
+                type="submit"
+                className="btn btn-dark px-4"
+                disabled={loading}
+              >
+                {loading
+                  ? "Updating..."
+                  : "Update BOQ"}
+              </button>
+
+            </div>
 
           </form>
 

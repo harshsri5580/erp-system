@@ -34,7 +34,7 @@ export default function EditInventoryPage() {
       status: "",
       vendorId: "",
       projectId: "",
-      purchaseOrderId: "",
+      // purchaseOrderId: "",
     });
 
   // ======================
@@ -98,9 +98,9 @@ export default function EditInventoryPage() {
             inventory.projectId ||
             "",
 
-          purchaseOrderId:
-            inventory.purchaseOrderId ||
-            "",
+          // purchaseOrderId:
+          //   inventory.purchaseOrderId ||
+          //   "",
         });
 
         setVendors(
@@ -371,7 +371,7 @@ export default function EditInventoryPage() {
 
               {/* PURCHASE ORDER */}
 
-              <div className="col-md-6 mb-3">
+              {/* <div className="col-md-6 mb-3">
 
                 <label className="form-label">
                   Purchase Order
@@ -384,7 +384,7 @@ export default function EditInventoryPage() {
                   readOnly
                 />
 
-              </div>
+              </div> */}
 
             </div>
 

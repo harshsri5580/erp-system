@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getUser } from "@/lib/getUser";
 
 import fs from "fs";
 import path from "path";
@@ -8,12 +9,34 @@ import path from "path";
 // GET ALL DOCUMENTS
 // ======================
 
-export async function GET() {
+export async function GET(request) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const documents =
             await prisma.document.findMany({
+
+                where: {
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
 
                 include: {
                     project: true,
@@ -66,7 +89,22 @@ export async function POST(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const formData =
             await request.formData();
 
@@ -89,7 +127,39 @@ export async function POST(
             formData.get(
                 "projectId"
             );
+        if (projectId) {
 
+            const project =
+                await prisma.project.findFirst({
+
+                    where: {
+
+                        id:
+                            parseInt(projectId),
+
+                        companyId:
+                            currentUser.companyId,
+
+                    },
+
+                });
+
+            if (!project) {
+
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message:
+                            "Invalid Project",
+                    },
+                    {
+                        status: 404,
+                    }
+                );
+
+            }
+
+        }
         const file =
             formData.get(
                 "file"
@@ -157,7 +227,11 @@ export async function POST(
             await prisma.document.create({
 
                 data: {
-
+                    company: {
+                        connect: {
+                            id: currentUser.companyId,
+                        },
+                    },
                     title,
 
                     category,

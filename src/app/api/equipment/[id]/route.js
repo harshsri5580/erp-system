@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET SINGLE
 // ======================
@@ -11,17 +11,35 @@ export async function GET(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
 
         const equipment =
-            await prisma.equipment.findUnique({
+            await prisma.equipment.findFirst({
 
                 where: {
 
                     id:
                         parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
 
                 },
 
@@ -79,47 +97,146 @@ export async function PUT(
         const body =
             await request.json();
 
+        const currentUser =
+            getUser(request);
+
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
+
+        const existingEquipment =
+            await prisma.equipment.findFirst({
+
+                where: {
+
+                    id:
+                        parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!existingEquipment) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Equipment not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+
         const {
 
             equipmentCode,
-
             equipmentName,
-
             category,
-
             brand,
-
             modelNo,
-
             serialNumber,
-
             projectId,
-
             userId,
-
             location,
-
             purchaseDate,
-
             purchaseCost,
-
             currentValue,
-
             totalUsageHours,
-
             lastMaintenanceDate,
-
             nextMaintenanceDate,
-
             maintenanceCost,
-
             maintenanceRemarks,
-
             status,
-
             remarks,
 
         } = body;
+
+        if (projectId) {
+
+            const project =
+                await prisma.project.findFirst({
+
+                    where: {
+
+                        id:
+                            parseInt(projectId),
+
+                        companyId:
+                            currentUser.companyId,
+
+                    },
+
+                });
+
+            if (!project) {
+
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message:
+                            "Invalid Project",
+                    },
+                    {
+                        status: 404,
+                    }
+                );
+
+            }
+
+        }
+
+        if (userId) {
+
+            const user =
+                await prisma.user.findFirst({
+
+                    where: {
+
+                        id:
+                            parseInt(userId),
+
+                        companyId:
+                            currentUser.companyId,
+
+                    },
+
+                });
+
+            if (!user) {
+
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message:
+                            "Invalid User",
+                    },
+                    {
+                        status: 404,
+                    }
+                );
+
+            }
+
+        }
+
+
 
         const equipment =
             await prisma.equipment.update({
@@ -263,7 +380,52 @@ export async function DELETE(
 
         const { id } =
             await context.params;
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
+
+        const existingEquipment =
+            await prisma.equipment.findFirst({
+
+                where: {
+
+                    id:
+                        parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!existingEquipment) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Equipment not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         await prisma.equipment.delete({
 
             where: {

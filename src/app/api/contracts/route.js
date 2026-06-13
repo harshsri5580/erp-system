@@ -1,14 +1,38 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET ALL CONTRACTS
 // ======================
 
-export async function GET() {
+export async function GET(request) {
+
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const contracts =
       await prisma.contract.findMany({
+
+        where: {
+
+          companyId:
+            currentUser.companyId,
+
+        },
         include: {
           project: true,
           vendor: true,
@@ -42,6 +66,23 @@ export async function GET() {
 
 export async function POST(request) {
   try {
+
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const body = await request.json();
 
     const {
@@ -55,16 +96,80 @@ export async function POST(request) {
       description,
     } = body;
 
+    const project =
+      await prisma.project.findFirst({
+
+        where: {
+
+          id:
+            parseInt(projectId),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!project) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Invalid Project",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
+
+    const vendor =
+      await prisma.vendor.findFirst({
+
+        where: {
+
+          id:
+            parseInt(vendorId),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!vendor) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Invalid Vendor",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
     const contract =
       await prisma.contract.create({
         data: {
+          company: {
+            connect: {
+              id: currentUser.companyId,
+            },
+          },
           title,
 
           contractValue:
             contractValue
               ? parseFloat(
-                  contractValue
-                )
+                contractValue
+              )
               : null,
 
           startDate,

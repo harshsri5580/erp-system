@@ -51,7 +51,7 @@ export default function AddProgressBillingPage() {
 
         loadProjects();
 
-        loadMilestones();
+        // loadMilestones();
 
         loadUsers();
 
@@ -152,13 +152,20 @@ export default function AddProgressBillingPage() {
                 await getPreviousBilling(
                     projectId
                 );
+            const milestoneRes =
+                await axios.get(
+                    `/api/milestones?projectId=${projectId}`
+                );
 
+            setMilestones(
+                milestoneRes.data.milestones || []
+            );
             setFormData((prev) => ({
 
                 ...prev,
 
                 projectId,
-
+                milestoneId: "",
                 clientId:
                     project?.clientId,
 
@@ -295,6 +302,7 @@ export default function AddProgressBillingPage() {
                                 <select
                                     name="milestoneId"
                                     className="form-select"
+                                    disabled={!formData.projectId}
                                     value={formData.milestoneId}
                                     onChange={handleChange}
                                 >

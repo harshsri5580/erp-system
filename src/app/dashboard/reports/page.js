@@ -68,14 +68,26 @@ export default function ReportsPage() {
 
     <div className="container-fluid p-4">
 
-      <div className="mb-4">
+      <div className="mb-5">
 
-        <h2 className="page-title">
+        <h1
+          className="fw-bold mb-2"
+          style={{
+            color: "#111827",
+            fontSize: "2.5rem",
+          }}
+        >
           Reports Dashboard
-        </h2>
+        </h1>
 
-        <p className="page-subtitle">
-          Manage and analyze ERP reports
+        <p
+          className="mb-0"
+          style={{
+            color: "#6B7280",
+            fontSize: "1rem",
+          }}
+        >
+          Analyze payroll, attendance and business insights
         </p>
 
       </div>
@@ -98,38 +110,83 @@ export default function ReportsPage() {
                 className="text-decoration-none"
               >
 
-                <div className="card border-0 shadow-sm rounded-4 h-100">
+                <div
+                  className="card border-0 rounded-4 h-100"
+                  style={{
+                    transition: "all .25s ease",
+                    boxShadow:
+                      "0 10px 30px rgba(0,0,0,.06)",
+                    cursor: "pointer",
+                  }}
+                >
 
-                  <div className="card-body p-4">
+                  <div className="card-body p-4 d-flex flex-column h-100">
 
                     <div
-                      className={`
-                        bg-${report.color}
-                        bg-opacity-10
-                        text-${report.color}
-                        rounded-4
-                        d-flex
-                        align-items-center
-                        justify-content-center
-                        mb-4
-                      `}
+                      className="rounded-4 d-flex align-items-center justify-content-center mb-4"
                       style={{
-                        width: "60px",
-                        height: "60px",
+                        width: "72px",
+                        height: "72px",
+                        background:
+                          report.color === "success"
+                            ? "#ECFDF3"
+                            : report.color === "warning"
+                              ? "#FFFAEB"
+                              : "#FEF2F2",
                       }}
                     >
-
-                      <Icon size={28} />
-
+                      <Icon
+                        size={32}
+                        className={`text-${report.color}`}
+                      />
                     </div>
 
-                    <h5 className="fw-bold text-dark">
+                    <h4
+                      className="fw-bold mb-2"
+                      style={{
+                        color: "#111827",
+                      }}
+                    >
                       {report.title}
-                    </h5>
+                    </h4>
 
-                    <p className="text-muted mb-0">
+                    <p
+                      className="mb-0"
+                      style={{
+                        color: "#6B7280",
+                        minHeight: "48px",
+                      }}
+                    >
                       {report.desc}
                     </p>
+
+                    <div
+                      className="mt-auto pt-4 border-top d-flex align-items-center justify-content-between"
+                    >
+                      <span
+                        style={{
+                          color: "#2563EB",
+                          fontWeight: "600",
+                          fontSize: "14px",
+                        }}
+                      >
+                        Open Report
+                      </span>
+
+                      <div
+                        className="d-flex align-items-center justify-content-center rounded-circle"
+                        style={{
+                          width: "34px",
+                          height: "34px",
+                          background: "#EFF6FF",
+                          color: "#2563EB",
+                          fontSize: "16px",
+                          fontWeight: "700",
+                        }}
+                      >
+                        →
+                      </div>
+                    </div>
 
                   </div>
 

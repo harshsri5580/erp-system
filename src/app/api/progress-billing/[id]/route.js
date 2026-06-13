@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET SINGLE
 // ======================
@@ -11,17 +11,35 @@ export async function GET(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
 
         const progressBilling =
-            await prisma.progressbilling.findUnique({
+            await prisma.progressbilling.findFirst({
 
                 where: {
 
                     id:
                         parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
 
                 },
 
@@ -29,11 +47,11 @@ export async function GET(
 
                     project: true,
 
-                    client: true,
+                    // client: true,
 
-                    milestone: true,
+                    // milestone: true,
 
-                    user: true,
+                    // user: true,
 
                 },
 
@@ -81,10 +99,53 @@ export async function PUT(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
+        const existingProgressBilling =
+            await prisma.progressbilling.findFirst({
 
+                where: {
+
+                    id:
+                        parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!existingProgressBilling) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Progress Billing not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         const body =
             await request.json();
 
@@ -115,7 +176,125 @@ export async function PUT(
             userId,
 
         } = body;
+        const project =
+            await prisma.project.findFirst({
 
+                where: {
+
+                    id:
+                        parseInt(projectId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!project) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Project",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+
+        const client =
+            await prisma.client.findFirst({
+
+                where: {
+
+                    id:
+                        parseInt(clientId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!client) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Client",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+
+        const milestone =
+            await prisma.milestone.findFirst({
+
+                where: {
+
+                    id:
+                        parseInt(milestoneId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!milestone) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Milestone",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+
+        const user =
+            await prisma.user.findFirst({
+
+                where: {
+
+                    id:
+                        parseInt(userId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!user) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid User",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         const totalBilled =
             Number(previousBilled || 0) +
             Number(currentBillAmount || 0);
@@ -266,10 +445,53 @@ export async function DELETE(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
+        const existingProgressBilling =
+            await prisma.progressbilling.findFirst({
 
+                where: {
+
+                    id:
+                        parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!existingProgressBilling) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Progress Billing not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         await prisma.progressbilling.delete({
 
             where: {

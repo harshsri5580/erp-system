@@ -14,8 +14,8 @@ export default function AddInventoryPage() {
   const [projects, setProjects] =
     useState([]);
 
-  const [purchaseOrders, setPurchaseOrders] =
-    useState([]);
+  // const [purchaseOrders, setPurchaseOrders] =
+  //   useState([]);
 
   const [loading, setLoading] =
     useState(false);
@@ -29,7 +29,6 @@ export default function AddInventoryPage() {
       status: "In Stock",
       vendorId: "",
       projectId: "",
-      purchaseOrderId: "",
     });
 
   // ======================
@@ -64,9 +63,9 @@ export default function AddInventoryPage() {
           projectsRes.data.projects
         );
 
-        setPurchaseOrders(
-          poRes.data.purchaseOrders
-        );
+        // setPurchaseOrders(
+        //   poRes.data.purchaseOrders
+        // );
 
       } catch (error) {
 
@@ -366,7 +365,7 @@ export default function AddInventoryPage() {
               </div>
 
               {/* PURCHASE ORDER */}
-
+              {/* 
               <div className="col-md-6 mb-3">
 
                 <label className="form-label">
@@ -401,7 +400,7 @@ export default function AddInventoryPage() {
 
                 </select>
 
-              </div>
+              </div> */}
 
             </div>
 

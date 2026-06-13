@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 
 
 // GET SINGLE PAYROLL
@@ -11,13 +11,32 @@ export async function GET(
 
   try {
 
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          error: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const { id } = await context.params;
 
     const payroll =
-      await prisma.payroll.findUnique({
-
+      await prisma.payroll.findFirst({
         where: {
+
           id: Number(id),
+
+          companyId:
+            currentUser.companyId,
+
         },
 
         include: {
@@ -65,7 +84,79 @@ export async function PUT(
   try {
 
     const { id } = await context.params;
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          error: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
+
+    const existingPayroll =
+      await prisma.payroll.findFirst({
+
+        where: {
+
+          id: Number(id),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!existingPayroll) {
+
+      return NextResponse.json(
+        {
+          error:
+            "Payroll not found",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
     const body = await request.json();
+
+    const user =
+      await prisma.user.findFirst({
+
+        where: {
+
+          id:
+            Number(body.userId),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!user) {
+
+      return NextResponse.json(
+        {
+          error:
+            "Invalid User",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
 
     const basicSalary =
       parseFloat(body.basicSalary) || 0;
@@ -131,7 +222,49 @@ export async function DELETE(
   try {
 
     const { id } = await context.params;
+    const currentUser =
+      getUser(request);
 
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          error: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
+
+    const existingPayroll =
+      await prisma.payroll.findFirst({
+
+        where: {
+
+          id: Number(id),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!existingPayroll) {
+
+      return NextResponse.json(
+        {
+          error:
+            "Payroll not found",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
     await prisma.payroll.delete({
 
       where: {

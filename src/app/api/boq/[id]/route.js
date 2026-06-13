@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET SINGLE BOQ
 // ======================
@@ -10,14 +10,34 @@ export async function GET(
   context
 ) {
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const { id } =
       await context.params;
     const boq =
-      await prisma.boq.findUnique({
+      await prisma.boq.findFirst({
         where: {
-          id: parseInt(id),
-        },
 
+          id: parseInt(id),
+
+          companyId:
+            currentUser.companyId,
+
+        },
         include: {
           contract: true,
         },
@@ -49,8 +69,50 @@ export async function PUT(
   context
 ) {
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+    }
     const { id } =
       await context.params;
+    const existingBoq =
+      await prisma.boq.findFirst({
+
+        where: {
+
+          id: parseInt(id),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!existingBoq) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "BOQ not found",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
     const body = await request.json();
 
     const {
@@ -61,7 +123,35 @@ export async function PUT(
       rate,
       description,
     } = body;
+    const contract =
+      await prisma.contract.findFirst({
 
+        where: {
+
+          id:
+            parseInt(contractId),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!contract) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Invalid Contract",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
     const total =
       parseFloat(quantity || 0) *
       parseFloat(rate || 0);
@@ -123,9 +213,55 @@ export async function DELETE(
   request,
   context
 ) {
-  const { id } =
-    await context.params;
+
+
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
+    const { id } =
+      await context.params;
+    const existingBoq =
+      await prisma.boq.findFirst({
+
+        where: {
+
+          id: parseInt(id),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!existingBoq) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "BOQ not found",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
     await prisma.boq.delete({
       where: {
         id: parseInt(id),

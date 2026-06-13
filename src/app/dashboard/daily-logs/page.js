@@ -4,6 +4,16 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 
+import Swal from "sweetalert2";
+import toast from "react-hot-toast";
+
+import {
+    Plus,
+    Pencil,
+    Trash2,
+    ClipboardList,
+} from "lucide-react";
+
 export default function DailyLogsPage() {
 
     const [dailyLogs, setDailyLogs] =
@@ -47,12 +57,33 @@ export default function DailyLogsPage() {
     const handleDelete =
         async (id) => {
 
-            const confirmDelete =
-                confirm(
-                    "Are you sure you want to delete this daily log?"
-                );
+            const result =
+                await Swal.fire({
 
-            if (!confirmDelete)
+                    title:
+                        "Delete Daily Log?",
+
+                    text:
+                        "This daily log will be permanently removed.",
+
+                    icon: "warning",
+
+                    showCancelButton: true,
+
+                    confirmButtonText:
+                        "Yes, Delete",
+
+                    cancelButtonText:
+                        "Cancel",
+
+                    reverseButtons: true,
+
+                    confirmButtonColor:
+                        "#dc3545",
+
+                });
+
+            if (!result.isConfirmed)
                 return;
 
             try {
@@ -61,8 +92,8 @@ export default function DailyLogsPage() {
                     `/api/daily-logs/${id}`
                 );
 
-                alert(
-                    "Daily Log deleted successfully"
+                toast.success(
+                    "Daily log deleted successfully"
                 );
 
                 fetchDailyLogs();
@@ -71,7 +102,7 @@ export default function DailyLogsPage() {
 
                 console.log(error);
 
-                alert(
+                toast.error(
                     "Failed to delete daily log"
                 );
 
@@ -81,7 +112,7 @@ export default function DailyLogsPage() {
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
             {/* HEADER */}
 
@@ -94,25 +125,45 @@ export default function DailyLogsPage() {
         "
             >
 
-                <h2 className="page-title">
+                <h2
+                    className="fw-bold mb-1"
+                    style={{
+                        color: "#111827",
+                    }}
+                >
                     Daily Logs
                 </h2>
-
+                <p
+                    className="mb-0"
+                    style={{
+                        color: "#6B7280",
+                    }}
+                >
+                    Monitor project daily activities
+                </p>
                 <Link
                     href="/dashboard/daily-logs/add"
-                    className="btn btn-primary"
+                    className="btn btn-dark rounded-3 px-4 d-flex align-items-center gap-2"
                 >
-                    <i className="bi bi-plus-circle me-2"></i>
-                    Add Daily Log
+                    <>
+                        <Plus size={18} />
+                        Add Daily Log
+                    </>
                 </Link>
 
             </div>
 
             {/* CARD */}
 
-            <div className="card shadow border-0">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
-                <div className="card-body">
+                <div className="card-body p-4">
 
                     {loading ? (
 
@@ -139,11 +190,10 @@ export default function DailyLogsPage() {
                   align-middle
                 "
                             >
-
                                 <thead
-                                    className="
-                    table-dark
-                  "
+                                    style={{
+                                        background: "#F9FAFB",
+                                    }}
                                 >
 
                                     <tr>
@@ -222,7 +272,7 @@ export default function DailyLogsPage() {
 
                                                         <span
                                                             className={`
-                                badge
+                                badge rounded-pill px-3 py-2
                                 ${log.status ===
                                                                     "Closed"
                                                                     ? "bg-success"
@@ -250,23 +300,18 @@ export default function DailyLogsPage() {
 
                                                             <Link
                                                                 href={`/dashboard/daily-logs/edit/${log.id}`}
-                                                                className="
-                                  btn
-                                  btn-sm
-                                  btn-warning
-                                "
+                                                                className="btn btn-outline-warning btn-sm d-flex align-items-center gap-1"
                                                             >
 
-                                                                Edit
+                                                                <>
+                                                                    <Pencil size={14} />
+                                                                    Edit
+                                                                </>
 
                                                             </Link>
 
                                                             <button
-                                                                className="
-                                  btn
-                                  btn-sm
-                                  btn-danger
-                                "
+                                                                className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
                                                                 onClick={() =>
                                                                     handleDelete(
                                                                         log.id
@@ -274,7 +319,10 @@ export default function DailyLogsPage() {
                                                                 }
                                                             >
 
-                                                                Delete
+                                                                <>
+                                                                    <Trash2 size={14} />
+                                                                    Delete
+                                                                </>
 
                                                             </button>
 
@@ -299,7 +347,22 @@ export default function DailyLogsPage() {
                         "
                                             >
 
-                                                No Daily Logs Found
+                                                <div className="py-5">
+
+                                                    <ClipboardList
+                                                        size={45}
+                                                        className="mb-3 text-secondary"
+                                                    />
+
+                                                    <div className="fw-semibold">
+                                                        No Daily Logs Found
+                                                    </div>
+
+                                                    <div className="text-muted">
+                                                        Create your first daily log
+                                                    </div>
+
+                                                </div>
 
                                             </td>
 

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET SINGLE RFI
 // ======================
@@ -11,17 +11,35 @@ export async function GET(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
 
         const rfi =
-            await prisma.rfi.findUnique({
+            await prisma.rfi.findFirst({
 
                 where: {
 
                     id:
                         parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
 
                 },
 
@@ -35,6 +53,20 @@ export async function GET(
 
             });
 
+        if (!rfi) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "RFI not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         return NextResponse.json({
 
             success: true,
@@ -77,10 +109,53 @@ export async function PUT(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
+        const existingRfi =
+            await prisma.rfi.findFirst({
 
+                where: {
+
+                    id:
+                        parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!existingRfi) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "RFI not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         const body =
             await request.json();
 
@@ -107,7 +182,64 @@ export async function PUT(
             userId,
 
         } = body;
+        const project =
+            await prisma.project.findFirst({
 
+                where: {
+
+                    id:
+                        parseInt(projectId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!project) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Project",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+        const user =
+            await prisma.user.findFirst({
+
+                where: {
+
+                    id:
+                        parseInt(userId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!user) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid User",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         const rfi =
             await prisma.rfi.update({
 
@@ -154,14 +286,9 @@ export async function PUT(
                     },
 
                     user: {
-
                         connect: {
-
-                            id:
-                                parseInt(userId),
-
+                            id: parseInt(userId),
                         },
-
                     },
 
                 },
@@ -213,10 +340,53 @@ export async function DELETE(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
+        const existingRfi =
+            await prisma.rfi.findFirst({
 
+                where: {
+
+                    id:
+                        parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!existingRfi) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "RFI not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         await prisma.rfi.delete({
 
             where: {

@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 
 import axios from "axios";
-
+import { Receipt, FileText } from "lucide-react";
+import toast from "react-hot-toast";
 import {
     useParams,
     useRouter,
@@ -128,21 +129,22 @@ export default function EditExpensePage() {
                         formData
                     );
 
-                alert(
-                    response.data.message
+                toast.success(
+                    response.data.message ||
+                    "Expense updated successfully"
                 );
 
-                router.push(
-                    "/dashboard/expenses"
-                );
-
+                setTimeout(() => {
+                    router.push(
+                        "/dashboard/expenses"
+                    );
+                }, 1000);
             } catch (error) {
 
                 console.log(error);
 
-                alert(
-                    error?.response?.data
-                        ?.message ||
+                toast.error(
+                    error?.response?.data?.message ||
                     "Something went wrong"
                 );
 
@@ -153,29 +155,53 @@ export default function EditExpensePage() {
         };
 
     if (fetching) {
-
         return (
-            <h4>
-                Loading...
-            </h4>
+            <div className="container-fluid px-4 py-5 text-center">
+                <h5 className="text-muted">
+                    Loading Expense...
+                </h5>
+            </div>
         );
     }
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
-            <div className="card shadow border-0 rounded-4">
+            <div className="mb-4 pb-3 border-bottom">
+
+                <h2
+                    className="fw-bold mb-1"
+                    style={{
+                        color: "#111827",
+                    }}
+                >
+                    Edit Expense
+                </h2>
+
+                <p
+                    className="mb-0"
+                    style={{
+                        color: "#6B7280",
+                    }}
+                >
+                    Update expense information and payment details
+                </p>
+
+            </div>
+
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1000px",
+                    margin: "0 auto",
+                    boxShadow: "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
                 {/* HEADER */}
 
-                <div className="card-header bg-dark text-white">
 
-                    <h3>
-                        Edit Expense
-                    </h3>
-
-                </div>
 
                 {/* BODY */}
 
@@ -191,14 +217,14 @@ export default function EditExpensePage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Expense Title
                                 </label>
 
                                 <input
                                     type="text"
                                     name="title"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.title
                                     }
@@ -214,13 +240,13 @@ export default function EditExpensePage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Category
                                 </label>
 
                                 <select
                                     name="category"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.category
                                     }
@@ -257,14 +283,14 @@ export default function EditExpensePage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Amount
                                 </label>
 
                                 <input
                                     type="number"
                                     name="amount"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.amount
                                     }
@@ -280,14 +306,14 @@ export default function EditExpensePage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Expense Date
                                 </label>
 
                                 <input
                                     type="date"
                                     name="date"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.date
                                     }
@@ -303,13 +329,13 @@ export default function EditExpensePage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Status
                                 </label>
 
                                 <select
                                     name="status"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.status
                                     }
@@ -334,14 +360,14 @@ export default function EditExpensePage() {
 
                             <div className="col-md-12 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
                                     Notes
                                 </label>
 
                                 <textarea
                                     name="notes"
                                     rows="4"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.notes
                                     }
@@ -356,17 +382,31 @@ export default function EditExpensePage() {
 
                         {/* BUTTON */}
 
-                        <button
-                            type="submit"
-                            className="btn btn-dark"
-                            disabled={loading}
-                        >
+                        <div className="d-flex gap-2">
 
-                            {loading
-                                ? "Updating..."
-                                : "Update Expense"}
+                            <button
+                                type="submit"
+                                className="btn btn-dark px-4 rounded-3"
+                                disabled={loading}
+                            >
+                                {loading
+                                    ? "Updating..."
+                                    : "Update Expense"}
+                            </button>
 
-                        </button>
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary px-4 rounded-3"
+                                onClick={() =>
+                                    router.push(
+                                        "/dashboard/expenses"
+                                    )
+                                }
+                            >
+                                Back
+                            </button>
+
+                        </div>
 
                     </form>
 

@@ -2,21 +2,30 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import {
+    useParams,
+    useRouter,
+} from "next/navigation";
+
+import {
+    ArrowLeft,
+} from "lucide-react";
 
 export default function ViewChangeOrderPage() {
 
     const params = useParams();
+    const router = useRouter();
 
     const [changeOrder, setChangeOrder] =
         useState(null);
 
     useEffect(() => {
 
-        fetchChangeOrder();
+        if (params?.id) {
+            fetchChangeOrder();
+        }
 
-    }, []);
-
+    }, [params?.id]);
     const fetchChangeOrder =
         async () => {
 
@@ -42,8 +51,12 @@ export default function ViewChangeOrderPage() {
     if (!changeOrder) {
 
         return (
-            <div className="text-center mt-5">
-                Loading...
+            <div className="container-fluid px-4 py-3">
+                <div className="card border-0 rounded-4">
+                    <div className="card-body text-center py-5">
+                        Loading Change Order...
+                    </div>
+                </div>
             </div>
         );
 
@@ -51,146 +64,223 @@ export default function ViewChangeOrderPage() {
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
-            <div className="card shadow border-0">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1200px",
+                    margin: "0 auto",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,0.06)",
+                }}
+            >
 
-                <div className="card-body">
+                <div className="card-body p-4 p-lg-5">
 
-                    <h2 className="fw-bold mb-4">
+                    <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
 
-                        Change Order Details
+                        <div>
 
-                    </h2>
+                            <h2
+                                className="fw-bold mb-1"
+                                style={{
+                                    color: "#111827",
+                                }}
+                            >
+                                Change Order Details
+                            </h2>
 
-                    <table className="table table-bordered">
+                            <p
+                                className="mb-0"
+                                style={{
+                                    color: "#6B7280",
+                                }}
+                            >
+                                View contract variation details
+                            </p>
 
-                        <tbody>
+                        </div>
 
-                            <tr>
-                                <th>CO Number</th>
-                                <td>
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary d-flex align-items-center gap-2"
+                            onClick={() =>
+                                router.push(
+                                    "/dashboard/change-orders"
+                                )
+                            }
+                        >
+                            <ArrowLeft size={16} />
+                            Back
+                        </button>
+
+                    </div>
+
+                    <div className="row g-4">
+
+                        <div className="col-md-6">
+                            <div className="border rounded-4 p-3 h-100">
+                                <small className="text-muted">
+                                    CO Number
+                                </small>
+
+                                <h5 className="fw-bold mb-0">
                                     {changeOrder.coNumber}
-                                </td>
-                            </tr>
+                                </h5>
+                            </div>
+                        </div>
 
-                            <tr>
-                                <th>Project</th>
-                                <td>
-                                    {
-                                        changeOrder.project
-                                            ?.name
-                                    }
-                                </td>
-                            </tr>
+                        <div className="col-md-6">
+                            <div className="border rounded-4 p-3 h-100">
+                                <small className="text-muted">
+                                    Project
+                                </small>
 
-                            <tr>
-                                <th>Client</th>
-                                <td>
-                                    {
-                                        changeOrder.client
-                                            ?.companyName
-                                    }
-                                </td>
-                            </tr>
+                                <h5 className="fw-bold mb-0">
+                                    {changeOrder.project?.name}
+                                </h5>
+                            </div>
+                        </div>
 
-                            <tr>
-                                <th>Raised By</th>
-                                <td>
-                                    {
-                                        changeOrder.user
-                                            ?.name
-                                    }
-                                </td>
-                            </tr>
+                        <div className="col-md-6">
+                            <div className="border rounded-4 p-3 h-100">
+                                <small className="text-muted">
+                                    Client
+                                </small>
 
-                            <tr>
-                                <th>Title</th>
-                                <td>
+                                <h5 className="mb-0">
+                                    {changeOrder.client?.companyName}
+                                </h5>
+                            </div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="border rounded-4 p-3 h-100">
+                                <small className="text-muted">
+                                    Raised By
+                                </small>
+
+                                <h5 className="mb-0">
+                                    {changeOrder.user?.name}
+                                </h5>
+                            </div>
+                        </div>
+
+                        <div className="col-12">
+                            <div className="border rounded-4 p-3">
+                                <small className="text-muted">
+                                    Title
+                                </small>
+
+                                <h5 className="fw-bold mb-0">
                                     {changeOrder.title}
-                                </td>
-                            </tr>
+                                </h5>
+                            </div>
+                        </div>
 
-                            <tr>
-                                <th>Description</th>
-                                <td>
-                                    {
-                                        changeOrder.description
-                                    }
-                                </td>
-                            </tr>
+                        <div className="col-md-4">
+                            <div className="border rounded-4 p-3">
+                                <small className="text-muted">
+                                    Old Amount
+                                </small>
 
-                            <tr>
-                                <th>Reason</th>
-                                <td>
-                                    {
-                                        changeOrder.reason
-                                    }
-                                </td>
-                            </tr>
+                                <h4 className="text-danger fw-bold mb-0">
+                                    ₹{changeOrder.oldAmount}
+                                </h4>
+                            </div>
+                        </div>
 
-                            <tr>
-                                <th>Old Amount</th>
-                                <td>
-                                    ₹
-                                    {changeOrder.oldAmount}
-                                </td>
-                            </tr>
+                        <div className="col-md-4">
+                            <div className="border rounded-4 p-3">
+                                <small className="text-muted">
+                                    New Amount
+                                </small>
 
-                            <tr>
-                                <th>New Amount</th>
-                                <td>
-                                    ₹
-                                    {changeOrder.newAmount}
-                                </td>
-                            </tr>
+                                <h4 className="text-primary fw-bold mb-0">
+                                    ₹{changeOrder.newAmount}
+                                </h4>
+                            </div>
+                        </div>
 
-                            <tr>
-                                <th>Difference</th>
-                                <td>
-                                    ₹
-                                    {
-                                        changeOrder.differenceAmount
-                                    }
-                                </td>
-                            </tr>
+                        <div className="col-md-4">
+                            <div className="border rounded-4 p-3">
+                                <small className="text-muted">
+                                    Difference
+                                </small>
 
-                            <tr>
-                                <th>Status</th>
-                                <td>
-                                    {
-                                        changeOrder.status
-                                    }
-                                </td>
-                            </tr>
+                                <h4 className="text-success fw-bold mb-0">
+                                    ₹{changeOrder.differenceAmount}
+                                </h4>
+                            </div>
+                        </div>
 
-                            <tr>
-                                <th>Approved Date</th>
-                                <td>
+                        <div className="col-md-6">
+                            <div className="border rounded-4 p-3">
+                                <small className="text-muted">
+                                    Status
+                                </small>
 
+                                <div className="mt-2">
+                                    <span
+                                        className={`badge px-3 py-2 ${changeOrder.status === "Approved"
+                                            ? "bg-success"
+                                            : changeOrder.status === "Rejected"
+                                                ? "bg-danger"
+                                                : changeOrder.status === "Submitted"
+                                                    ? "bg-warning text-dark"
+                                                    : "bg-secondary"
+                                            }`}
+                                    >
+                                        {changeOrder.status}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="border rounded-4 p-3">
+                                <small className="text-muted">
+                                    Approved Date
+                                </small>
+
+                                <h6 className="mb-0 mt-2">
                                     {changeOrder.approvedDate
                                         ? new Date(
                                             changeOrder.approvedDate
                                         ).toLocaleDateString()
                                         : "-"}
+                                </h6>
+                            </div>
+                        </div>
 
-                                </td>
-                            </tr>
+                        <div className="col-12">
+                            <div className="border rounded-4 p-4">
+                                <small className="text-muted">
+                                    Description
+                                </small>
 
-                            <tr>
-                                <th>Created At</th>
-                                <td>
+                                <p className="mb-0 mt-2">
+                                    {changeOrder.description ||
+                                        "No description available"}
+                                </p>
+                            </div>
+                        </div>
 
-                                    {new Date(
-                                        changeOrder.createdAt
-                                    ).toLocaleString()}
+                        <div className="col-12">
+                            <div className="border rounded-4 p-4">
+                                <small className="text-muted">
+                                    Reason
+                                </small>
 
-                                </td>
-                            </tr>
+                                <p className="mb-0 mt-2">
+                                    {changeOrder.reason ||
+                                        "No reason provided"}
+                                </p>
+                            </div>
+                        </div>
 
-                        </tbody>
-
-                    </table>
+                    </div>
 
                 </div>
 

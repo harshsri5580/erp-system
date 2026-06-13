@@ -22,12 +22,12 @@ export default function Home() {
             Login
           </a>
 
-          {/* <a
+          <a
             href="/register"
             className="btn btn-primary px-4"
           >
             Register
-          </a> */}
+          </a>
         </div>
       </nav>
 

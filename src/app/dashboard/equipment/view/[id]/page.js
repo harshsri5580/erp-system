@@ -2,12 +2,24 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import {
+    useParams,
+    useRouter,
+} from "next/navigation";
+
+import Link from "next/link";
+
+import {
+    ArrowLeft,
+    Pencil,
+} from "lucide-react";
 
 export default function ViewEquipmentPage() {
 
     const params =
         useParams();
+    const router =
+        useRouter();
 
     const [equipment, setEquipment] =
         useState(null);
@@ -43,30 +55,83 @@ export default function ViewEquipmentPage() {
     if (!equipment) {
 
         return (
-            <div className="container-fluid mt-4">
-                Loading...
+            <div className="container-fluid px-4 py-5 text-center">
+                Loading Equipment...
             </div>
         );
-
     }
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
-            <div className="card">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1200px",
+                    margin: "0 auto",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
-                <div className="card-body">
+                <div className="card-body p-4 p-lg-5">
 
-                    <h2 className="mb-4">
+                    <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
 
-                        Equipment Details
+                        <div>
 
-                    </h2>
+                            <h2
+                                className="fw-bold mb-1"
+                                style={{
+                                    color: "#111827",
+                                }}
+                            >
+                                Equipment Details
+                            </h2>
 
-                    <table className="table table-bordered">
+                            <p
+                                className="mb-0"
+                                style={{
+                                    color: "#6B7280",
+                                }}
+                            >
+                                View equipment information
+                            </p>
 
-                        <tbody>
+                        </div>
+
+                        <div className="d-flex gap-2">
+
+                            <Link
+                                href={`/dashboard/equipment/edit/${equipment.id}`}
+                                className="btn btn-dark"
+                            >
+                                <Pencil size={15} />
+                            </Link>
+
+                            <button
+                                className="btn btn-outline-secondary"
+                                onClick={() =>
+                                    router.push(
+                                        "/dashboard/equipment"
+                                    )
+                                }
+                            >
+                                <ArrowLeft size={15} />
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <table className="table align-middle mb-0">
+
+                        <tbody
+                            style={{
+                                fontSize: "15px",
+                            }}
+                        >
 
                             <tr>
                                 <th>Code</th>
@@ -115,37 +180,82 @@ export default function ViewEquipmentPage() {
 
                             <tr>
                                 <th>Usage Hours</th>
-                                <td>{equipment.totalUsageHours}</td>
+                                <td className="fw-bold text-primary">
+                                    {equipment.totalUsageHours}
+                                </td>
                             </tr>
 
                             <tr>
                                 <th>Purchase Cost</th>
-                                <td>{equipment.purchaseCost}</td>
+                                <td className="fw-semibold">
+                                    ₹{equipment.purchaseCost}
+                                </td>
                             </tr>
 
                             <tr>
                                 <th>Current Value</th>
-                                <td>{equipment.currentValue}</td>
+                                <td className="fw-bold text-success">
+                                    ₹{equipment.currentValue}
+                                </td>
                             </tr>
 
                             <tr>
                                 <th>Maintenance Cost</th>
-                                <td>{equipment.maintenanceCost}</td>
+                                <td className="fw-bold text-danger">
+                                    ₹{equipment.maintenanceCost}
+                                </td>
                             </tr>
 
                             <tr>
                                 <th>Status</th>
-                                <td>{equipment.status}</td>
+                                <td>
+
+                                    <span
+                                        className={`badge ${equipment.status === "Available"
+                                            ? "bg-success"
+                                            : equipment.status === "In Use"
+                                                ? "bg-warning text-dark"
+                                                : equipment.status === "Under Maintenance"
+                                                    ? "bg-info"
+                                                    : "bg-secondary"
+                                            }`}
+                                    >
+                                        {equipment.status}
+                                    </span>
+
+                                </td>
                             </tr>
 
                             <tr>
                                 <th>Maintenance Remarks</th>
-                                <td>{equipment.maintenanceRemarks}</td>
+                                <td>
+
+                                    <div
+                                        className="p-3 rounded-3"
+                                        style={{
+                                            background: "#F9FAFB",
+                                        }}
+                                    >
+                                        {equipment.maintenanceRemarks || "-"}
+                                    </div>
+
+                                </td>
                             </tr>
 
                             <tr>
                                 <th>Remarks</th>
-                                <td>{equipment.remarks}</td>
+                                <td>
+
+                                    <div
+                                        className="p-3 rounded-3"
+                                        style={{
+                                            background: "#F9FAFB",
+                                        }}
+                                    >
+                                        {equipment.remarks || "-"}
+                                    </div>
+
+                                </td>
                             </tr>
 
                         </tbody>

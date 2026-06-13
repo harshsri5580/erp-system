@@ -1,23 +1,45 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 
 
 // GET ALL PAYROLLS
-export async function GET() {
+export async function GET(request) {
 
   try {
+    const currentUser =
+      getUser(request);
 
-    const payrolls = await prisma.payroll.findMany({
+    if (!currentUser) {
 
-      include: {
-        user: true,
-      },
+      return NextResponse.json(
+        {
+          error: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
 
-      orderBy: {
-        id: "desc",
-      },
-    });
+    }
+    const payrolls =
+      await prisma.payroll.findMany({
+
+        where: {
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+        include: {
+          user: true,
+        },
+
+        orderBy: {
+          id: "desc",
+        },
+      });
 
     return NextResponse.json(payrolls);
 
@@ -43,9 +65,50 @@ export async function GET() {
 export async function POST(request) {
 
   try {
+    const currentUser =
+      getUser(request);
 
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          error: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const body = await request.json();
+    const user =
+      await prisma.user.findFirst({
 
+        where: {
+
+          id:
+            Number(body.userId),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!user) {
+
+      return NextResponse.json(
+        {
+          error:
+            "Invalid User",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
     const basicSalary =
       parseFloat(body.basicSalary) || 0;
 
@@ -64,6 +127,8 @@ export async function POST(request) {
       await prisma.payroll.create({
 
         data: {
+          companyId:
+            currentUser.companyId,
 
           userId: Number(body.userId),
 

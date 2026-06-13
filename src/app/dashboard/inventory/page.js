@@ -126,7 +126,7 @@ export default function InventoryPage() {
                     <th>Stock Alert</th>
                     <th>Vendor</th>
                     <th>Project</th>
-                    <th>PO</th>
+                    {/* <th>PO</th> */}
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -200,12 +200,12 @@ export default function InventoryPage() {
                             {inventory.project?.name || "-"}
                           </td>
 
-                          <td>
+                          {/* <td>
                             {
                               inventory.purchaseorder?.poNumber ||
                               `PO-${inventory.purchaseOrderId || "-"}`
                             }
-                          </td>
+                          </td> */}
 
                           <td>
 

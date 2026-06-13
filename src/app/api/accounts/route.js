@@ -1,27 +1,68 @@
 import { NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET ACCOUNTS DASHBOARD
 // ======================
 
-export async function GET() {
+export async function GET(request) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         // ======================
         // FETCH DATA
         // ======================
 
         const invoices =
-            await prisma.invoice.findMany();
+            await prisma.invoice.findMany({
+
+                where: {
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
 
         const payments =
-            await prisma.payment.findMany();
+            await prisma.payment.findMany({
 
+                where: {
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
         const expenses =
-            await prisma.expense.findMany();
+            await prisma.expense.findMany({
+
+                where: {
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
 
         // ======================
         // TOTAL INVOICES

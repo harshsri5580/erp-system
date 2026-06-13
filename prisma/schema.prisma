@@ -17,7 +17,11 @@ model attendance {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      user     @relation(fields: [userId], references: [id], onDelete: NoAction, map: "Attendance_userId_fkey")
+  companyId Int?
 
+  company company? @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
   @@index([userId], map: "Attendance_userId_fkey")
 }
 
@@ -33,22 +37,32 @@ model boq {
   createdAt     DateTime        @default(now())
   contract      contract        @relation(fields: [contractId], references: [id], onDelete: NoAction, map: "Boq_contractId_fkey")
   purchaseorder purchaseorder[]
+  companyId     Int?
 
+  company company? @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
   @@index([contractId], map: "Boq_contractId_fkey")
 }
 
 model client {
-  id          Int       @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   companyName String
   ownerName   String?
   email       String?
   phone       String?
   gstNumber   String?
   address     String?
-  status      String?   @default("Active")
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  project     project[]
+  status      String?  @default("Active")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  companyId   Int?
+
+  company  company?  @relation(fields: [companyId], references: [id])
+  project  project[]
+  invoices invoice[]
+
+  @@index([companyId])
 }
 
 model contract {
@@ -66,7 +80,11 @@ model contract {
   boq           boq[]
   project       project  @relation(fields: [projectId], references: [id], onDelete: NoAction, map: "Contract_projectId_fkey")
   vendor        vendor   @relation(fields: [vendorId], references: [id], onDelete: NoAction, map: "Contract_vendorId_fkey")
+  companyId     Int?
 
+  company company? @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
   @@index([projectId], map: "Contract_projectId_fkey")
   @@index([vendorId], map: "Contract_vendorId_fkey")
 }
@@ -86,7 +104,11 @@ model inventory {
   project         project?       @relation(fields: [projectId], references: [id], map: "Inventory_projectId_fkey")
   purchaseorder   purchaseorder? @relation(fields: [purchaseOrderId], references: [id], map: "Inventory_purchaseOrderId_fkey")
   vendor          vendor?        @relation(fields: [vendorId], references: [id], map: "Inventory_vendorId_fkey")
+  companyId       Int?
 
+  company company? @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
   @@index([projectId], map: "Inventory_projectId_fkey")
   @@index([purchaseOrderId], map: "Inventory_purchaseOrderId_fkey")
   @@index([vendorId], map: "Inventory_vendorId_fkey")
@@ -104,25 +126,43 @@ model payroll {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   user        user     @relation(fields: [userId], references: [id], onDelete: NoAction, map: "Payroll_userId_fkey")
+  companyId   Int?
 
+  company company? @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
   @@index([userId], map: "Payroll_userId_fkey")
 }
 
 model project {
-  id            Int             @id @default(autoincrement())
-  name          String
-  description   String?
-  budget        Float?
-  status        String?
-  userId        Int?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  clientId      Int?
-  contract      contract[]
-  inventory     inventory[]
-  user          user?           @relation(fields: [userId], references: [id], map: "Project_userId_fkey")
-  client        client?         @relation(fields: [clientId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_client_project")
-  purchaseorder purchaseorder[]
+  id              Int               @id @default(autoincrement())
+  name            String
+  description     String?
+  budget          Float?
+  status          String?
+  userId          Int?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  clientId        Int?
+  companyId       Int?
+  contract        contract[]
+  inventory       inventory[]
+  user            user?             @relation(fields: [userId], references: [id], map: "Project_userId_fkey")
+  client          client?           @relation(fields: [clientId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_client_project")
+  company         company?          @relation(fields: [companyId], references: [id])
+  purchaseorder   purchaseorder[]
+  payment         payment[]
+  document        document[]
+  grn             grn[]
+  dailylog        dailylog[]
+  milestone       milestone[]
+  rfi             rfi[]
+  changeorder     changeorder[]
+  progressbilling progressbilling[]
+  inspection      inspection[]
+  incident        incident[]
+  equipment       equipment[]
+  invoice         invoice[]
 
   @@index([userId], map: "Project_userId_fkey")
   @@index([clientId], map: "fk_client_project")
@@ -147,7 +187,12 @@ model purchaseorder {
   boq         boq         @relation(fields: [boqId], references: [id], onDelete: NoAction, map: "PurchaseOrder_boqId_fkey")
   project     project     @relation(fields: [projectId], references: [id], onDelete: NoAction, map: "PurchaseOrder_projectId_fkey")
   vendor      vendor      @relation(fields: [vendorId], references: [id], onDelete: NoAction, map: "PurchaseOrder_vendorId_fkey")
+  companyId   Int?
 
+  company company? @relation(fields: [companyId], references: [id])
+  grn     grn[]
+
+  @@index([companyId])
   @@index([boqId], map: "PurchaseOrder_boqId_fkey")
   @@index([projectId], map: "PurchaseOrder_projectId_fkey")
   @@index([vendorId], map: "PurchaseOrder_vendorId_fkey")
@@ -167,6 +212,7 @@ model user {
   password     String
   status       Boolean      @default(true)
   roleId       Int
+  companyId    Int?
   createdAt    DateTime     @default(now())
   address      String?
   department   String?
@@ -179,24 +225,36 @@ model user {
   payroll      payroll[]
   project      project[]
   role         role         @relation(fields: [roleId], references: [id], onDelete: NoAction, map: "User_roleId_fkey")
+  company      company?     @relation(fields: [companyId], references: [id])
+  incident     incident[]
+  rfi          rfi[]
+  dailylog     dailylog[]
+  equipment    equipment[]
 
   @@index([roleId], map: "User_roleId_fkey")
+  @@index([companyId], map: "User_companyId_fkey")
 }
 
 model vendor {
-  id            Int             @id @default(autoincrement())
-  companyName   String
-  ownerName     String?
-  phone         String?
-  email         String?
-  gstNumber     String?
-  address       String?
-  bankDetails   String?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @default(now()) @updatedAt
+  id          Int      @id @default(autoincrement())
+  companyName String
+  ownerName   String?
+  phone       String?
+  email       String?
+  gstNumber   String?
+  address     String?
+  bankDetails String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  companyId   Int?
+
+  company       company?        @relation(fields: [companyId], references: [id])
   contract      contract[]
   inventory     inventory[]
   purchaseorder purchaseorder[]
+  grn           grn[]
+
+  @@index([companyId])
 }
 
 model expense {
@@ -209,10 +267,16 @@ model expense {
   notes     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  companyId Int?
+
+  company company? @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
 }
 
 model payment {
   id            Int      @id @default(autoincrement())
+  projectId     Int?
   amount        Float
   paymentMethod String?
   paymentDate   String?
@@ -222,7 +286,11 @@ model payment {
   clientId      Int
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  companyId     Int?
+  project       project? @relation(fields: [projectId], references: [id])
+  company       company? @relation(fields: [companyId], references: [id])
 
+  @@index([companyId])
   @@index([clientId], map: "payment_clientId_fkey")
   @@index([invoiceId], map: "payment_invoiceId_fkey")
 }
@@ -237,6 +305,11 @@ model transaction {
   status    String?  @default("Completed")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  companyId Int?
+
+  company company? @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
 }
 
 model document {
@@ -250,24 +323,43 @@ model document {
   uploadedBy Int?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  companyId  Int?
 
+  company company? @relation(fields: [companyId], references: [id])
+  project project? @relation(fields: [projectId], references: [id])
+
+  @@index([companyId])
   @@index([projectId], map: "document_projectId_fkey")
 }
 
 model grn {
-  id              Int      @id @default(autoincrement())
-  grnNumber       String   @unique
+  id        Int    @id @default(autoincrement())
+  grnNumber String @unique
+
   purchaseOrderId Int
   vendorId        Int
   projectId       Int?
-  receivedQty     Float
-  pendingQty      Float?
-  remarks         String?
-  status          String?  @default("Received")
-  receivedDate    DateTime @default(now())
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
 
+  receivedQty Float
+  pendingQty  Float?
+  remarks     String?
+  status      String? @default("Received")
+
+  receivedDate DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  companyId Int?
+
+  purchaseorder purchaseorder @relation(fields: [purchaseOrderId], references: [id])
+
+  vendor vendor @relation(fields: [vendorId], references: [id])
+
+  project project? @relation(fields: [projectId], references: [id])
+
+  company company? @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
   @@index([purchaseOrderId])
   @@index([vendorId])
   @@index([projectId])
@@ -287,7 +379,12 @@ model dailylog {
   userId        Int
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  companyId     Int?
+  project       project? @relation(fields: [projectId], references: [id])
+  company       company? @relation(fields: [companyId], references: [id])
+  user          user?    @relation(fields: [userId], references: [id])
 
+  @@index([companyId])
   @@index([projectId])
   @@index([userId])
 }
@@ -303,7 +400,11 @@ model milestone {
   projectId     Int
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  companyId     Int?
+  project       project?  @relation(fields: [projectId], references: [id])
+  company       company?  @relation(fields: [companyId], references: [id])
 
+  @@index([companyId])
   @@index([projectId])
 }
 
@@ -322,7 +423,12 @@ model rfi {
   userId      Int
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  companyId   Int?
+  project     project?  @relation(fields: [projectId], references: [id])
+  company     company?  @relation(fields: [companyId], references: [id])
+  user        user?     @relation(fields: [userId], references: [id])
 
+  @@index([companyId])
   @@index([projectId])
   @@index([userId])
 }
@@ -343,7 +449,11 @@ model changeorder {
   userId           Int
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
+  companyId        Int?
+  project          project?  @relation(fields: [projectId], references: [id])
+  company          company?  @relation(fields: [companyId], references: [id])
 
+  @@index([companyId])
   @@index([projectId])
   @@index([clientId])
   @@index([userId])
@@ -367,7 +477,11 @@ model progressbilling {
   userId             Int
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+  companyId          Int?
+  project            project? @relation(fields: [projectId], references: [id])
+  company            company? @relation(fields: [companyId], references: [id])
 
+  @@index([companyId])
   @@index([projectId])
   @@index([clientId])
   @@index([milestoneId])
@@ -375,39 +489,50 @@ model progressbilling {
 }
 
 model inspection {
-  id               Int      @id @default(autoincrement())
-  inspectionNumber String   @unique
-  inspectionDate   DateTime @default(now())
+  id               Int        @id @default(autoincrement())
+  inspectionNumber String     @unique
+  inspectionDate   DateTime   @default(now())
   inspectionType   String?
   location         String?
-  checklist        String?  @db.Text
-  remarks          String?  @db.Text
-  status           String?  @default("Open")
+  checklist        String?    @db.Text
+  remarks          String?    @db.Text
+  status           String?    @default("Open")
   projectId        Int
   userId           Int
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  companyId        Int?
+  project          project?   @relation(fields: [projectId], references: [id])
+  company          company?   @relation(fields: [companyId], references: [id])
+  incident         incident[]
 
+  @@index([companyId])
   @@index([projectId])
   @@index([userId])
 }
 
 model incident {
-  id             Int      @id @default(autoincrement())
-  incidentNumber String   @unique
-  incidentDate   DateTime @default(now())
+  id             Int         @id @default(autoincrement())
+  incidentNumber String      @unique
+  incidentDate   DateTime    @default(now())
   title          String
-  description    String   @db.Text
+  description    String      @db.Text
   incidentType   String?
-  severity       String?  @default("Medium")
+  severity       String?     @default("Medium")
   location       String?
-  status         String?  @default("Open")
+  status         String?     @default("Open")
   projectId      Int
   userId         Int
   inspectionId   Int?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  companyId      Int?
+  project        project?    @relation(fields: [projectId], references: [id])
+  company        company?    @relation(fields: [companyId], references: [id])
+  user           user?       @relation(fields: [userId], references: [id])
+  inspection     inspection? @relation(fields: [inspectionId], references: [id])
 
+  @@index([companyId])
   @@index([projectId])
   @@index([userId])
   @@index([inspectionId])
@@ -436,7 +561,12 @@ model equipment {
   remarks             String?   @db.Text
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
+  companyId           Int?
+  project             project?  @relation(fields: [projectId], references: [id])
+  company             company?  @relation(fields: [companyId], references: [id])
+  user                user?     @relation(fields: [userId], references: [id])
 
+  @@index([companyId])
   @@index([projectId])
   @@index([userId])
 }
@@ -454,14 +584,19 @@ model invoice {
   clientId      Int
   projectId     Int
   createdAt     DateTime @default(now())
-  updatedAt     DateTime
+  updatedAt     DateTime @updatedAt
+  companyId     Int?
+  client        client   @relation(fields: [clientId], references: [id])
+  project       project? @relation(fields: [projectId], references: [id])
+  company       company? @relation(fields: [companyId], references: [id])
 
+  @@index([companyId])
   @@index([clientId], map: "Invoice_clientId_fkey")
   @@index([projectId], map: "Invoice_projectId_fkey")
 }
 
 model settings {
-  id             Int      @id @default(1)
+  id             Int      @id @default(autoincrement())
   companyName    String?
   companyEmail   String?
   companyPhone   String?
@@ -482,5 +617,45 @@ model settings {
   smtpSecure     Boolean  @default(false)
   timezone       String?  @default("Asia/Kolkata")
   createdAt      DateTime @default(now())
-  updatedAt      DateTime
+  updatedAt      DateTime @updatedAt
+  companyId      Int?     @unique
+
+  company company? @relation(fields: [companyId], references: [id])
+}
+
+model company {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  phone     String?
+  address   String?
+  logo      String?
+  status    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  users            user[]
+  projects         project[]
+  clients          client[]
+  vendors          vendor[]
+  expenses         expense[]
+  transactions     transaction[]
+  invoices         invoice[]
+  payments         payment[]
+  documents        document[]
+  equipment        equipment[]
+  attendances      attendance[]
+  payrolls         payroll[]
+  contracts        contract[]
+  boqs             boq[]
+  purchaseorders   purchaseorder[]
+  inventories      inventory[]
+  grns             grn[]
+  milestones       milestone[]
+  progressbillings progressbilling[]
+  dailylogs        dailylog[]
+  rfis             rfi[]
+  changeorders     changeorder[]
+  inspections      inspection[]
+  incidents        incident[]
+  settings         settings?
 }

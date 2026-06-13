@@ -3,11 +3,16 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
+import { ArrowLeft } from "lucide-react";
+import toast from "react-hot-toast";
+
 export default function EditClientPage() {
 
     const { id } = useParams();
 
     const router = useRouter();
+    const [loading, setLoading] =
+        useState(false);
 
     const [formData, setFormData] = useState({
         companyName: "",
@@ -20,8 +25,10 @@ export default function EditClientPage() {
     });
 
     useEffect(() => {
-        fetchClient();
-    }, []);
+        if (id) {
+            fetchClient();
+        }
+    }, [id]);
 
     const fetchClient = async () => {
 
@@ -44,32 +51,103 @@ export default function EditClientPage() {
 
         e.preventDefault();
 
-        await fetch(`/api/clients/${id}`, {
+        try {
 
-            method: "PUT",
+            setLoading(true);
 
-            headers: {
-                "Content-Type": "application/json",
-            },
+            await fetch(
+                `/api/clients/${id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+                    },
+                    body: JSON.stringify(
+                        formData
+                    ),
+                }
+            );
 
-            body: JSON.stringify(formData),
+            toast.success(
+                "Client updated successfully"
+            );
 
-        });
+            setTimeout(() => {
 
-        router.push("/dashboard/clients");
+                router.push(
+                    "/dashboard/clients"
+                );
+
+            }, 1000);
+
+        } catch (error) {
+
+            console.log(error);
+
+            toast.error(
+                "Failed to update client"
+            );
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
     };
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
-            <div className="card border-0 shadow-sm rounded-4">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1000px",
+                    margin: "0 auto",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
                 <div className="card-body p-4">
 
-                    <h2 className="fw-bold mb-4">
-                        Edit Client
-                    </h2>
+                    <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+
+                        <div>
+
+                            <h2
+                                className="fw-bold mb-1"
+                                style={{
+                                    color: "#111827",
+                                }}
+                            >
+                                Edit Client
+                            </h2>
+
+                            <p
+                                className="mb-0"
+                                style={{
+                                    color: "#6B7280",
+                                }}
+                            >
+                                Update client information
+                            </p>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary"
+                            onClick={() =>
+                                router.push("/dashboard/clients")
+                            }
+                        >
+                            <ArrowLeft size={16} />
+                        </button>
+
+                    </div>
 
                     <form onSubmit={handleSubmit}>
 
@@ -77,12 +155,12 @@ export default function EditClientPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>Company Name</label>
+                                <label className="form-label fw-semibold text-dark">Company Name</label>
 
                                 <input
                                     type="text"
                                     name="companyName"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={formData.companyName}
                                     onChange={handleChange}
                                 />
@@ -91,12 +169,12 @@ export default function EditClientPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>Owner Name</label>
+                                <label className="form-label fw-semibold text-dark">Owner Name</label>
 
                                 <input
                                     type="text"
                                     name="ownerName"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={formData.ownerName}
                                     onChange={handleChange}
                                 />
@@ -105,12 +183,12 @@ export default function EditClientPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>Email</label>
+                                <label className="form-label fw-semibold text-dark">Email</label>
 
                                 <input
                                     type="email"
                                     name="email"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={formData.email}
                                     onChange={handleChange}
                                 />
@@ -119,12 +197,12 @@ export default function EditClientPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>Phone</label>
+                                <label className="form-label fw-semibold text-dark">Phone</label>
 
                                 <input
                                     type="text"
                                     name="phone"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={formData.phone}
                                     onChange={handleChange}
                                 />
@@ -133,12 +211,12 @@ export default function EditClientPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>GST Number</label>
+                                <label className="form-label fw-semibold text-dark">GST Number</label>
 
                                 <input
                                     type="text"
                                     name="gstNumber"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={formData.gstNumber}
                                     onChange={handleChange}
                                 />
@@ -147,11 +225,11 @@ export default function EditClientPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>Status</label>
+                                <label className="form-label fw-semibold text-dark">Status</label>
 
                                 <select
                                     name="status"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={formData.status}
                                     onChange={handleChange}
                                 >
@@ -163,12 +241,12 @@ export default function EditClientPage() {
 
                             <div className="col-12 mb-3">
 
-                                <label>Address</label>
+                                <label className="form-label fw-semibold text-dark">Address</label>
 
                                 <textarea
                                     name="address"
                                     rows="4"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={formData.address}
                                     onChange={handleChange}
                                 ></textarea>
@@ -177,8 +255,13 @@ export default function EditClientPage() {
 
                         </div>
 
-                        <button className="btn btn-dark">
-                            Update Client
+                        <button
+                            className="btn btn-dark px-4"
+                            disabled={loading}
+                        >
+                            {loading
+                                ? "Updating..."
+                                : "Update Client"}
                         </button>
 
                     </form>

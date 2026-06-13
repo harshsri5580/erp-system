@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET SINGLE EXPENSE
 // ======================
@@ -12,15 +12,34 @@ export async function GET(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
+
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
 
         const expense =
-            await prisma.expense.findUnique({
+            await prisma.expense.findFirst({
 
                 where: {
 
                     id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
 
                 },
 
@@ -90,6 +109,51 @@ export async function PUT(
 
         const body =
             await request.json();
+        const currentUser =
+            getUser(request);
+
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
+
+        const existingExpense =
+            await prisma.expense.findFirst({
+
+                where: {
+
+                    id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!existingExpense) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Expense not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
 
         const {
 
@@ -212,7 +276,51 @@ export async function DELETE(
     try {
         const { id } =
             await context.params;
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
+
+        const existingExpense =
+            await prisma.expense.findFirst({
+
+                where: {
+
+                    id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!existingExpense) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Expense not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         await prisma.expense.delete({
 
             where: {

@@ -1,40 +1,55 @@
 import { NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
+import { getUser } from "@/lib/getUser";
 
 // ======================
 // GET ALL PAYMENTS
 // ======================
 
-export async function GET() {
+export async function GET(request) {
 
     try {
+        const currentUser =
+            getUser(request);
 
-        const payments =
-            await prisma.payment.findMany({
+        if (!currentUser) {
 
-                include: {
-
-                    invoice: true,
-
-                    client: true,
-
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
                 },
+                {
+                    status: 401,
+                }
+            );
 
-                orderBy: {
+        }
+        const payments = await prisma.payment.findMany({
+            where: {
+                companyId: currentUser.companyId,
+            },
+            orderBy: {
+                id: "desc",
+            },
+        });
 
-                    id: "desc",
-
-                },
-
-            });
+        const formattedPayments = await Promise.all(
+            payments.map(async (payment) => ({
+                ...payment,
+                invoice: await prisma.invoice.findUnique({
+                    where: { id: payment.invoiceId },
+                }),
+                client: await prisma.client.findUnique({
+                    where: { id: payment.clientId },
+                }),
+            }))
+        );
 
         return NextResponse.json({
-
             success: true,
-
-            payments,
-
+            payments: formattedPayments,
         });
 
     } catch (error) {
@@ -66,7 +81,22 @@ export async function GET() {
 export async function POST(request) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const body =
             await request.json();
 
@@ -87,7 +117,62 @@ export async function POST(request) {
             notes,
 
         } = body;
+        const invoice =
+            await prisma.invoice.findFirst({
 
+                where: {
+
+                    id: parseInt(invoiceId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!invoice) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Invoice",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+        const client =
+            await prisma.client.findFirst({
+
+                where: {
+
+                    id: parseInt(clientId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!client) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Client",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         // ======================
         // CREATE PAYMENT
         // ======================
@@ -95,11 +180,13 @@ export async function POST(request) {
         const payment =
             await prisma.payment.create({
 
-                data: {
 
+                data: {
+                    companyId:
+                        currentUser.companyId,
                     amount:
                         parseFloat(amount),
-
+                    invoiceId: parseInt(invoiceId),
                     paymentMethod,
 
                     paymentDate,
@@ -108,35 +195,18 @@ export async function POST(request) {
 
                     notes,
 
-                    invoice: {
-
-                        connect: {
-
-                            id: parseInt(invoiceId),
-
-                        },
-
-                    },
-
-                    client: {
-
-                        connect: {
-
-                            id: parseInt(clientId),
-
-                        },
-
-                    },
+                    invoiceId: parseInt(invoiceId),
+                    clientId: parseInt(clientId),
 
                 },
 
-                include: {
+                // include: {
 
-                    invoice: true,
+                //     invoice: true,
 
-                    client: true,
+                //     client: true,
 
-                },
+                // },
 
             });
 
@@ -172,7 +242,8 @@ export async function POST(request) {
         await prisma.transaction.create({
 
             data: {
-
+                companyId:
+                    currentUser.companyId,
                 title:
                     `Payment - ${invoice.invoiceNumber}`,
 

@@ -1,17 +1,41 @@
 import { NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET ALL EXPENSES
 // ======================
 
-export async function GET() {
+export async function GET(request) {
 
     try {
 
+        const currentUser =
+            getUser(request);
+
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
+
         const expenses =
             await prisma.expense.findMany({
+
+                where: {
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
 
                 orderBy: {
 
@@ -58,7 +82,22 @@ export async function GET() {
 export async function POST(request) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const body =
             await request.json();
 
@@ -86,6 +125,8 @@ export async function POST(request) {
             await prisma.expense.create({
 
                 data: {
+                    companyId:
+                        currentUser.companyId,
 
                     title,
 
@@ -111,6 +152,8 @@ export async function POST(request) {
         await prisma.transaction.create({
 
             data: {
+                companyId:
+                    currentUser.companyId,
 
                 title: `Expense - ${title}`,
 

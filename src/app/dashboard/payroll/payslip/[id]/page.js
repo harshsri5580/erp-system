@@ -29,7 +29,7 @@ export default function PayslipPage() {
 
   return (
 
-    <div className="container p-4">
+    <div id="payslip-print" className="container p-4">
 
       <div className="card border-0 shadow rounded-4">
 
@@ -46,10 +46,65 @@ export default function PayslipPage() {
                 Employee Salary Slip
               </p>
             </div>
-
             <button
-              className="btn btn-dark"
-              onClick={() => window.print()}
+              className="btn btn-dark no-print"
+              onClick={() => {
+
+                const printContents =
+                  document.getElementById(
+                    "payslip-print"
+                  ).innerHTML;
+
+                const printWindow =
+                  window.open(
+                    "",
+                    "",
+                    "width=900,height=650"
+                  );
+
+                printWindow.document.write(`
+    <html>
+      <head>
+        <title>Payslip</title>
+
+        <style>
+          body{
+            font-family: Arial;
+            padding:20px;
+          }
+
+          table{
+            width:100%;
+            border-collapse:collapse;
+          }
+
+          th,td{
+            border:1px solid #ddd;
+            padding:10px;
+            text-align:left;
+          }
+
+          th{
+            width:250px;
+          }
+        </style>
+
+      </head>
+
+      <body>
+
+        ${printContents}
+
+      </body>
+
+    </html>
+  `);
+
+                printWindow.document.close();
+
+                printWindow.print();
+
+              }}
             >
               Print
             </button>

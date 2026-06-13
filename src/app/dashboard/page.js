@@ -19,8 +19,11 @@ import {
 export default function DashboardPage() {
   const [userRole, setUserRole] =
     useState("");
+  const [companyName, setCompanyName] =
+    useState("");
 
   const [statsData, setStatsData] =
+
     useState({
       totalUsers: 0,
       totalProjects: 0,
@@ -32,6 +35,10 @@ export default function DashboardPage() {
 
       pendingExpenses: 0,
     });
+  const [recentActivity,
+    setRecentActivity] =
+    useState([]);
+
 
   useEffect(() => {
 
@@ -57,6 +64,20 @@ export default function DashboardPage() {
         await res.json();
 
       setStatsData(data);
+
+      setRecentActivity(
+        data.recentActivity || []
+      );
+
+      setStatsData(data);
+
+      setRecentActivity(
+        data.recentActivity || []
+      );
+
+      setCompanyName(
+        data.companyName || ""
+      );
 
     } catch (error) {
 
@@ -162,6 +183,8 @@ export default function DashboardPage() {
 
           [
             "Active Projects",
+            "Total Users",
+            "Attendance Today",
           ].includes(
             item.title
           )
@@ -206,7 +229,7 @@ export default function DashboardPage() {
           >
             Construction ERP Dashboard
           </h2>
-          <h5>{userRole}</h5>
+          {/* <h5>{userRole}</h5> */}
           <p
             className="mb-0"
             style={{
@@ -215,13 +238,13 @@ export default function DashboardPage() {
               fontWeight: "500",
             }}
           >
-            Welcome back, manage everything from one place.
+            Monitor projects, workforce, finance and operations from one unified platform.
           </p>
 
         </div>
 
         <div className="d-flex align-items-center gap-3">
-
+          {/* 
           <button className="btn btn-light border rounded-3 position-relative">
 
             <Bell size={18} />
@@ -240,7 +263,7 @@ export default function DashboardPage() {
               3
             </span>
 
-          </button>
+          </button> */}
 
           <div
             className="
@@ -285,7 +308,7 @@ export default function DashboardPage() {
                   letterSpacing: "-0.3px",
                 }}
               >
-                Harsh Builders
+                {companyName || "Company"}
               </div>
 
               <small className="text-muted">
@@ -319,13 +342,16 @@ export default function DashboardPage() {
                 className="
                   card
 border-0
-shadow-lg
+shadow-lg bg-white
 rounded-5
 h-100
 overflow-hidden
 position-relative
 premium-card
                 "
+                style={{
+                  backdropFilter: "blur(12px)",
+                }}
               >
 
                 <div className="card-body p-4 d-flex flex-column justify-content-between h-100">
@@ -348,7 +374,7 @@ premium-card
                       <h2
                         className="fw-black mb-3"
                         style={{
-                          fontSize: "54px",
+                          fontSize: "42px",
                           letterSpacing: "-1px",
                           color: "#0f172a",
                         }}
@@ -439,7 +465,13 @@ premium-card
                   Recent Activity
                 </h5>
 
-                <button className="btn btn-sm btn-light border rounded-3">
+                <button
+                  className="btn btn-sm btn-light border rounded-3"
+                  onClick={() =>
+                    window.location.href =
+                    "/dashboard/activity"
+                  }
+                >
                   View All
                 </button>
 
@@ -447,84 +479,78 @@ premium-card
 
               <div className="d-flex flex-column gap-3">
 
-                {[
-                  {
-                    title: "New employee added",
-                    time: "2 mins ago",
-                  },
+                {recentActivity.length > 0 ? (
 
-                  {
-                    title: "Invoice payment received",
-                    time: "15 mins ago",
-                  },
-
-                  {
-                    title: "Project assigned to team",
-                    time: "1 hour ago",
-                  },
-
-                  {
-                    title: "Attendance updated",
-                    time: "Today",
-                  },
-
-                ].map((activity, index) => (
-
-                  <div
-                    key={index}
-                    className="
-                      d-flex
-                      justify-content-between
-                      align-items-center
-                      border
-                      rounded-4
-                      p-3
-                    "
-                  >
-
-                    <div className="d-flex align-items-center gap-3">
+                  recentActivity.map(
+                    (activity, index) => (
 
                       <div
+                        key={index}
                         className="
-                          bg-primary
-                          bg-opacity-10
-                          text-primary
-                          rounded-circle
-                          d-flex
-                          align-items-center
-                          justify-content-center
-                        "
-                        style={{
-                          width: "42px",
-                          height: "42px",
-                        }}
+d-flex
+justify-content-between
+align-items-center
+rounded-4
+p-3
+border-0
+shadow-sm
+bg-white
+"
                       >
 
-                        <ClipboardList size={18} />
+                        <div className="d-flex align-items-center gap-3">
 
-                      </div>
+                          <div
+                            className="
+                bg-primary
+                bg-opacity-10
+                text-primary
+                rounded-circle
+                d-flex
+                align-items-center
+                justify-content-center
+              "
+                            style={{
+                              width: "42px",
+                              height: "42px",
+                            }}
+                          >
+                            <ClipboardList size={18} />
+                          </div>
 
-                      <div>
+                          <div>
 
-                        <div className="fw-semibold">
-                          {activity.title}
+                            <div className="fw-semibold">
+                              {activity.title}
+                            </div>
+
+                            <small className="text-muted">
+                              {new Date(
+                                activity.time
+                              ).toLocaleString()}
+                            </small>
+
+                          </div>
+
                         </div>
 
-                        <small className="text-muted">
-                          {activity.time}
-                        </small>
+                        {/* <ArrowUpRight
+                          size={18}
+                          className="text-muted"
+                        /> */}
 
                       </div>
 
-                    </div>
+                    )
+                  )
 
-                    <ArrowUpRight
-                      size={18}
-                      className="text-muted"
-                    />
+                ) : (
 
+                  <div className="text-center text-muted py-4">
+                    No Recent Activity Found
                   </div>
-                ))}
+
+                )}
 
               </div>
 
@@ -552,49 +578,49 @@ premium-card
                   <>
                     <Link
                       href="/dashboard/users/add"
-                      className="btn btn-dark rounded-3 py-3"
+                      className="btn btn-dark rounded-3 py-3 fw-semibold"
                     >
                       Add User
                     </Link>
 
                     <Link
                       href="/dashboard/projects/add"
-                      className="btn btn-primary rounded-3 py-3"
+                      className="btn btn-primary rounded-3 py-3 fw-semibold"
                     >
                       Create Project
                     </Link>
 
                     <Link
                       href="/dashboard/payroll/generate"
-                      className="btn btn-success rounded-3 py-3"
+                      className="btn btn-success rounded-3 py-3 fw-semibold"
                     >
                       Generate Payroll
                     </Link>
 
                     <Link
                       href="/dashboard/reports"
-                      className="btn btn-warning text-white rounded-3 py-3"
+                      className="btn btn-warning text-white rounded-3 py-3 fw-semibold"
                     >
                       View Reports
                     </Link>
 
                     <Link
                       href="/dashboard/invoices/add"
-                      className="btn btn-danger rounded-3 py-3"
+                      className="btn btn-danger rounded-3 py-3 fw-semibold"
                     >
                       Create Invoice
                     </Link>
 
                     <Link
                       href="/dashboard/payments/add"
-                      className="btn btn-info text-white rounded-3 py-3"
+                      className="btn btn-info text-white rounded-3 py-3 fw-semibold"
                     >
                       Add Payment
                     </Link>
 
                     <Link
                       href="/dashboard/expenses/add"
-                      className="btn btn-secondary rounded-3 py-3"
+                      className="btn btn-secondary rounded-3 py-3 fw-semibold"
                     >
                       Add Expense
                     </Link>
@@ -605,28 +631,28 @@ premium-card
                   <>
                     <Link
                       href="/dashboard/projects/add"
-                      className="btn btn-primary rounded-3 py-3"
+                      className="btn btn-primary rounded-3 py-3 fw-semibold"
                     >
                       Create Project
                     </Link>
 
                     <Link
                       href="/dashboard/purchase-orders/add"
-                      className="btn btn-success rounded-3 py-3"
+                      className="btn btn-success rounded-3 py-3 fw-semibold"
                     >
                       Create PO
                     </Link>
 
                     <Link
                       href="/dashboard/grn/add"
-                      className="btn btn-warning text-white rounded-3 py-3"
+                      className="btn btn-warning text-white rounded-3 py-3 fw-semibold"
                     >
                       Create GRN
                     </Link>
 
                     <Link
                       href="/dashboard/reports"
-                      className="btn btn-info text-white rounded-3 py-3"
+                      className="btn btn-info text-white rounded-3 py-3 fw-semibold"
                     >
                       View Reports
                     </Link>
@@ -637,28 +663,28 @@ premium-card
                   <>
                     <Link
                       href="/dashboard/invoices/add"
-                      className="btn btn-danger rounded-3 py-3"
+                      className="btn btn-danger rounded-3 py-3 fw-semibold"
                     >
                       Create Invoice
                     </Link>
 
                     <Link
                       href="/dashboard/payments/add"
-                      className="btn btn-info text-white rounded-3 py-3"
+                      className="btn btn-info text-white rounded-3 py-3 fw-semibold"
                     >
                       Add Payment
                     </Link>
 
                     <Link
                       href="/dashboard/expenses/add"
-                      className="btn btn-secondary rounded-3 py-3"
+                      className="btn btn-secondary rounded-3 py-3 fw-semibold"
                     >
                       Add Expense
                     </Link>
 
                     <Link
                       href="/dashboard/reports"
-                      className="btn btn-warning text-white rounded-3 py-3"
+                      className="btn btn-warning text-white rounded-3 py-3 fw-semibold"
                     >
                       View Reports
                     </Link>
@@ -669,14 +695,14 @@ premium-card
                   <>
                     <Link
                       href="/dashboard/attendance"
-                      className="btn btn-success rounded-3 py-3"
+                      className="btn btn-success rounded-3 py-3 fw-semibold"
                     >
                       My Attendance
                     </Link>
 
                     <Link
                       href="/dashboard/documents"
-                      className="btn btn-primary rounded-3 py-3"
+                      className="btn btn-primary rounded-3 py-3 fw-semibold"
                     >
                       My Documents
                     </Link>
@@ -687,7 +713,7 @@ premium-card
 
               {/* MINI STATUS */}
 
-              <div
+              {/* <div
                 className="
                   mt-4
                   p-3
@@ -737,7 +763,9 @@ premium-card
 
                 </div>
 
-              </div>
+              </div> */}
+
+
 
             </div>
 

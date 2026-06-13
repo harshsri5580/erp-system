@@ -7,6 +7,12 @@ import {
     useRouter,
 } from "next/navigation";
 
+import {
+    ArrowLeft,
+} from "lucide-react";
+
+import toast from "react-hot-toast";
+
 export default function EditEquipmentPage() {
 
     const params =
@@ -224,19 +230,23 @@ export default function EditEquipmentPage() {
                     formData
                 );
 
-                alert(
+                toast.success(
                     "Equipment updated successfully"
                 );
 
-                router.push(
-                    "/dashboard/equipment"
-                );
+                setTimeout(() => {
+
+                    router.push(
+                        "/dashboard/equipment"
+                    );
+
+                }, 1000);
 
             } catch (error) {
 
                 console.log(error);
 
-                alert(
+                toast.error(
                     "Failed to update equipment"
                 );
 
@@ -250,18 +260,57 @@ export default function EditEquipmentPage() {
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
-            <div className="card">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1000px",
+                    margin: "0 auto",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
-                <div className="card-body">
+                <div className="card-body p-4 p-lg-5">
 
-                    <h2 className="mb-4">
+                    <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
 
-                        Edit Equipment
+                        <div>
 
-                    </h2>
+                            <h2
+                                className="fw-bold mb-1"
+                                style={{
+                                    color: "#111827",
+                                }}
+                            >
+                                Edit Equipment
+                            </h2>
 
+                            <p
+                                className="mb-0"
+                                style={{
+                                    color: "#6B7280",
+                                }}
+                            >
+                                Update equipment information
+                            </p>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary"
+                            onClick={() =>
+                                router.push(
+                                    "/dashboard/equipment"
+                                )
+                            }
+                        >
+                            <ArrowLeft size={16} />
+                        </button>
+
+                    </div>
                     <form
                         onSubmit={
                             handleSubmit
@@ -272,14 +321,14 @@ export default function EditEquipmentPage() {
 
                         <div className="mb-3">
 
-                            <label>
+                            <label className="form-label fw-semibold text-dark">
 
                                 Equipment Code
 
                             </label>
 
                             <input
-                                className="form-control"
+                                className="form-control rounded-3"
                                 value={
                                     formData.equipmentCode
                                 }
@@ -292,7 +341,7 @@ export default function EditEquipmentPage() {
 
                         <div className="mb-3">
 
-                            <label>
+                            <label className="form-label fw-semibold text-dark">
 
                                 Equipment Name
 
@@ -300,7 +349,7 @@ export default function EditEquipmentPage() {
 
                             <input
                                 name="equipmentName"
-                                className="form-control"
+                                className="form-control rounded-3"
                                 value={
                                     formData.equipmentName
                                 }
@@ -315,7 +364,7 @@ export default function EditEquipmentPage() {
 
                         <div className="mb-3">
 
-                            <label>
+                            <label className="form-label fw-semibold text-dark">
 
                                 Category
 
@@ -323,7 +372,7 @@ export default function EditEquipmentPage() {
 
                             <input
                                 name="category"
-                                className="form-control"
+                                className="form-control rounded-3"
                                 value={
                                     formData.category
                                 }
@@ -338,7 +387,7 @@ export default function EditEquipmentPage() {
 
                         <div className="mb-3">
 
-                            <label>
+                            <label className="form-label fw-semibold text-dark">
 
                                 Brand
 
@@ -346,7 +395,7 @@ export default function EditEquipmentPage() {
 
                             <input
                                 name="brand"
-                                className="form-control"
+                                className="form-control rounded-3"
                                 value={
                                     formData.brand
                                 }
@@ -361,7 +410,7 @@ export default function EditEquipmentPage() {
 
                         <div className="mb-3">
 
-                            <label>
+                            <label className="form-label fw-semibold text-dark">
 
                                 Status
 
@@ -369,7 +418,7 @@ export default function EditEquipmentPage() {
 
                             <select
                                 name="status"
-                                className="form-select"
+                                className="form-select rounded-3"
                                 value={
                                     formData.status
                                 }
@@ -402,7 +451,7 @@ export default function EditEquipmentPage() {
 
                         <div className="mb-3">
 
-                            <label>
+                            <label className="form-label fw-semibold text-dark">
 
                                 Project
 
@@ -410,7 +459,7 @@ export default function EditEquipmentPage() {
 
                             <select
                                 name="projectId"
-                                className="form-select"
+                                className="form-select rounded-3"
                                 value={
                                     formData.projectId
                                 }
@@ -452,7 +501,7 @@ export default function EditEquipmentPage() {
 
                         <div className="mb-3">
 
-                            <label>
+                            <label className="form-label fw-semibold text-dark">
 
                                 Assigned User
 
@@ -460,7 +509,7 @@ export default function EditEquipmentPage() {
 
                             <select
                                 name="userId"
-                                className="form-select"
+                                className="form-select rounded-3"
                                 value={
                                     formData.userId
                                 }
@@ -502,7 +551,7 @@ export default function EditEquipmentPage() {
 
                         <div className="mb-3">
 
-                            <label>
+                            <label className="form-label fw-semibold text-dark">
 
                                 Usage Hours
 
@@ -511,7 +560,7 @@ export default function EditEquipmentPage() {
                             <input
                                 type="number"
                                 name="totalUsageHours"
-                                className="form-control"
+                                className="form-control rounded-3"
                                 value={
                                     formData.totalUsageHours
                                 }
@@ -526,7 +575,7 @@ export default function EditEquipmentPage() {
 
                         <div className="mb-3">
 
-                            <label>
+                            <label className="form-label fw-semibold text-dark">
 
                                 Maintenance Cost
 
@@ -535,7 +584,7 @@ export default function EditEquipmentPage() {
                             <input
                                 type="number"
                                 name="maintenanceCost"
-                                className="form-control"
+                                className="form-control rounded-3"
                                 value={
                                     formData.maintenanceCost
                                 }
@@ -550,16 +599,16 @@ export default function EditEquipmentPage() {
 
                         <div className="mb-3">
 
-                            <label>
+                            <label className="form-label fw-semibold text-dark">
 
                                 Remarks
 
                             </label>
 
                             <textarea
-                                rows="4"
+                                rows="5"
                                 name="remarks"
-                                className="form-control"
+                                className="form-control rounded-3"
                                 value={
                                     formData.remarks
                                 }
@@ -577,7 +626,7 @@ export default function EditEquipmentPage() {
 
                             {loading
                                 ? "Updating..."
-                                : "Update Equipment"}
+                                : "Save Changes"}
 
                         </button>
 

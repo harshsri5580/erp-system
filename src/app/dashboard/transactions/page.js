@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import {
+    ArrowDownCircle,
+    ArrowUpCircle,
+    Wallet,
+} from "lucide-react";
 export default function TransactionsPage() {
 
     const [transactions, setTransactions] =
@@ -69,43 +73,83 @@ export default function TransactionsPage() {
                 0
             );
 
+    const netBalance =
+        totalCredit - totalDebit;
+
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
             {/* HEADER */}
 
             <div className="mb-4">
 
-                <h2 className="page-title">
-                    Transactions
+                <h2
+                    className="fw-bold mb-1"
+                    style={{
+                        color: "#111827",
+                    }}
+                >
+                    Transactions Management
                 </h2>
 
-                <p className="text-muted mb-0">
-                    Complete financial activity
+                <p
+                    className="mb-0"
+                    style={{
+                        color: "#6B7280",
+                    }}
+                >
+                    Monitor all financial transactions and cash flow
                 </p>
 
             </div>
 
             {/* STATS */}
 
-            <div className="row mb-4">
+            <div className="row g-4 mb-4">
 
                 {/* CREDIT */}
 
                 <div className="col-md-4">
 
-                    <div className="card shadow border-0 rounded-4">
+                    <div
+                        className="card border-0 rounded-4"
+                        style={{
+                            minHeight: "170px",
+                            boxShadow:
+                                "0 10px 30px rgba(0,0,0,.06)",
+                        }}
+                    >
 
-                        <div className="card-body">
+                        <div className="card-body p-4">
 
-                            <h6 className="text-muted">
-                                Total Credit
-                            </h6>
+                            <div className="d-flex justify-content-between align-items-center mb-4">
 
-                            <h2 className="fw-bold text-success">
-                                ₹{totalCredit}
+                                <h6 className="text-muted mb-0">
+                                    Total Credit
+                                </h6>
+
+                                <div
+                                    className="p-2 rounded-circle"
+                                    style={{
+                                        background: "#ECFDF5",
+                                    }}
+                                >
+                                    <ArrowDownCircle
+                                        size={20}
+                                        className="text-success"
+                                    />
+                                </div>
+
+                            </div>
+
+                            <h2 className="fw-bold text-success mb-2">
+                                ₹{totalCredit.toLocaleString()}
                             </h2>
+
+                            <small className="text-muted">
+                                Completed Income Transactions
+                            </small>
 
                         </div>
 
@@ -117,17 +161,44 @@ export default function TransactionsPage() {
 
                 <div className="col-md-4">
 
-                    <div className="card shadow border-0 rounded-4">
+                    <div
+                        className="card border-0 rounded-4"
+                        style={{
+                            minHeight: "170px",
+                            boxShadow:
+                                "0 10px 30px rgba(0,0,0,.06)",
+                        }}
+                    >
 
-                        <div className="card-body">
+                        <div className="card-body p-4">
 
-                            <h6 className="text-muted">
-                                Total Debit
-                            </h6>
+                            <div className="d-flex justify-content-between align-items-center mb-4">
 
-                            <h2 className="fw-bold text-danger">
-                                ₹{totalDebit}
+                                <h6 className="text-muted mb-0">
+                                    Total Debit
+                                </h6>
+
+                                <div
+                                    className="p-2 rounded-circle"
+                                    style={{
+                                        background: "#FEF2F2",
+                                    }}
+                                >
+                                    <ArrowUpCircle
+                                        size={20}
+                                        className="text-danger"
+                                    />
+                                </div>
+
+                            </div>
+
+                            <h2 className="fw-bold text-danger mb-2">
+                                ₹{totalDebit.toLocaleString()}
                             </h2>
+
+                            <small className="text-muted">
+                                Completed Expense Transactions
+                            </small>
 
                         </div>
 
@@ -139,19 +210,49 @@ export default function TransactionsPage() {
 
                 <div className="col-md-4">
 
-                    <div className="card shadow border-0 rounded-4">
+                    <div
+                        className="card border-0 rounded-4"
+                        style={{
+                            minHeight: "170px",
+                            boxShadow:
+                                "0 10px 30px rgba(0,0,0,.06)",
+                        }}
+                    >
 
-                        <div className="card-body">
+                        <div className="card-body p-4">
 
-                            <h6 className="text-muted">
-                                Net Balance
-                            </h6>
+                            <div className="d-flex justify-content-between align-items-center mb-4">
 
-                            <h2 className="fw-bold text-primary">
-                                ₹
-                                {totalCredit -
-                                    totalDebit}
+                                <h6 className="text-muted mb-0">
+                                    Net Balance
+                                </h6>
+
+                                <div
+                                    className="p-2 rounded-circle"
+                                    style={{
+                                        background: "#EFF6FF",
+                                    }}
+                                >
+                                    <Wallet
+                                        size={20}
+                                        className="text-primary"
+                                    />
+                                </div>
+
+                            </div>
+
+                            <h2
+                                className={`fw-bold mb-2 ${netBalance >= 0
+                                    ? "text-primary"
+                                    : "text-danger"
+                                    }`}
+                            >
+                                ₹{netBalance.toLocaleString()}
                             </h2>
+
+                            <small className="text-muted">
+                                Current Available Balance
+                            </small>
 
                         </div>
 
@@ -163,15 +264,22 @@ export default function TransactionsPage() {
 
             {/* TABLE */}
 
-            <div className="card shadow border-0 rounded-4">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    minHeight: "120px",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
-                <div className="card-body">
+                <div className="card-body p-4">
 
                     {loading ? (
 
-                        <h5>
-                            Loading...
-                        </h5>
+                        <div className="text-center py-5">
+                            Loading Transactions...
+                        </div>
 
                     ) : (
 
@@ -179,23 +287,27 @@ export default function TransactionsPage() {
 
                             <table className="table table-hover align-middle">
 
-                                <thead className="table-dark">
+                                <thead
+                                    style={{
+                                        background: "#F9FAFB",
+                                    }}
+                                >
 
                                     <tr>
 
-                                        <th>ID</th>
+                                        <th className="fw-semibold text-secondary">ID</th>
 
-                                        <th>Title</th>
+                                        <th className="fw-semibold text-secondary">Title</th>
 
-                                        <th>Type</th>
+                                        <th className="fw-semibold text-secondary">Type</th>
 
-                                        <th>Amount</th>
+                                        <th className="fw-semibold text-secondary">Amount</th>
 
-                                        <th>Reference</th>
+                                        <th className="fw-semibold text-secondary">Reference</th>
 
-                                        <th>Date</th>
+                                        <th className="fw-semibold text-secondary">Date</th>
 
-                                        <th>Status</th>
+                                        <th className="fw-semibold text-secondary">Status</th>
 
                                     </tr>
 
@@ -222,10 +334,8 @@ export default function TransactionsPage() {
                                                         }
                                                     </td>
 
-                                                    <td>
-                                                        {
-                                                            transaction.title
-                                                        }
+                                                    <td className="fw-semibold">
+                                                        {transaction.title}
                                                     </td>
 
                                                     <td>
@@ -261,10 +371,10 @@ export default function TransactionsPage() {
                                                         }
                                                     </td>
 
-                                                    <td>
-                                                        {
+                                                    <td className="text-muted">
+                                                        {new Date(
                                                             transaction.date
-                                                        }
+                                                        ).toLocaleDateString()}
                                                     </td>
 
                                                     <td>

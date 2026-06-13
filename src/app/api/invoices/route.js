@@ -1,17 +1,37 @@
 import { NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET ALL INVOICES
 // ======================
 
-export async function GET() {
+export async function GET(request) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const invoices =
             await prisma.invoice.findMany({
+
+                where: {
+                    companyId:
+                        currentUser.companyId,
+                },
 
                 include: {
 
@@ -66,7 +86,22 @@ export async function GET() {
 export async function POST(request) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const body =
             await request.json();
 
@@ -92,13 +127,56 @@ export async function POST(request) {
 
         } = body;
 
+
+        if (
+            parseFloat(totalAmount) <= 0
+        ) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid invoice amount",
+                },
+                {
+                    status: 400,
+                }
+            );
+
+        }
+
+        if (
+            new Date(dueDate) <
+            new Date(issueDate)
+        ) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Due date cannot be earlier than issue date",
+                },
+                {
+                    status: 400,
+                }
+            );
+
+        }
+
         // CHECK EXISTING INVOICE
         // ======================
         // GENERATE INVOICE NUMBER
         // ======================
 
         const settings =
-            await prisma.settings.findFirst();
+            await prisma.settings.findFirst({
+
+                where: {
+                    companyId:
+                        currentUser.companyId,
+                },
+
+            });
 
         const prefix =
             settings?.invoicePrefix || "INV";
@@ -109,6 +187,7 @@ export async function POST(request) {
         const existingInvoice =
             await prisma.invoice.findUnique({
 
+
                 where: {
 
                     invoiceNumber,
@@ -117,6 +196,62 @@ export async function POST(request) {
 
             });
 
+        const client =
+            await prisma.client.findFirst({
+
+                where: {
+
+                    id: parseInt(clientId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!client) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Client",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+        const project =
+            await prisma.project.findFirst({
+
+                where: {
+
+                    id: parseInt(projectId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!project) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Project",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         if (existingInvoice) {
 
             return NextResponse.json(
@@ -145,6 +280,11 @@ export async function POST(request) {
 
                     invoiceNumber,
 
+                    company: {
+                        connect: {
+                            id: currentUser.companyId,
+                        },
+                    },
                     amount:
                         parseFloat(amount),
 
@@ -163,15 +303,7 @@ export async function POST(request) {
 
                     notes,
 
-                    client: {
-
-                        connect: {
-
-                            id: parseInt(clientId),
-
-                        },
-
-                    },
+                    clientId: parseInt(clientId),
 
                     project: {
 

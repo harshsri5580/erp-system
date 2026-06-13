@@ -4,6 +4,17 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 
+import toast from "react-hot-toast";
+
+import {
+    Plus,
+    Eye,
+    Pencil,
+    Trash2,
+    Search,
+    Wrench,
+} from "lucide-react";
+
 export default function EquipmentPage() {
 
     const [equipments, setEquipments] =
@@ -43,18 +54,14 @@ export default function EquipmentPage() {
     const handleDelete =
         async (id) => {
 
-            const confirmDelete =
-                confirm(
-                    "Delete this equipment?"
-                );
-
-            if (!confirmDelete)
-                return;
-
             try {
 
                 await axios.delete(
                     `/api/equipment/${id}`
+                );
+
+                toast.success(
+                    "Equipment deleted successfully"
                 );
 
                 fetchEquipments();
@@ -62,6 +69,10 @@ export default function EquipmentPage() {
             } catch (error) {
 
                 console.log(error);
+
+                toast.error(
+                    "Failed to delete equipment"
+                );
 
             }
 
@@ -94,56 +105,95 @@ export default function EquipmentPage() {
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
             <div className="d-flex justify-content-between align-items-center mb-4">
 
-                <h2 className="page-title">
-                    Equipment Management
-                </h2>
+                <div>
+
+                    <h2
+                        className="fw-bold mb-1"
+                        style={{
+                            color: "#111827",
+                        }}
+                    >
+                        Equipment Management
+                    </h2>
+
+                    <p
+                        className="mb-0"
+                        style={{
+                            color: "#6B7280",
+                        }}
+                    >
+                        Track and manage company equipment
+                    </p>
+
+                </div>
 
                 <Link
                     href="/dashboard/equipment/add"
-                    className="btn btn-primary"
+                    className="btn btn-dark rounded-3 px-4 d-flex align-items-center gap-2"
                 >
-
+                    <Plus size={18} />
                     Add Equipment
-
                 </Link>
 
             </div>
 
-            <div className="card shadow">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
-                <div className="card-body">
+                <div className="card-body p-4">
 
                     <div className="row mb-3">
 
                         <div className="col-md-4">
 
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Search Equipment..."
-                                value={
-                                    search
-                                }
-                                onChange={(e) =>
-                                    setSearch(
-                                        e.target.value
-                                    )
-                                }
-                            />
+                            <div className="position-relative">
 
+                                <Search
+                                    size={16}
+                                    className="position-absolute"
+                                    style={{
+                                        left: "12px",
+                                        top: "12px",
+                                        color: "#6B7280",
+                                    }}
+                                />
+
+                                <input
+                                    type="text"
+                                    className="form-control rounded-3 ps-5"
+                                    placeholder="Search Equipment..."
+                                    value={
+                                        search
+                                    }
+                                    onChange={(e) =>
+                                        setSearch(
+                                            e.target.value
+                                        )
+                                    }
+                                />
+                            </div>
                         </div>
 
                     </div>
 
                     <div className="table-responsive">
 
-                        <table className="table table-bordered table-hover">
+                        <table className="table table-hover align-middle mb-0">
 
-                            <thead>
+                            <thead
+                                style={{
+                                    background: "#F9FAFB",
+                                }}
+                            >
 
                                 <tr>
 
@@ -180,7 +230,22 @@ export default function EquipmentPage() {
                                             className="text-center"
                                         >
 
-                                            No Equipment Found
+                                            <div className="py-5">
+
+                                                <Wrench
+                                                    size={45}
+                                                    className="text-secondary mb-3"
+                                                />
+
+                                                <h5>
+                                                    No Equipment Found
+                                                </h5>
+
+                                                <p className="text-muted mb-0">
+                                                    Equipment records will appear here
+                                                </p>
+
+                                            </div>
 
                                         </td>
 
@@ -207,10 +272,8 @@ export default function EquipmentPage() {
                                                     }
                                                 </td>
 
-                                                <td>
-                                                    {
-                                                        item.equipmentName
-                                                    }
+                                                <td className="fw-semibold">
+                                                    {item.equipmentName}
                                                 </td>
 
                                                 <td>
@@ -225,10 +288,8 @@ export default function EquipmentPage() {
                                                     }
                                                 </td>
 
-                                                <td>
-                                                    {
-                                                        item.totalUsageHours
-                                                    }
+                                                <td className="fw-bold text-primary">
+                                                    {item.totalUsageHours}
                                                 </td>
 
                                                 <td>
@@ -258,24 +319,30 @@ export default function EquipmentPage() {
 
                                                         <Link
                                                             href={`/dashboard/equipment/view/${item.id}`}
-                                                            className="btn btn-info btn-sm"
+                                                            className="btn btn-outline-info btn-sm d-flex align-items-center gap-1"
                                                         >
 
-                                                            View
+                                                            <>
+                                                                <Eye size={14} />
+                                                                View
+                                                            </>
 
                                                         </Link>
 
                                                         <Link
                                                             href={`/dashboard/equipment/edit/${item.id}`}
-                                                            className="btn btn-warning btn-sm"
+                                                            className="btn btn-outline-warning btn-sm d-flex align-items-center gap-1"
                                                         >
 
-                                                            Edit
+                                                            <>
+                                                                <Pencil size={14} />
+                                                                Edit
+                                                            </>
 
                                                         </Link>
 
                                                         <button
-                                                            className="btn btn-danger btn-sm"
+                                                            className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
                                                             onClick={() =>
                                                                 handleDelete(
                                                                     item.id
@@ -283,7 +350,10 @@ export default function EquipmentPage() {
                                                             }
                                                         >
 
-                                                            Delete
+                                                            <>
+                                                                <Trash2 size={14} />
+                                                                Delete
+                                                            </>
 
                                                         </button>
 

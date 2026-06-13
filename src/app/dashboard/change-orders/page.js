@@ -1,8 +1,18 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
+
+import Swal from "sweetalert2";
+import toast from "react-hot-toast";
+
+import {
+    Plus,
+    Eye,
+    Pencil,
+    Trash2,
+    FileEdit,
+} from "lucide-react";
 
 export default function ChangeOrdersPage() {
 
@@ -47,12 +57,40 @@ export default function ChangeOrdersPage() {
     const handleDelete =
         async (id) => {
 
-            const confirmDelete =
-                confirm(
-                    "Delete this Change Order?"
-                );
+            const result =
+                await Swal.fire({
 
-            if (!confirmDelete)
+                    title:
+                        "Delete Change Order?",
+
+                    text:
+                        "This change order will be permanently removed.",
+
+                    icon: "warning",
+
+                    showCancelButton: true,
+
+                    confirmButtonText:
+                        "Yes, Delete",
+
+                    cancelButtonText:
+                        "Cancel",
+
+                    reverseButtons: true,
+
+                    confirmButtonColor:
+                        "#dc3545",
+
+                    cancelButtonColor:
+                        "#6c757d",
+
+                    customClass: {
+                        popup: "rounded-4",
+                    },
+
+                });
+
+            if (!result.isConfirmed)
                 return;
 
             try {
@@ -61,13 +99,17 @@ export default function ChangeOrdersPage() {
                     `/api/change-orders/${id}`
                 );
 
+                toast.success(
+                    "Change Order deleted successfully"
+                );
+
                 fetchChangeOrders();
 
             } catch (error) {
 
                 console.log(error);
 
-                alert(
+                toast.error(
                     "Failed to delete Change Order"
                 );
 
@@ -78,8 +120,12 @@ export default function ChangeOrdersPage() {
     if (loading) {
 
         return (
-            <div className="text-center mt-5">
-                Loading...
+            <div className="container-fluid px-4 py-3">
+                <div className="card border-0 rounded-4">
+                    <div className="card-body text-center py-5">
+                        Loading Change Orders...
+                    </div>
+                </div>
             </div>
         );
 
@@ -87,68 +133,77 @@ export default function ChangeOrdersPage() {
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
             <div className="d-flex justify-content-between align-items-center mb-4">
 
                 <div>
 
-                    <h2 className="page-title">
-
+                    <h2
+                        className="fw-bold mb-1"
+                        style={{
+                            color: "#111827",
+                        }}
+                    >
                         Change Orders
-
                     </h2>
 
-                    <p className="text-muted">
-
-                        Contract Variations & Scope Changes
-
+                    <p
+                        className="mb-0"
+                        style={{
+                            color: "#6B7280",
+                        }}
+                    >
+                        Contract variations and scope change management
                     </p>
 
                 </div>
 
                 <Link
                     href="/dashboard/change-orders/add"
-                    className="btn btn-dark"
+                    className="btn btn-dark rounded-3 px-4 d-flex align-items-center gap-2"
                 >
-
+                    <Plus size={18} />
                     Add Change Order
-
                 </Link>
 
             </div>
 
-            <div className="card shadow border-0">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,0.06)",
+                }}
+            >
 
-                <div className="card-body">
+                <div className="card-body p-4">
 
                     <div className="table-responsive">
 
-                        <table className="table table-bordered">
+                        <table className="table table-hover align-middle mb-0">
 
-                            <thead className="table-dark">
+                            <thead
+                                style={{
+                                    background: "#F9FAFB",
+                                }}
+                            >
 
                                 <tr>
 
-                                    <th>ID</th>
+                                    <th className="fw-semibold text-secondary">
+                                        ID
+                                    </th>
 
-                                    <th>CO Number</th>
-
-                                    <th>Project</th>
-
-                                    <th>Client</th>
-
-                                    <th>Title</th>
-
-                                    <th>Old Amount</th>
-
-                                    <th>New Amount</th>
-
-                                    <th>Difference</th>
-
-                                    <th>Status</th>
-
-                                    <th>Actions</th>
+                                    <th className="fw-semibold text-secondary">CO Number</th>
+                                    <th className="fw-semibold text-secondary">Project</th>
+                                    <th className="fw-semibold text-secondary">Client</th>
+                                    <th className="fw-semibold text-secondary">Title</th>
+                                    <th className="fw-semibold text-secondary">Old Amount</th>
+                                    <th className="fw-semibold text-secondary">New Amount</th>
+                                    <th className="fw-semibold text-secondary">Difference</th>
+                                    <th className="fw-semibold text-secondary">Status</th>
+                                    <th className="fw-semibold text-secondary">Actions</th>
 
                                 </tr>
 
@@ -173,52 +228,39 @@ export default function ChangeOrdersPage() {
                                                     {item.coNumber}
                                                 </td>
 
-                                                <td>
-                                                    {
-                                                        item.project
-                                                            ?.name
-                                                    }
+                                                <td className="fw-semibold">
+                                                    {item.project?.name}
                                                 </td>
-
                                                 <td>
-                                                    {
-                                                        item.client
-                                                            ?.companyName
-                                                    }
+                                                    <span className="fw-medium">
+                                                        {item.client?.companyName}
+                                                    </span>
                                                 </td>
 
                                                 <td>
                                                     {item.title}
                                                 </td>
 
-                                                <td>
-                                                    ₹
-                                                    {item.oldAmount}
+                                                <td className="text-danger fw-semibold">
+                                                    ₹{item.oldAmount}
                                                 </td>
 
-                                                <td>
-                                                    ₹
-                                                    {item.newAmount}
+                                                <td className="text-primary fw-semibold">
+                                                    ₹{item.newAmount}
                                                 </td>
 
-                                                <td>
-                                                    ₹
-                                                    {
-                                                        item.differenceAmount
-                                                    }
+                                                <td className="text-success fw-bold">
+                                                    ₹{item.differenceAmount}
                                                 </td>
 
                                                 <td>
 
                                                     <span
-                                                        className={`badge ${item.status ===
-                                                            "Approved"
+                                                        className={`badge rounded-pill px-3 py-2 ${item.status === "Approved"
                                                             ? "bg-success"
-                                                            : item.status ===
-                                                                "Rejected"
+                                                            : item.status === "Rejected"
                                                                 ? "bg-danger"
-                                                                : item.status ===
-                                                                    "Submitted"
+                                                                : item.status === "Submitted"
                                                                     ? "bg-warning text-dark"
                                                                     : "bg-secondary"
                                                             }`}
@@ -234,31 +276,41 @@ export default function ChangeOrdersPage() {
 
                                                 <td>
 
-                                                    <div className="d-flex gap-2">
+                                                    <div className="d-flex gap-2 flex-wrap">
 
                                                         <Link
                                                             href={`/dashboard/change-orders/view/${item.id}`}
-                                                            className="btn btn-info btn-sm"
+                                                            className="btn btn-outline-info btn-sm d-flex align-items-center gap-1"
                                                         >
-                                                            View
+                                                            <>
+                                                                <Eye size={14} />
+                                                                View
+                                                            </>
                                                         </Link>
 
                                                         <Link
                                                             href={`/dashboard/change-orders/edit/${item.id}`}
-                                                            className="btn btn-warning btn-sm"
+                                                            className="btn btn-outline-warning btn-sm d-flex align-items-center gap-1"
                                                         >
-                                                            Edit
+
+                                                            <>
+                                                                <Pencil size={14} />
+                                                                Edit
+                                                            </>
                                                         </Link>
 
                                                         <button
-                                                            className="btn btn-danger btn-sm"
+                                                            className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
                                                             onClick={() =>
                                                                 handleDelete(
                                                                     item.id
                                                                 )
                                                             }
                                                         >
-                                                            Delete
+                                                            <>
+                                                                <Trash2 size={14} />
+                                                                Delete
+                                                            </>
                                                         </button>
 
                                                     </div>
@@ -276,10 +328,21 @@ export default function ChangeOrdersPage() {
 
                                         <td
                                             colSpan="10"
-                                            className="text-center"
+                                            className="text-center py-5"
                                         >
 
-                                            No Change Orders Found
+                                            <FileEdit
+                                                size={40}
+                                                className="mb-3 text-secondary"
+                                            />
+
+                                            <div className="fw-semibold">
+                                                No Change Orders Found
+                                            </div>
+
+                                            <div className="text-muted">
+                                                Create your first change order
+                                            </div>
 
                                         </td>
 

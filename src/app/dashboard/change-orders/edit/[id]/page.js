@@ -7,6 +7,12 @@ import {
     useParams,
 } from "next/navigation";
 
+import {
+    ArrowLeft,
+} from "lucide-react";
+
+import toast from "react-hot-toast";
+
 export default function AddChangeOrderPage() {
 
     const router = useRouter();
@@ -20,6 +26,9 @@ export default function AddChangeOrderPage() {
 
     const [users, setUsers] =
         useState([]);
+
+    const [loading, setLoading] =
+        useState(false);
 
     const [formData, setFormData] =
         useState({
@@ -51,15 +60,19 @@ export default function AddChangeOrderPage() {
 
     useEffect(() => {
 
-        fetchProjects();
+        if (params?.id) {
 
-        fetchClients();
+            fetchProjects();
 
-        fetchUsers();
+            fetchClients();
 
-        fetchChangeOrder();
+            fetchUsers();
 
-    }, []);
+            fetchChangeOrder();
+
+        }
+
+    }, [params?.id]);
 
     const fetchProjects =
         async () => {
@@ -209,34 +222,39 @@ export default function AddChangeOrderPage() {
         e.preventDefault();
 
         try {
-
+            setLoading(true);
             const response =
                 await axios.put(
                     `/api/change-orders/${params.id}`,
                     formData
                 );
 
-            if (
-                response.data.success
-            ) {
+            toast.success(
+                response.data.message ||
+                "Change Order updated successfully"
+            );
 
-                alert(
-                    "Change Order Updated Successfully"
-                );
+            setTimeout(() => {
 
                 router.push(
                     "/dashboard/change-orders"
                 );
 
-            }
+            }, 1000);
 
         } catch (error) {
 
             console.log(error);
 
-            alert(
+            toast.error(
+                error?.response?.data?.message ||
                 "Failed to update Change Order"
             );
+
+        }
+        finally {
+
+            setLoading(false);
 
         }
 
@@ -254,15 +272,58 @@ export default function AddChangeOrderPage() {
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
-            <div className="card shadow">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1200px",
+                    margin: "0 auto",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,0.06)",
+                }}
+            >
 
-                <div className="card-body">
+                <div className="card-body p-4 p-lg-5">
 
-                    <h2 className="mb-4">
-                        Edit Change Order
-                    </h2>
+                    <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+
+                        <div>
+
+                            <h2
+                                className="fw-bold mb-1"
+                                style={{
+                                    color: "#111827",
+                                }}
+                            >
+                                Edit Change Order
+                            </h2>
+
+                            <p
+                                className="mb-0"
+                                style={{
+                                    color: "#6B7280",
+                                }}
+                            >
+                                Update contract variation and scope changes
+                            </p>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary d-flex align-items-center gap-2"
+                            onClick={() =>
+                                router.push(
+                                    "/dashboard/change-orders"
+                                )
+                            }
+                        >
+                            <ArrowLeft size={16} />
+                            Back
+                        </button>
+
+                    </div>
 
                     <form
                         onSubmit={
@@ -274,13 +335,13 @@ export default function AddChangeOrderPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     CO Number
                                 </label>
 
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={formData.coNumber}
                                     readOnly
                                 />
@@ -289,13 +350,13 @@ export default function AddChangeOrderPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Project
                                 </label>
 
                                 <select
                                     name="projectId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={formData.projectId}
                                     onChange={
                                         handleProjectChange
@@ -336,13 +397,13 @@ export default function AddChangeOrderPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Client
                                 </label>
 
                                 <select
                                     name="clientId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.clientId
                                     }
@@ -385,13 +446,13 @@ export default function AddChangeOrderPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Raised By
                                 </label>
 
                                 <select
                                     name="userId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.userId
                                     }
@@ -434,14 +495,14 @@ export default function AddChangeOrderPage() {
 
                             <div className="col-md-12 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Title
                                 </label>
 
                                 <input
                                     type="text"
                                     name="title"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.title
                                     }
@@ -455,14 +516,14 @@ export default function AddChangeOrderPage() {
 
                             <div className="col-md-12 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Description
                                 </label>
 
                                 <textarea
                                     rows="4"
                                     name="description"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.description
                                     }
@@ -475,14 +536,14 @@ export default function AddChangeOrderPage() {
 
                             <div className="col-md-12 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Reason
                                 </label>
 
                                 <textarea
                                     rows="4"
                                     name="reason"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.reason
                                     }
@@ -495,14 +556,14 @@ export default function AddChangeOrderPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Old Amount
                                 </label>
 
                                 <input
                                     type="number"
                                     name="oldAmount"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={formData.oldAmount}
                                     readOnly
                                 />
@@ -510,14 +571,14 @@ export default function AddChangeOrderPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     New Amount
                                 </label>
 
                                 <input
                                     type="number"
                                     name="newAmount"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.newAmount
                                     }
@@ -530,14 +591,14 @@ export default function AddChangeOrderPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Difference
                                 </label>
 
                                 <input
                                     type="text"
-                                    className="form-control"
-                                    value={difference}
+                                    className="form-control rounded-3 fw-bold text-success"
+                                    value={`₹ ${difference}`}
                                     readOnly
                                 />
 
@@ -545,13 +606,13 @@ export default function AddChangeOrderPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Status
                                 </label>
 
                                 <select
                                     name="status"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.status
                                     }
@@ -586,14 +647,14 @@ export default function AddChangeOrderPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Approved Date
                                 </label>
 
                                 <input
                                     type="date"
                                     name="approvedDate"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.approvedDate
                                     }
@@ -608,11 +669,12 @@ export default function AddChangeOrderPage() {
 
                         <button
                             type="submit"
-                            className="btn btn-dark"
+                            className="btn btn-dark px-4"
+                            disabled={loading}
                         >
-
-                            Update Change Order
-
+                            {loading
+                                ? "Updating..."
+                                : "Update Change Order"}
                         </button>
 
                     </form>

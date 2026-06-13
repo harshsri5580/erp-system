@@ -7,6 +7,14 @@ import {
     useRouter,
 } from "next/navigation";
 
+import toast from "react-hot-toast";
+
+import {
+    ShieldAlert,
+    Save,
+    ArrowLeft,
+} from "lucide-react";
+
 export default function EditIncidentPage() {
 
     const params =
@@ -197,19 +205,24 @@ export default function EditIncidentPage() {
                     formData
                 );
 
-                alert(
+                toast.success(
                     "Incident updated successfully"
                 );
 
-                router.push(
-                    "/dashboard/incidents"
-                );
+                setTimeout(() => {
+
+                    router.push(
+                        "/dashboard/incidents"
+                    );
+
+                }, 1000);
 
             } catch (error) {
 
                 console.log(error);
 
-                alert(
+                toast.error(
+                    error?.response?.data?.message ||
                     "Failed to update incident"
                 );
 
@@ -225,15 +238,52 @@ export default function EditIncidentPage() {
 
         <div className="container-fluid">
 
-            <div className="card shadow">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1100px",
+                    margin: "0 auto",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
-                <div className="card-body">
+                <div className="card-body p-4 p-lg-5">
 
-                    <h2 className="mb-4">
+                    <div className="mb-4 pb-3 border-bottom">
 
-                        Edit Incident
+                        <div className="d-flex justify-content-between align-items-center">
 
-                    </h2>
+                            <div>
+
+                                <h2
+                                    className="fw-bold mb-1"
+                                    style={{
+                                        color: "#111827",
+                                    }}
+                                >
+                                    Edit Incident
+                                </h2>
+
+                                <p
+                                    className="mb-0"
+                                    style={{
+                                        color: "#6B7280",
+                                    }}
+                                >
+                                    Update incident details and status
+                                </p>
+
+                            </div>
+
+                            <ShieldAlert
+                                size={34}
+                                color="#DC2626"
+                            />
+
+                        </div>
+
+                    </div>
 
                     <form
                         onSubmit={
@@ -245,12 +295,12 @@ export default function EditIncidentPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Incident Number
                                 </label>
 
                                 <input
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.incidentNumber
                                     }
@@ -261,14 +311,14 @@ export default function EditIncidentPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Incident Date
                                 </label>
 
                                 <input
                                     type="date"
                                     name="incidentDate"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.incidentDate
                                     }
@@ -281,13 +331,13 @@ export default function EditIncidentPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Project
                                 </label>
 
                                 <select
                                     name="projectId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.projectId
                                     }
@@ -323,13 +373,13 @@ export default function EditIncidentPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Reported By
                                 </label>
 
                                 <select
                                     name="userId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.userId
                                     }
@@ -365,13 +415,13 @@ export default function EditIncidentPage() {
 
                             <div className="col-md-12 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Related Inspection
                                 </label>
 
                                 <select
                                     name="inspectionId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.inspectionId
                                     }
@@ -407,14 +457,14 @@ export default function EditIncidentPage() {
 
                             <div className="col-md-12 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Title
                                 </label>
 
                                 <input
                                     type="text"
                                     name="title"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.title
                                     }
@@ -427,14 +477,14 @@ export default function EditIncidentPage() {
 
                             <div className="col-md-12 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Description
                                 </label>
 
                                 <textarea
                                     rows="5"
                                     name="description"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.description
                                     }
@@ -447,14 +497,14 @@ export default function EditIncidentPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Incident Type
                                 </label>
 
                                 <input
                                     type="text"
                                     name="incidentType"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.incidentType
                                     }
@@ -467,13 +517,13 @@ export default function EditIncidentPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Severity
                                 </label>
 
                                 <select
                                     name="severity"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.severity
                                     }
@@ -491,13 +541,13 @@ export default function EditIncidentPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Status
                                 </label>
 
                                 <select
                                     name="status"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.status
                                     }
@@ -514,14 +564,14 @@ export default function EditIncidentPage() {
 
                             <div className="col-md-12 mb-3">
 
-                                <label>
+                                <label className="form-label fw-semibold text-dark">
                                     Location
                                 </label>
 
                                 <input
                                     type="text"
                                     name="location"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.location
                                     }
@@ -534,17 +584,38 @@ export default function EditIncidentPage() {
 
                         </div>
 
-                        <button
-                            className="btn btn-primary"
-                            disabled={loading}
-                        >
+                        <div className="d-flex gap-2 mt-4">
 
-                            {loading
-                                ? "Updating..."
-                                : "Update Incident"}
+                            <button
+                                className="btn btn-dark px-4 rounded-3 d-flex align-items-center gap-2"
+                                disabled={loading}
+                            >
 
-                        </button>
+                                <Save size={16} />
 
+                                {loading
+                                    ? "Updating..."
+                                    : "Update Incident"}
+
+                            </button>
+
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary px-4 rounded-3 d-flex align-items-center gap-2"
+                                onClick={() =>
+                                    router.push(
+                                        "/dashboard/incidents"
+                                    )
+                                }
+                            >
+
+                                <ArrowLeft size={16} />
+
+                                Back
+
+                            </button>
+
+                        </div>
                     </form>
 
                 </div>

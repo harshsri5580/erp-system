@@ -4,6 +4,18 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 
+import {
+    Plus,
+    Eye,
+    Pencil,
+    Trash2,
+    Receipt,
+    Wallet,
+    Clock3,
+} from "lucide-react";
+
+import toast from "react-hot-toast";
+
 export default function ExpensesPage() {
 
     const [expenses, setExpenses] =
@@ -58,7 +70,7 @@ export default function ExpensesPage() {
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
             {/* HEADER */}
 
@@ -66,14 +78,33 @@ export default function ExpensesPage() {
 
                 <div>
 
-                    <h2 className="page-title">
-                        Expense Management
-                    </h2>
+                    <div className="d-flex justify-content-between align-items-center mb-4">
 
-                    <p className="text-muted mb-0">
-                        Track company expenses
-                    </p>
+                        <div>
 
+                            <h2
+                                className="fw-bold mb-1"
+                                style={{
+                                    color: "#111827",
+                                }}
+                            >
+                                Expense Management
+                            </h2>
+
+                            <p
+                                className="mb-0"
+                                style={{
+                                    color: "#6B7280",
+                                }}
+                            >
+                                Track and manage company expenses
+                            </p>
+
+                        </div>
+
+
+
+                    </div>
                 </div>
 
                 <Link
@@ -87,21 +118,39 @@ export default function ExpensesPage() {
 
             {/* STATS */}
 
-            <div className="row mb-4">
+            <div className="row g-4 mb-4">
 
                 <div className="col-md-4">
 
-                    <div className="card shadow border-0 rounded-4">
+                    <div className="card border-0 rounded-4 h-100"
+
+                        style={{
+                            boxShadow:
+                                "0 10px 30px rgba(0,0,0,.06)",
+                        }}>
 
                         <div className="card-body">
 
-                            <h6 className="text-muted">
-                                Total Expenses
-                            </h6>
+                            <div className="d-flex justify-content-between mb-4">
 
-                            <h2 className="fw-bold text-danger">
-                                ₹{totalExpenses}
+                                <h6 className="text-muted mb-0">
+                                    Total Expenses
+                                </h6>
+
+                                <Receipt
+                                    size={20}
+                                    className="text-danger"
+                                />
+
+                            </div>
+
+                            <h2 className="fw-bold text-danger mb-2">
+                                ₹{totalExpenses.toLocaleString()}
                             </h2>
+
+                            <small className="text-muted">
+                                Paid Expenses
+                            </small>
 
                         </div>
 
@@ -111,18 +160,36 @@ export default function ExpensesPage() {
 
                 <div className="col-md-4">
 
-                    <div className="card shadow border-0 rounded-4">
+                    <div className="card border-0 rounded-4 h-100"
+
+                        style={{
+                            boxShadow:
+                                "0 10px 30px rgba(0,0,0,.06)",
+                        }}>
 
                         <div className="card-body">
 
-                            <h6 className="text-muted">
-                                Expense Entries
-                            </h6>
+                            <div className="d-flex justify-content-between mb-4">
 
-                            <h2 className="page-title">
+                                <h6 className="text-muted mb-0">
+                                    Expense Entries
+                                </h6>
+
+                                <Wallet
+                                    size={20}
+                                    className="text-primary"
+                                />
+
+                            </div>
+
+                            <h2 className="fw-bold text-primary mb-2">
                                 {expenses.length}
                             </h2>
 
+                            <small className="text-muted">
+                                Total Records
+                            </small>
+
                         </div>
 
                     </div>
@@ -131,28 +198,50 @@ export default function ExpensesPage() {
 
                 <div className="col-md-4">
 
-                    <div className="card shadow border-0 rounded-4">
+                    <div className="card border-0 rounded-4 h-100"
+
+                        style={{
+                            boxShadow:
+                                "0 10px 30px rgba(0,0,0,.06)",
+                        }}>
 
                         <div className="card-body">
 
-                            <h6 className="text-muted">
-                                Pending Expenses
-                            </h6>
+                            <div className="d-flex justify-content-between mb-4">
 
-                            <h2 className="fw-bold text-warning">
-                                ₹{expenses
-                                    .filter(
-                                        (item) =>
-                                            item.status ===
-                                            "Pending"
-                                    )
-                                    .reduce(
-                                        (acc, item) =>
-                                            acc +
-                                            Number(item.amount || 0),
-                                        0
-                                    )}
+                                <h6 className="text-muted mb-0">
+                                    Pending Expenses
+                                </h6>
+
+                                <Clock3
+                                    size={20}
+                                    className="text-warning"
+                                />
+
+                            </div>
+
+                            <h2 className="fw-bold text-warning mb-2">
+
+                                ₹{
+                                    expenses
+                                        .filter(
+                                            (item) =>
+                                                item.status === "Pending"
+                                        )
+                                        .reduce(
+                                            (acc, item) =>
+                                                acc +
+                                                Number(item.amount || 0),
+                                            0
+                                        )
+                                        .toLocaleString()
+                                }
+
                             </h2>
+
+                            <small className="text-muted">
+                                Awaiting Approval
+                            </small>
 
                         </div>
 
@@ -164,7 +253,12 @@ export default function ExpensesPage() {
 
             {/* TABLE */}
 
-            <div className="card shadow border-0 rounded-4">
+            <div className="card border-0 rounded-4 h-100"
+
+                style={{
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}>
 
                 <div className="card-body">
 
@@ -180,23 +274,27 @@ export default function ExpensesPage() {
 
                             <table className="table table-hover align-middle">
 
-                                <thead className="table-dark">
+                                <thead
+                                    style={{
+                                        background: "#F9FAFB",
+                                    }}
+                                >
 
                                     <tr>
 
-                                        <th>ID</th>
+                                        <th className="fw-semibold text-secondary">ID</th>
 
-                                        <th>Title</th>
+                                        <th className="fw-semibold text-secondary">Title</th>
 
-                                        <th>Category</th>
+                                        <th className="fw-semibold text-secondary">Category</th>
 
-                                        <th>Amount</th>
+                                        <th className="fw-semibold text-secondary">Amount</th>
 
-                                        <th>Date</th>
+                                        <th className="fw-semibold text-secondary">Date</th>
 
-                                        <th>Status</th>
+                                        <th className="fw-semibold text-secondary">Status</th>
 
-                                        <th>Actions</th>
+                                        <th className="fw-semibold text-secondary">Actions</th>
 
                                     </tr>
 
@@ -217,7 +315,7 @@ export default function ExpensesPage() {
                                                         {expense.id}
                                                     </td>
 
-                                                    <td>
+                                                    <td className="fw-semibold">
                                                         {expense.title}
                                                     </td>
 
@@ -229,8 +327,10 @@ export default function ExpensesPage() {
                                                         ₹{expense.amount}
                                                     </td>
 
-                                                    <td>
-                                                        {expense.date}
+                                                    <td className="text-muted">
+                                                        {new Date(
+                                                            expense.date
+                                                        ).toLocaleDateString()}
                                                     </td>
 
                                                     <td>
@@ -252,20 +352,26 @@ export default function ExpensesPage() {
 
                                                             <Link
                                                                 href={`/dashboard/expenses/view/${expense.id}`}
-                                                                className="btn btn-info btn-sm"
+                                                                className="btn btn-outline-info btn-sm d-flex align-items-center gap-1"
                                                             >
-                                                                View
+                                                                <>
+                                                                    <Eye size={14} />
+                                                                    View
+                                                                </>
                                                             </Link>
 
                                                             <Link
                                                                 href={`/dashboard/expenses/edit/${expense.id}`}
-                                                                className="btn btn-warning btn-sm"
+                                                                className="btn btn-outline-warning btn-sm d-flex align-items-center gap-1"
                                                             >
-                                                                Edit
+                                                                <>
+                                                                    <Pencil size={14} />
+                                                                    Edit
+                                                                </>
                                                             </Link>
 
                                                             <button
-                                                                className="btn btn-danger btn-sm"
+                                                                className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
                                                                 onClick={async () => {
 
                                                                     const confirmDelete =
@@ -292,13 +398,19 @@ export default function ExpensesPage() {
                                                                             error
                                                                         );
 
-                                                                        alert(
+                                                                        toast.error(
                                                                             "Failed to delete expense"
+                                                                        );
+                                                                        toast.success(
+                                                                            "Expense deleted successfully"
                                                                         );
                                                                     }
                                                                 }}
                                                             >
-                                                                Delete
+                                                                <>
+                                                                    <Trash2 size={14} />
+                                                                    Delete
+                                                                </>
                                                             </button>
 
                                                         </div>

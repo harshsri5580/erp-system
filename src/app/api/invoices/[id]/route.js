@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET SINGLE INVOICE
 // ======================
@@ -12,15 +12,34 @@ export async function GET(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
+
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
 
         const invoice =
-            await prisma.invoice.findUnique({
+            await prisma.invoice.findFirst({
 
                 where: {
 
                     id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
 
                 },
 
@@ -93,11 +112,57 @@ export async function PUT(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
+
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
 
         const body =
             await request.json();
+        const invoiceExists =
+            await prisma.invoice.findFirst({
+
+                where: {
+
+                    id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!invoiceExists) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invoice not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+
+
 
         const {
 
@@ -123,6 +188,63 @@ export async function PUT(
 
         } = body;
 
+
+        const project =
+            await prisma.project.findFirst({
+
+                where: {
+
+                    id: parseInt(projectId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!project) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Project",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+        const client =
+            await prisma.client.findFirst({
+
+                where: {
+
+                    id: parseInt(clientId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!client) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Client",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         // CHECK EXISTING INVOICE
 
         const existingInvoice =
@@ -195,13 +317,9 @@ export async function PUT(
                     notes,
 
                     client: {
-
                         connect: {
-
                             id: parseInt(clientId),
-
                         },
-
                     },
 
                     project: {
@@ -263,8 +381,53 @@ export async function DELETE(
 ) {
 
     try {
+
+        const currentUser =
+            getUser(request);
+
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
+        const invoiceExists =
+            await prisma.invoice.findFirst({
+
+                where: {
+
+                    id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!invoiceExists) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invoice not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         await prisma.invoice.delete({
 
             where: {

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET SINGLE DAILY LOG
 // ======================
@@ -11,16 +11,34 @@ export async function GET(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
 
         const dailyLog =
-            await prisma.dailylog.findUnique({
+            await prisma.dailylog.findFirst({
 
                 where: {
 
                     id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
 
                 },
 
@@ -33,6 +51,21 @@ export async function GET(
                 },
 
             });
+
+        if (!dailyLog) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Daily log not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
 
         return NextResponse.json({
 
@@ -76,9 +109,53 @@ export async function PUT(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
+
+        const existingDailyLog =
+            await prisma.dailylog.findFirst({
+
+                where: {
+
+                    id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!existingDailyLog) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Daily log not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
 
         const body =
             await request.json();
@@ -106,7 +183,65 @@ export async function PUT(
             userId,
 
         } = body;
+        const project =
+            await prisma.project.findFirst({
 
+                where: {
+
+                    id:
+                        parseInt(projectId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!project) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Project",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+
+        const user =
+            await prisma.user.findFirst({
+
+                where: {
+
+                    id:
+                        parseInt(userId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!user) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid User",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         const dailyLog =
             await prisma.dailylog.update({
 
@@ -211,9 +346,52 @@ export async function DELETE(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
+        const existingDailyLog =
+            await prisma.dailylog.findFirst({
+
+                where: {
+
+                    id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!existingDailyLog) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Daily log not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
 
         await prisma.dailylog.delete({
 

@@ -1,16 +1,38 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 
 
 // GET ATTENDANCE REPORTS
 
-export async function GET() {
+export async function GET(request) {
 
   try {
+    const currentUser =
+      getUser(request);
 
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const attendance =
       await prisma.attendance.findMany({
+
+        where: {
+
+          companyId:
+            currentUser.companyId,
+
+        },
 
         include: {
           user: true,
@@ -19,6 +41,7 @@ export async function GET() {
         orderBy: {
           id: "desc",
         },
+
       });
 
     return NextResponse.json(attendance);

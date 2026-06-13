@@ -4,6 +4,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
+import {
+    ArrowLeft,
+} from "lucide-react";
+
+import toast from "react-hot-toast";
+
 export default function AddEquipmentPage() {
 
     const router =
@@ -142,19 +148,23 @@ export default function AddEquipmentPage() {
                     formData
                 );
 
-                alert(
+                toast.success(
                     "Equipment created successfully"
                 );
 
-                router.push(
-                    "/dashboard/equipment"
-                );
+                setTimeout(() => {
+
+                    router.push(
+                        "/dashboard/equipment"
+                    );
+
+                }, 1000);
 
             } catch (error) {
 
                 console.log(error);
 
-                alert(
+                toast.error(
                     error?.response?.data?.message ||
                     "Failed to create equipment"
                 );
@@ -169,18 +179,57 @@ export default function AddEquipmentPage() {
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
-            <div className="card shadow">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1200px",
+                    margin: "0 auto",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
-                <div className="card-body">
+                <div className="card-body p-4 p-lg-5">
 
-                    <h2 className="mb-4">
+                    <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
 
-                        Add Equipment
+                        <div>
 
-                    </h2>
+                            <h2
+                                className="fw-bold mb-1"
+                                style={{
+                                    color: "#111827",
+                                }}
+                            >
+                                Add Equipment
+                            </h2>
 
+                            <p
+                                className="mb-0"
+                                style={{
+                                    color: "#6B7280",
+                                }}
+                            >
+                                Register and manage company equipment
+                            </p>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary"
+                            onClick={() =>
+                                router.push(
+                                    "/dashboard/equipment"
+                                )
+                            }
+                        >
+                            <ArrowLeft size={16} />
+                        </button>
+
+                    </div>
                     <form
                         onSubmit={
                             handleSubmit
@@ -191,7 +240,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Equipment Code
 
@@ -199,7 +248,7 @@ export default function AddEquipmentPage() {
 
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.equipmentCode
                                     }
@@ -210,7 +259,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Equipment Name
 
@@ -219,7 +268,7 @@ export default function AddEquipmentPage() {
                                 <input
                                     type="text"
                                     name="equipmentName"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.equipmentName
                                     }
@@ -233,7 +282,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Category
 
@@ -242,7 +291,7 @@ export default function AddEquipmentPage() {
                                 <input
                                     type="text"
                                     name="category"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={formData.category}
                                     onChange={handleChange}
                                     placeholder="e.g. Crane, JCB, Welding Machine, Tower Light"
@@ -252,7 +301,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Brand
 
@@ -261,7 +310,7 @@ export default function AddEquipmentPage() {
                                 <input
                                     type="text"
                                     name="brand"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.brand
                                     }
@@ -274,7 +323,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Model No
 
@@ -283,7 +332,7 @@ export default function AddEquipmentPage() {
                                 <input
                                     type="text"
                                     name="modelNo"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.modelNo
                                     }
@@ -296,7 +345,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Serial Number
 
@@ -305,7 +354,7 @@ export default function AddEquipmentPage() {
                                 <input
                                     type="text"
                                     name="serialNumber"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.serialNumber
                                     }
@@ -318,7 +367,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Location
 
@@ -327,7 +376,7 @@ export default function AddEquipmentPage() {
                                 <input
                                     type="text"
                                     name="location"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.location
                                     }
@@ -340,7 +389,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Project
 
@@ -348,7 +397,7 @@ export default function AddEquipmentPage() {
 
                                 <select
                                     name="projectId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.projectId
                                     }
@@ -388,7 +437,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Assigned User
 
@@ -396,7 +445,7 @@ export default function AddEquipmentPage() {
 
                                 <select
                                     name="userId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.userId
                                     }
@@ -436,7 +485,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Purchase Date
 
@@ -445,7 +494,7 @@ export default function AddEquipmentPage() {
                                 <input
                                     type="date"
                                     name="purchaseDate"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.purchaseDate
                                     }
@@ -458,7 +507,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Purchase Cost
 
@@ -467,7 +516,7 @@ export default function AddEquipmentPage() {
                                 <input
                                     type="number"
                                     name="purchaseCost"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.purchaseCost
                                     }
@@ -480,7 +529,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Current Value
 
@@ -489,7 +538,7 @@ export default function AddEquipmentPage() {
                                 <input
                                     type="number"
                                     name="currentValue"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.currentValue
                                     }
@@ -502,7 +551,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Usage Hours
 
@@ -511,7 +560,7 @@ export default function AddEquipmentPage() {
                                 <input
                                     type="number"
                                     name="totalUsageHours"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.totalUsageHours
                                     }
@@ -524,7 +573,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Last Maintenance
 
@@ -533,7 +582,7 @@ export default function AddEquipmentPage() {
                                 <input
                                     type="date"
                                     name="lastMaintenanceDate"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.lastMaintenanceDate
                                     }
@@ -546,7 +595,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Next Maintenance
 
@@ -555,7 +604,7 @@ export default function AddEquipmentPage() {
                                 <input
                                     type="date"
                                     name="nextMaintenanceDate"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.nextMaintenanceDate
                                     }
@@ -568,7 +617,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Maintenance Cost
 
@@ -577,7 +626,7 @@ export default function AddEquipmentPage() {
                                 <input
                                     type="number"
                                     name="maintenanceCost"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.maintenanceCost
                                     }
@@ -590,7 +639,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Status
 
@@ -598,7 +647,7 @@ export default function AddEquipmentPage() {
 
                                 <select
                                     name="status"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.status
                                     }
@@ -629,7 +678,7 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-12 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Maintenance Remarks
 
@@ -638,7 +687,7 @@ export default function AddEquipmentPage() {
                                 <textarea
                                     rows="3"
                                     name="maintenanceRemarks"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.maintenanceRemarks
                                     }
@@ -651,16 +700,16 @@ export default function AddEquipmentPage() {
 
                             <div className="col-md-12 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     General Remarks
 
                                 </label>
 
                                 <textarea
-                                    rows="4"
+                                    rows="5"
                                     name="remarks"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.remarks
                                     }
@@ -675,13 +724,13 @@ export default function AddEquipmentPage() {
 
                         <button
                             type="submit"
-                            className="btn btn-primary"
+                            className="btn btn-dark px-4"
                             disabled={loading}
                         >
 
                             {loading
-                                ? "Saving..."
-                                : "Save Equipment"}
+                                ? "Creating..."
+                                : "Create Equipment"}
 
                         </button>
 

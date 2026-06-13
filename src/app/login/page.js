@@ -24,6 +24,10 @@ export default function LoginPage() {
 
       if (response.data.success) {
         localStorage.setItem(
+          "token",
+          response.data.token || ""
+        );
+        localStorage.setItem(
           "userRole",
           response.data.user.role
         );
@@ -31,6 +35,15 @@ export default function LoginPage() {
         localStorage.setItem(
           "userName",
           response.data.user.name
+        );
+        localStorage.setItem(
+          "companyName",
+          response.data.user.companyName || ""
+        );
+
+        localStorage.setItem(
+          "companyId",
+          response.data.user.companyId || ""
         );
 
         window.location.href =

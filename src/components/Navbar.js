@@ -23,9 +23,9 @@ export default function Navbar() {
 
         <div className="d-flex align-items-center">
 
-          <span className="text-white fw-medium">
+          {/* <span className="text-white fw-medium">
             Welcome, Admin
-          </span>
+          </span> */}
 
         </div>
       </div>

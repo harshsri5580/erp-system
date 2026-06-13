@@ -5,7 +5,11 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-
+import {
+  FileText,
+  FileSpreadsheet,
+  Printer,
+} from "lucide-react";
 import {
   Users,
   FolderKanban,
@@ -479,15 +483,48 @@ export default function AnalyticsPage() {
 
       <div className="mb-4">
 
-        <h2 className="page-title">
+        <h1
+          className="fw-bold mb-2"
+          style={{
+            fontSize: "2.5rem",
+            color: "#111827",
+          }}
+        >
           ERP Analytics Dashboard
-        </h2>
+        </h1>
 
         <p className="page-subtitle">
           Real-time business analytics
         </p>
+        <div className="row mb-4">
 
-        <div className="card border-0 shadow-sm rounded-4 mb-4">
+          <div className="col-md-4">
+            <div className="alert alert-success border-0 rounded-4 mb-0">
+              <strong>Revenue:</strong> ₹{analytics.totalRevenue || 0}
+            </div>
+          </div>
+
+          <div className="col-md-4">
+            <div className="alert alert-danger border-0 rounded-4 mb-0">
+              <strong>Expenses:</strong> ₹{analytics.totalExpenses || 0}
+            </div>
+          </div>
+
+          <div className="col-md-4">
+            <div className="alert alert-primary border-0 rounded-4 mb-0">
+              <strong>Profit:</strong> ₹{analytics.netProfit || 0}
+            </div>
+          </div>
+
+        </div>
+
+        <div
+          className="card border-0 rounded-4 mb-4"
+          style={{
+            boxShadow:
+              "0 10px 30px rgba(0,0,0,.06)",
+          }}
+        >
 
           <div className="card-body">
 
@@ -539,7 +576,7 @@ export default function AnalyticsPage() {
               <div className="col-md-3 d-flex align-items-end">
 
                 <button
-                  className="btn btn-primary w-100"
+                  className="btn btn-primary w-100 py-2"
                   onClick={fetchAnalytics}
                 >
                   Apply Filter
@@ -550,7 +587,7 @@ export default function AnalyticsPage() {
               <div className="col-md-3 d-flex align-items-end">
 
                 <button
-                  className="btn btn-secondary w-100"
+                  className="btn btn-primary w-100 py-2"
                   onClick={() => {
 
                     setFilters({
@@ -564,7 +601,18 @@ export default function AnalyticsPage() {
                       projectStatus: "",
                     });
 
-                    window.location.reload();
+                    setFilters({
+                      fromDate: "",
+                      toDate: "",
+                      project: "",
+                      client: "",
+                      vendor: "",
+                      paymentStatus: "",
+                      expenseStatus: "",
+                      projectStatus: "",
+                    });
+
+                    fetchAnalytics();
 
                   }}
                 >
@@ -842,13 +890,18 @@ export default function AnalyticsPage() {
                 </select>
 
               </div>
-
               <div className="col-md-3 d-flex align-items-end">
 
                 <button
-                  className="btn btn-success w-100"
+                  className="
+      btn btn-success w-100 py-2
+      d-flex align-items-center
+      justify-content-center gap-2
+      rounded-3
+    "
                   onClick={exportPDF}
                 >
+                  <FileText size={18} />
                   Export PDF
                 </button>
 
@@ -857,13 +910,19 @@ export default function AnalyticsPage() {
               <div className="col-md-3 d-flex align-items-end">
 
                 <button
-                  className="btn btn-dark w-100"
+                  className="
+      btn btn-dark w-100 py-2
+      d-flex align-items-center
+      justify-content-center gap-2
+      rounded-3
+    "
                   onClick={() =>
                     exportExcel(
                       analytics
                     )
                   }
                 >
+                  <FileSpreadsheet size={18} />
                   Export Excel
                 </button>
 
@@ -872,9 +931,15 @@ export default function AnalyticsPage() {
               <div className="col-md-3 d-flex align-items-end">
 
                 <button
-                  className="btn btn-info w-100"
+                  className="
+      btn btn-info text-white w-100 py-2
+      d-flex align-items-center
+      justify-content-center gap-2
+      rounded-3
+    "
                   onClick={printReport}
                 >
+                  <Printer size={18} />
                   Print Report
                 </button>
 
@@ -903,7 +968,13 @@ export default function AnalyticsPage() {
               key={index}
             >
 
-              <div className="card border-0 shadow-sm rounded-4 h-100">
+              <div
+                className="card border-0 rounded-4 h-100"
+                style={{
+                  boxShadow:
+                    "0 10px 30px rgba(0,0,0,.06)",
+                }}
+              >
 
                 <div className="card-body p-4">
 
@@ -915,9 +986,14 @@ export default function AnalyticsPage() {
                         {item.title}
                       </p>
 
-                      <h2 className="fw-bold mb-2">
+                      <h1
+                        className="fw-bold mb-2"
+                        style={{
+                          fontSize: "2rem",
+                        }}
+                      >
                         {item.value}
-                      </h2>
+                      </h1>
 
                       <div
                         className={`
@@ -990,7 +1066,12 @@ export default function AnalyticsPage() {
 
                 <table className="table align-middle">
 
-                  <thead className="table-dark">
+                  <thead
+                    style={{
+                      background:
+                        "#F8FAFC",
+                    }}
+                  >
 
                     <tr>
 
@@ -1125,7 +1206,13 @@ export default function AnalyticsPage() {
 
         <div className="col-lg-8">
 
-          <div className="card border-0 shadow-sm rounded-4">
+          <div
+            className="card border-0 rounded-4 h-100"
+            style={{
+              boxShadow:
+                "0 10px 30px rgba(0,0,0,.06)",
+            }}
+          >
 
             <div className="card-body p-4">
 
@@ -1176,7 +1263,13 @@ export default function AnalyticsPage() {
 
         <div className="col-lg-4">
 
-          <div className="card border-0 shadow-sm rounded-4">
+          <div
+            className="card border-0 rounded-4 h-100"
+            style={{
+              boxShadow:
+                "0 10px 30px rgba(0,0,0,.06)",
+            }}
+          >
 
             <div className="card-body p-4">
 

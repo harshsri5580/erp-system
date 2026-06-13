@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 
 
 // GET ANALYTICS REPORTS
@@ -8,6 +8,23 @@ import prisma from "@/lib/prisma";
 export async function GET(request) {
 
   try {
+
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const { searchParams } =
       new URL(request.url);
 
@@ -50,31 +67,88 @@ export async function GET(request) {
       );
 
     const totalUsers =
-      await prisma.user.count();
+      await prisma.user.count({
+
+        where: {
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
 
     const totalProjects =
-      await prisma.project.count();
+      await prisma.project.count({
+
+        where: {
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
 
     const totalAttendance =
-      await prisma.attendance.count();
+      await prisma.attendance.count({
+
+        where: {
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
 
     const totalPayroll =
-      await prisma.payroll.count();
+      await prisma.payroll.count({
+
+        where: {
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
 
     const totalVendors =
-      await prisma.vendor.count();
+      await prisma.vendor.count({
+
+        where: {
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
 
     const totalInventory =
-      await prisma.inventory.count();
+      await prisma.inventory.count({
+
+        where: {
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
     const purchaseOrders =
       vendorId
         ? await prisma.purchaseorder.findMany({
 
           where: {
+
             vendorId:
-              parseInt(
-                vendorId
-              ),
+              parseInt(vendorId),
+
+            companyId:
+              currentUser.companyId,
+
           },
 
           select: {
@@ -93,7 +167,8 @@ export async function GET(request) {
       await prisma.payment.findMany({
 
         where: {
-
+          companyId:
+            currentUser.companyId,
           ...(paymentStatus && {
             status:
               paymentStatus,
@@ -121,7 +196,8 @@ export async function GET(request) {
       await prisma.expense.findMany({
 
         where: {
-
+          companyId:
+            currentUser.companyId,
           ...(expenseStatus && {
             status:
               expenseStatus,
@@ -149,7 +225,8 @@ export async function GET(request) {
       await prisma.project.findMany({
 
         where: {
-
+          companyId:
+            currentUser.companyId,
           ...(projectStatus && {
             status:
               projectStatus,
@@ -262,8 +339,7 @@ export async function GET(request) {
     return NextResponse.json({
 
       totalUsers,
-      totalProjects:
-        projects.length,
+      totalProjects,
       totalAttendance,
       totalPayroll,
       totalVendors,

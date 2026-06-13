@@ -1,14 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+
+import {
+    ArrowLeft,
+    Pencil,
+    FileText,
+    FolderOpen,
+} from "lucide-react";
 import Link from "next/link";
 
 export default function ViewDocumentPage() {
 
     const params =
         useParams();
-
+    const router = useRouter();
     const [document, setDocument] =
         useState(null);
 
@@ -53,13 +60,11 @@ export default function ViewDocumentPage() {
     if (loading) {
 
         return (
-
-            <div className="container-fluid p-4">
-
-                Loading...
-
+            <div className="container-fluid p-4 text-center">
+                <div className="py-5">
+                    Loading Document...
+                </div>
             </div>
-
         );
 
     }
@@ -67,31 +72,39 @@ export default function ViewDocumentPage() {
     if (!document) {
 
         return (
-
-            <div className="container-fluid p-4">
-
-                Document not found
-
+            <div className="container-fluid p-4 text-center">
+                <div className="py-5">
+                    <h4>Document Not Found</h4>
+                </div>
             </div>
-
         );
 
     }
 
     return (
 
-        <div className="container-fluid p-4">
+        <div className="container-fluid px-4 py-3">
 
-            <div className="d-flex justify-content-between align-items-center mb-4">
+            <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
 
                 <div>
 
-                    <h2 className="page-title">
-                        View Document
+                    <h2
+                        className="fw-bold mb-1"
+                        style={{
+                            color: "#111827",
+                        }}
+                    >
+                        Document Details
                     </h2>
 
-                    <p className="page-subtitle">
-                        Document details
+                    <p
+                        className="mb-0"
+                        style={{
+                            color: "#6B7280",
+                        }}
+                    >
+                        View document information
                     </p>
 
                 </div>
@@ -100,23 +113,35 @@ export default function ViewDocumentPage() {
 
                     <Link
                         href={`/dashboard/documents/edit/${document.id}`}
-                        className="btn btn-warning"
+                        className="btn btn-dark d-flex align-items-center gap-2"
                     >
+                        <Pencil size={16} />
                         Edit
                     </Link>
 
-                    <Link
-                        href="/dashboard/documents"
-                        className="btn btn-secondary"
+                    <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={() =>
+                            router.push(
+                                "/dashboard/documents"
+                            )
+                        }
                     >
-                        Back
-                    </Link>
+                        <ArrowLeft size={16} />
+                    </button>
 
                 </div>
 
             </div>
 
-            <div className="card border-0 shadow-sm rounded-4">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
                 <div className="card-body">
 
@@ -124,11 +149,16 @@ export default function ViewDocumentPage() {
 
                         <div className="col-md-6">
 
-                            <label className="fw-bold">
+                            <label
+                                className="fw-semibold mb-2"
+                                style={{
+                                    color: "#6B7280",
+                                }}
+                            >
                                 Title
                             </label>
 
-                            <div>
+                            <div className="fw-bold fs-5">
                                 {document.title}
                             </div>
 
@@ -136,7 +166,12 @@ export default function ViewDocumentPage() {
 
                         <div className="col-md-6">
 
-                            <label className="fw-bold">
+                            <label
+                                className="fw-semibold mb-2"
+                                style={{
+                                    color: "#6B7280",
+                                }}
+                            >
                                 Category
                             </label>
 
@@ -148,50 +183,72 @@ export default function ViewDocumentPage() {
 
                         <div className="col-md-6">
 
-                            <label className="fw-bold">
+                            <label
+                                className="fw-semibold mb-2"
+                                style={{
+                                    color: "#6B7280",
+                                }}
+                            >
                                 Project
                             </label>
 
-                            <div>
-                                {
-                                    document.project
-                                        ?.name
-                                }
+                            <div className="d-flex align-items-center gap-2">
+
+                                <FolderOpen size={16} />
+
+                                {document.project?.name || "-"}
+
                             </div>
 
                         </div>
 
                         <div className="col-md-6">
 
-                            <label className="fw-bold">
+                            <label
+                                className="fw-semibold mb-2"
+                                style={{
+                                    color: "#6B7280",
+                                }}
+                            >
                                 File Type
                             </label>
 
-                            <div>
-                                {
-                                    document.fileType
-                                }
-                            </div>
+                            <span className="badge bg-primary">
+                                {document.fileType}
+                            </span>
 
                         </div>
 
                         <div className="col-12">
 
-                            <label className="fw-bold">
+                            <label
+                                className="fw-semibold mb-2"
+                                style={{
+                                    color: "#6B7280",
+                                }}
+                            >
                                 Remarks
                             </label>
 
-                            <div>
-                                {
-                                    document.remarks
-                                }
+                            <div
+                                className="p-3 rounded-3"
+                                style={{
+                                    background: "#F9FAFB",
+                                }}
+                            >
+                                {document.remarks || "-"}
                             </div>
 
                         </div>
 
                         <div className="col-12">
 
-                            <label className="fw-bold">
+                            <label
+                                className="fw-semibold mb-2"
+                                style={{
+                                    color: "#6B7280",
+                                }}
+                            >
                                 File
                             </label>
 
@@ -203,9 +260,12 @@ export default function ViewDocumentPage() {
                                     }
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="btn btn-primary"
+                                    className="btn btn-dark d-inline-flex align-items-center gap-2"
                                 >
-                                    Open File
+                                    <>
+                                        <FileText size={16} />
+                                        Open File
+                                    </>
                                 </a>
 
                             </div>

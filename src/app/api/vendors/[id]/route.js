@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET SINGLE VENDOR
 // ======================
@@ -10,12 +10,30 @@ export async function GET(
   context
 ) {
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const { id } =
       await context.params;
     const vendor =
-      await prisma.vendor.findUnique({
+      await prisma.vendor.findFirst({
         where: {
           id: parseInt(id),
+          companyId:
+            currentUser.companyId,
         },
       });
 
@@ -55,9 +73,51 @@ export async function PUT(
   context
 ) {
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const { id } =
       await context.params;
     const body = await request.json();
+    const existingVendor =
+      await prisma.vendor.findFirst({
+
+        where: {
+          id: parseInt(id),
+
+          companyId:
+            currentUser.companyId,
+        },
+
+      });
+
+    if (!existingVendor) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Vendor not found",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
 
     const {
       companyName,
@@ -114,8 +174,50 @@ export async function DELETE(
   context
 ) {
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const { id } =
       await context.params;
+    const existingVendor =
+      await prisma.vendor.findFirst({
+
+        where: {
+          id: parseInt(id),
+
+          companyId:
+            currentUser.companyId,
+        },
+
+      });
+
+    if (!existingVendor) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Vendor not found",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
     await prisma.vendor.delete({
       where: {
         id: parseInt(id),

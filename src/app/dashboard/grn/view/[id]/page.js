@@ -60,7 +60,7 @@ export default function ViewGRNPage() {
 
         return (
 
-            <div className="container-fluid">
+            <div className="container-fluid px-4 py-3">
 
                 <div className="card border-0 shadow-sm rounded-4">
 
@@ -82,7 +82,7 @@ export default function ViewGRNPage() {
 
         return (
 
-            <div className="container-fluid">
+            <div className="container-fluid px-4 py-3">
 
                 <div className="card border-0 shadow-sm rounded-4">
 
@@ -102,7 +102,7 @@ export default function ViewGRNPage() {
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
             {/* HEADER */}
 
@@ -110,12 +110,18 @@ export default function ViewGRNPage() {
 
                 <div>
 
-                    <h2 className="fw-bold">
+                    <h2
+                        className="fw-bold mb-1"
+                        style={{ color: "#111827" }}
+                    >
                         GRN Details
                     </h2>
 
-                    <p className="text-muted">
-                        View Goods Receipt Note
+                    <p
+                        className="mb-0"
+                        style={{ color: "#6B7280" }}
+                    >
+                        View goods receipt note information
                     </p>
 
                 </div>
@@ -124,14 +130,14 @@ export default function ViewGRNPage() {
 
                     <Link
                         href={`/dashboard/grn/edit/${grn.id}`}
-                        className="btn btn-warning"
+                        className="btn btn-dark px-4 rounded-3"
                     >
                         Edit
                     </Link>
 
                     <Link
                         href="/dashboard/grn"
-                        className="btn btn-secondary"
+                        className="btn btn-outline-secondary px-4 rounded-3"
                     >
                         Back
                     </Link>
@@ -142,15 +148,33 @@ export default function ViewGRNPage() {
 
             {/* DETAILS */}
 
-            <div className="card border-0 shadow-sm rounded-4">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
+
 
                 <div className="card-body">
 
+                    <div
+                        className="p-4 rounded-4 mb-4"
+                        style={{
+                            background: "#F8FAFC",
+                            border: "1px solid #E5E7EB",
+                        }}
+                    >
+                        <h6 className="fw-bold mb-0">
+                            Goods Receipt Information
+                        </h6>
+                    </div>
                     <div className="row">
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
                                 GRN Number
                             </label>
 
@@ -162,13 +186,20 @@ export default function ViewGRNPage() {
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
                                 Status
                             </label>
 
                             <div>
 
-                                <span className="badge bg-success">
+                                <span
+                                    className={`badge px-3 py-2 ${grn.status === "Approved"
+                                        ? "bg-success"
+                                        : grn.status === "Verified"
+                                            ? "bg-primary"
+                                            : "bg-warning text-dark"
+                                        }`}
+                                >
 
                                     {grn.status}
 
@@ -180,7 +211,7 @@ export default function ViewGRNPage() {
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
                                 Vendor
                             </label>
 
@@ -197,7 +228,7 @@ export default function ViewGRNPage() {
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
                                 Project
                             </label>
 
@@ -214,7 +245,7 @@ export default function ViewGRNPage() {
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
                                 Purchase Order ID
                             </label>
 
@@ -230,7 +261,7 @@ export default function ViewGRNPage() {
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
                                 BOQ Item
                             </label>
 
@@ -248,7 +279,7 @@ export default function ViewGRNPage() {
 
                         <div className="col-md-4 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
                                 Ordered Qty
                             </label>
 
@@ -265,7 +296,7 @@ export default function ViewGRNPage() {
 
                         <div className="col-md-4 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
                                 Received Qty
                             </label>
 
@@ -281,7 +312,7 @@ export default function ViewGRNPage() {
 
                         <div className="col-md-4 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
                                 Pending Qty
                             </label>
 
@@ -297,7 +328,7 @@ export default function ViewGRNPage() {
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
                                 Received Date
                             </label>
 
@@ -313,17 +344,18 @@ export default function ViewGRNPage() {
 
                         <div className="col-md-12 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
                                 Remarks
                             </label>
 
-                            <div>
-
-                                {
-                                    grn.remarks ||
-                                    "-"
-                                }
-
+                            <div
+                                className="p-3 rounded-3 mt-2"
+                                style={{
+                                    background: "#F9FAFB",
+                                    border: "1px solid #E5E7EB",
+                                }}
+                            >
+                                {grn.remarks || "No remarks available"}
                             </div>
 
                         </div>

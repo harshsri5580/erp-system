@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET SINGLE GRN
 // ======================
@@ -12,14 +12,35 @@ export async function GET(
 
     try {
 
+        const currentUser =
+            getUser(request);
+
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
 
         const grn =
-            await prisma.grn.findUnique({
+            await prisma.grn.findFirst({
 
                 where: {
+
                     id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
                 },
 
                 include: {
@@ -102,7 +123,22 @@ export async function PUT(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
 
@@ -120,10 +156,14 @@ export async function PUT(
         } = body;
 
         const oldGrn =
-            await prisma.grn.findUnique({
+            await prisma.grn.findFirst({
 
                 where: {
                     id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
                 },
 
             });
@@ -309,12 +349,27 @@ export async function DELETE(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
 
         const grn =
-            await prisma.grn.findUnique({
+            await prisma.grn.findFirst({
 
                 where: {
                     id: parseInt(id),

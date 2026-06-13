@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 import fs from "fs";
 import path from "path";
 
@@ -18,15 +18,39 @@ export async function GET(
         const { id } =
             await context.params;
 
+        const currentUser =
+            getUser(request);
+
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
+
         const document =
-            await prisma.document.findUnique({
+            await prisma.document.findFirst({
 
                 where: {
+
                     id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
                 },
 
                 include: {
+
                     project: true,
+
                 },
 
             });
@@ -93,15 +117,34 @@ export async function PUT(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
-
         const oldDocument =
-            await prisma.document.findUnique({
+            await prisma.document.findFirst({
 
                 where: {
+
                     id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
                 },
 
             });
@@ -148,7 +191,39 @@ export async function PUT(
             formData.get(
                 "projectId"
             );
+        if (projectId) {
 
+            const project =
+                await prisma.project.findFirst({
+
+                    where: {
+
+                        id:
+                            parseInt(projectId),
+
+                        companyId:
+                            currentUser.companyId,
+
+                    },
+
+                });
+
+            if (!project) {
+
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message:
+                            "Invalid Project",
+                    },
+                    {
+                        status: 404,
+                    }
+                );
+
+            }
+
+        }
         const file =
             formData.get(
                 "file"
@@ -325,15 +400,35 @@ export async function DELETE(
 ) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { id } =
             await context.params;
 
         const document =
-            await prisma.document.findUnique({
+            await prisma.document.findFirst({
 
                 where: {
+
                     id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
                 },
 
             });

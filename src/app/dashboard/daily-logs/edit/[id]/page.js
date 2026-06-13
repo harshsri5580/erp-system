@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 
+import { ArrowLeft } from "lucide-react";
+import toast from "react-hot-toast";
+
 export default function EditDailyLogPage() {
 
     const router = useRouter();
@@ -157,7 +160,7 @@ export default function EditDailyLogPage() {
 
                 console.log(error);
 
-                alert(
+                toast.error(
                     "Failed to load daily log"
                 );
 
@@ -212,6 +215,8 @@ export default function EditDailyLogPage() {
 
             try {
 
+                setLoading(true);
+
                 const response =
                     await axios.put(
                         `/api/daily-logs/${id}`,
@@ -222,13 +227,17 @@ export default function EditDailyLogPage() {
                     response.data.success
                 ) {
 
-                    alert(
+                    toast.success(
                         "Daily Log Updated Successfully"
                     );
 
-                    router.push(
-                        "/dashboard/daily-logs"
-                    );
+                    setTimeout(() => {
+
+                        router.push(
+                            "/dashboard/daily-logs"
+                        );
+
+                    }, 1000);
 
                 }
 
@@ -236,9 +245,13 @@ export default function EditDailyLogPage() {
 
                 console.log(error);
 
-                alert(
+                toast.error(
                     "Failed to update daily log"
                 );
+
+            } finally {
+
+                setLoading(false);
 
             }
 
@@ -248,10 +261,12 @@ export default function EditDailyLogPage() {
 
         return (
 
-            <div className="text-center py-5">
-
-                <div className="spinner-border text-primary"></div>
-
+            <div className="container-fluid px-4 py-3">
+                <div className="card border-0 rounded-4">
+                    <div className="card-body text-center py-5">
+                        Loading Daily Log...
+                    </div>
+                </div>
             </div>
 
         );
@@ -260,17 +275,57 @@ export default function EditDailyLogPage() {
 
     return (
 
-        <div className="container-fluid">
+        <div className="container-fluid px-4 py-3">
 
-            <div className="card shadow border-0">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1200px",
+                    margin: "0 auto",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
-                <div className="card-body">
+                <div className="card-body p-4 p-lg-5">
 
-                    <h2 className="mb-4 fw-bold">
+                    <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
 
-                        Edit Daily Log
+                        <div>
 
-                    </h2>
+                            <h2
+                                className="fw-bold mb-1"
+                                style={{
+                                    color: "#111827",
+                                }}
+                            >
+                                Edit Daily Log
+                            </h2>
+
+                            <p
+                                className="mb-0"
+                                style={{
+                                    color: "#6B7280",
+                                }}
+                            >
+                                Update project daily activity report
+                            </p>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary"
+                            onClick={() =>
+                                router.push(
+                                    "/dashboard/daily-logs"
+                                )
+                            }
+                        >
+                            <ArrowLeft size={16} />
+                        </button>
+
+                    </div>
 
                     <form
                         onSubmit={
@@ -282,7 +337,7 @@ export default function EditDailyLogPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Log Date
 
@@ -291,7 +346,7 @@ export default function EditDailyLogPage() {
                                 <input
                                     type="date"
                                     name="logDate"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.logDate
                                     }
@@ -305,7 +360,7 @@ export default function EditDailyLogPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Project
 
@@ -313,7 +368,7 @@ export default function EditDailyLogPage() {
 
                                 <select
                                     name="projectId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.projectId
                                     }
@@ -356,7 +411,7 @@ export default function EditDailyLogPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Employee
 
@@ -364,7 +419,7 @@ export default function EditDailyLogPage() {
 
                                 <select
                                     name="userId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.userId
                                     }
@@ -405,7 +460,7 @@ export default function EditDailyLogPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Labour Count
 
@@ -414,7 +469,7 @@ export default function EditDailyLogPage() {
                                 <input
                                     type="number"
                                     name="labourCount"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.labourCount
                                     }
@@ -427,7 +482,7 @@ export default function EditDailyLogPage() {
 
                             <div className="col-md-4 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Status
 
@@ -435,7 +490,7 @@ export default function EditDailyLogPage() {
 
                                 <select
                                     name="status"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.status
                                     }
@@ -462,7 +517,7 @@ export default function EditDailyLogPage() {
 
                             <div className="col-md-12 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Work Done
 
@@ -471,7 +526,7 @@ export default function EditDailyLogPage() {
                                 <textarea
                                     rows="4"
                                     name="workDone"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.workDone
                                     }
@@ -485,7 +540,7 @@ export default function EditDailyLogPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Material Used
 
@@ -494,7 +549,7 @@ export default function EditDailyLogPage() {
                                 <textarea
                                     rows="3"
                                     name="materialUsed"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.materialUsed
                                     }
@@ -507,7 +562,7 @@ export default function EditDailyLogPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Equipment Used
 
@@ -516,7 +571,7 @@ export default function EditDailyLogPage() {
                                 <textarea
                                     rows="3"
                                     name="equipmentUsed"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.equipmentUsed
                                     }
@@ -529,7 +584,7 @@ export default function EditDailyLogPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Issues
 
@@ -538,7 +593,7 @@ export default function EditDailyLogPage() {
                                 <textarea
                                     rows="3"
                                     name="issues"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.issues
                                     }
@@ -551,7 +606,7 @@ export default function EditDailyLogPage() {
 
                             <div className="col-md-6 mb-3">
 
-                                <label className="form-label">
+                                <label className="form-label fw-semibold text-dark">
 
                                     Remarks
 
@@ -560,7 +615,7 @@ export default function EditDailyLogPage() {
                                 <textarea
                                     rows="3"
                                     name="remarks"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.remarks
                                     }
@@ -575,7 +630,7 @@ export default function EditDailyLogPage() {
 
                         <button
                             type="submit"
-                            className="btn btn-primary"
+                            className="btn btn-dark px-4"
                         >
 
                             Update Daily Log

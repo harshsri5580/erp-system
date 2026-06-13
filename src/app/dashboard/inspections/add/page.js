@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
+import {
+    ClipboardCheck,
+    Save,
+    ArrowLeft,
+    MapPin,
+} from "lucide-react";
 export default function AddInspectionPage() {
 
     const router = useRouter();
@@ -120,7 +128,7 @@ export default function AddInspectionPage() {
                 !formData.projectId
             ) {
 
-                alert(
+                toast.error(
                     "Please select project"
                 );
 
@@ -132,7 +140,7 @@ export default function AddInspectionPage() {
                 !formData.userId
             ) {
 
-                alert(
+                toast.error(
                     "Please select inspector"
                 );
 
@@ -149,19 +157,24 @@ export default function AddInspectionPage() {
                     formData
                 );
 
-                alert(
+                toast.success(
                     "Inspection created successfully"
                 );
 
-                router.push(
-                    "/dashboard/inspections"
-                );
+                setTimeout(() => {
+
+                    router.push(
+                        "/dashboard/inspections"
+                    );
+
+                }, 1000);
 
             } catch (error) {
 
                 console.log(error);
 
-                alert(
+                toast.error(
+                    error?.response?.data?.message ||
                     "Failed to create inspection"
                 );
 
@@ -177,22 +190,77 @@ export default function AddInspectionPage() {
 
         <div className="container-fluid">
 
-            <div className="card shadow">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1200px",
+                    margin: "0 auto",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
-                <div className="card-body">
+                <div className="card-body p-4 p-lg-5">
 
-                    <h2 className="mb-4">
+                    <div className="mb-4 pb-3 border-bottom">
 
-                        Add Inspection
+                        <div className="d-flex justify-content-between align-items-center">
 
-                    </h2>
+                            <div>
+
+                                <h2
+                                    className="fw-bold mb-1"
+                                    style={{
+                                        color: "#111827",
+                                    }}
+                                >
+                                    Create Inspection
+                                </h2>
+
+                                <p
+                                    className="mb-0"
+                                    style={{
+                                        color: "#6B7280",
+                                    }}
+                                >
+                                    Create and manage site inspection records
+                                </p>
+
+                            </div>
+
+                            <ClipboardCheck
+                                size={36}
+                                color="#2563EB"
+                            />
+
+                        </div>
+
+                    </div>
 
                     <form
                         onSubmit={
                             handleSubmit
                         }
                     >
+                        <div
+                            className="p-4 rounded-4 mb-4"
+                            style={{
+                                background: "#F8FAFC",
+                                border:
+                                    "1px solid #E5E7EB",
+                            }}
+                        >
 
+                            <h5
+                                className="fw-bold mb-0"
+                                style={{
+                                    color: "#111827",
+                                }}
+                            >
+                                Inspection Information
+                            </h5>
+
+                        </div>
                         <div className="row">
 
                             <div className="col-md-6 mb-3">
@@ -205,7 +273,11 @@ export default function AddInspectionPage() {
 
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    className="form-control rounded-3"
+                                    style={{
+                                        background: "#F8FAFC",
+                                        fontWeight: "600",
+                                    }}
                                     value={
                                         formData.inspectionNumber
                                     }
@@ -225,7 +297,7 @@ export default function AddInspectionPage() {
                                 <input
                                     type="date"
                                     name="inspectionDate"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.inspectionDate
                                     }
@@ -246,7 +318,7 @@ export default function AddInspectionPage() {
 
                                 <select
                                     name="projectId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.projectId
                                     }
@@ -296,7 +368,7 @@ export default function AddInspectionPage() {
 
                                 <select
                                     name="userId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.userId
                                     }
@@ -346,7 +418,7 @@ export default function AddInspectionPage() {
 
                                 <select
                                     name="inspectionType"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.inspectionType
                                     }
@@ -393,7 +465,7 @@ export default function AddInspectionPage() {
 
                                 <select
                                     name="status"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.status
                                     }
@@ -434,18 +506,27 @@ export default function AddInspectionPage() {
 
                                 </label>
 
-                                <input
-                                    type="text"
-                                    name="location"
-                                    className="form-control"
-                                    value={
-                                        formData.location
-                                    }
-                                    onChange={
-                                        handleChange
-                                    }
-                                />
+                                <div className="position-relative">
 
+                                    <MapPin
+                                        size={18}
+                                        style={{
+                                            position: "absolute",
+                                            left: "14px",
+                                            top: "12px",
+                                            color: "#6B7280",
+                                        }}
+                                    />
+
+                                    <input
+                                        type="text"
+                                        name="location"
+                                        className="form-control rounded-3 ps-5"
+                                        value={formData.location}
+                                        onChange={handleChange}
+                                    />
+
+                                </div>
                             </div>
 
                             <div className="col-md-12 mb-3">
@@ -459,7 +540,7 @@ export default function AddInspectionPage() {
                                 <textarea
                                     rows="6"
                                     name="checklist"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.checklist
                                     }
@@ -481,7 +562,7 @@ export default function AddInspectionPage() {
                                 <textarea
                                     rows="4"
                                     name="remarks"
-                                    className="form-control"
+                                    className="form-control rounded-3"
                                     value={
                                         formData.remarks
                                     }
@@ -494,19 +575,39 @@ export default function AddInspectionPage() {
 
                         </div>
 
-                        <button
-                            type="submit"
-                            disabled={
-                                loading
-                            }
-                            className="btn btn-primary"
-                        >
+                        <div className="d-flex gap-2 mt-4">
 
-                            {loading
-                                ? "Saving..."
-                                : "Save Inspection"}
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="btn btn-dark px-4 rounded-3 d-flex align-items-center gap-2"
+                            >
 
-                        </button>
+                                <Save size={16} />
+
+                                {loading
+                                    ? "Saving..."
+                                    : "Save Inspection"}
+
+                            </button>
+
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary px-4 rounded-3 d-flex align-items-center gap-2"
+                                onClick={() =>
+                                    router.push(
+                                        "/dashboard/inspections"
+                                    )
+                                }
+                            >
+
+                                <ArrowLeft size={16} />
+
+                                Back
+
+                            </button>
+
+                        </div>
 
                     </form>
 

@@ -3,7 +3,17 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 
+import {
+    ShieldAlert,
+    ArrowLeft,
+    Pencil,
+    Calendar,
+    User,
+    MapPin,
+    AlertTriangle,
+} from "lucide-react";
 export default function ViewIncidentPage() {
 
     const params =
@@ -53,12 +63,12 @@ export default function ViewIncidentPage() {
 
             <div className="container-fluid">
 
-                <div className="text-center mt-5">
-
-                    Loading...
-
+                <div className="text-center py-5">
+                    <div
+                        className="spinner-border text-dark"
+                        role="status"
+                    />
                 </div>
-
             </div>
 
         );
@@ -71,10 +81,25 @@ export default function ViewIncidentPage() {
 
             <div className="container-fluid">
 
-                <div className="alert alert-danger">
+                <div
+                    className="card border-0 rounded-4"
+                    style={{
+                        boxShadow:
+                            "0 10px 30px rgba(0,0,0,.06)",
+                    }}
+                >
+                    <div className="card-body text-center py-5">
 
-                    Incident not found
+                        <AlertTriangle
+                            size={50}
+                            className="text-danger mb-3"
+                        />
 
+                        <h5>
+                            Incident Not Found
+                        </h5>
+
+                    </div>
                 </div>
 
             </div>
@@ -86,22 +111,156 @@ export default function ViewIncidentPage() {
     return (
 
         <div className="container-fluid">
+            <div className="d-flex justify-content-between align-items-center mb-4">
 
-            <div className="card shadow">
+                <div>
 
-                <div className="card-body">
-
-                    <h2 className="mb-4">
-
+                    <h2
+                        className="fw-bold mb-1"
+                        style={{
+                            color: "#111827",
+                        }}
+                    >
                         Incident Details
-
                     </h2>
 
+                    <p
+                        className="mb-0"
+                        style={{
+                            color: "#6B7280",
+                        }}
+                    >
+                        View complete incident information
+                    </p>
+
+                </div>
+
+                <div className="d-flex gap-2">
+
+                    <Link
+                        href={`/dashboard/incidents/edit/${incident.id}`}
+                        className="btn btn-dark rounded-3 d-flex align-items-center gap-2"
+                    >
+                        <Pencil size={16} />
+                        Edit
+                    </Link>
+
+                    <Link
+                        href="/dashboard/incidents"
+                        className="btn btn-outline-secondary rounded-3 d-flex align-items-center gap-2"
+                    >
+                        <ArrowLeft size={16} />
+                        Back
+                    </Link>
+
+                </div>
+
+            </div>
+
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
+
+
+
+                <div className="card-body p-4 p-lg-5">
+
+                    <div className="row mb-4">
+
+                        <div className="col-md-4">
+
+                            <div
+                                className="p-4 rounded-4 h-100"
+                                style={{
+                                    background: "#F8FAFC",
+                                }}
+                            >
+
+                                <Calendar
+                                    size={22}
+                                    className="mb-2 text-primary"
+                                />
+
+                                <div className="text-muted small">
+                                    Incident Date
+                                </div>
+
+                                <h6 className="fw-bold mb-0">
+
+                                    {incident.incidentDate
+                                        ? new Date(
+                                            incident.incidentDate
+                                        ).toLocaleDateString()
+                                        : "-"}
+
+                                </h6>
+
+                            </div>
+
+                        </div>
+
+                        <div className="col-md-4">
+
+                            <div
+                                className="p-4 rounded-4 h-100"
+                                style={{
+                                    background: "#F8FAFC",
+                                }}
+                            >
+
+                                <User
+                                    size={22}
+                                    className="mb-2 text-success"
+                                />
+
+                                <div className="text-muted small">
+                                    Reported By
+                                </div>
+
+                                <h6 className="fw-bold mb-0">
+                                    {incident.user?.name || "-"}
+                                </h6>
+
+                            </div>
+
+                        </div>
+
+                        <div className="col-md-4">
+
+                            <div
+                                className="p-4 rounded-4 h-100"
+                                style={{
+                                    background: "#F8FAFC",
+                                }}
+                            >
+
+                                <MapPin
+                                    size={22}
+                                    className="mb-2 text-danger"
+                                />
+
+                                <div className="text-muted small">
+                                    Location
+                                </div>
+
+                                <h6 className="fw-bold mb-0">
+                                    {incident.location || "-"}
+                                </h6>
+
+                            </div>
+
+                        </div>
+
+                    </div>
                     <div className="row">
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
 
                                 Incident Number
 
@@ -117,7 +276,7 @@ export default function ViewIncidentPage() {
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
 
                                 Incident Date
 
@@ -137,7 +296,7 @@ export default function ViewIncidentPage() {
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
 
                                 Project
 
@@ -153,7 +312,7 @@ export default function ViewIncidentPage() {
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
 
                                 Reported By
 
@@ -169,7 +328,7 @@ export default function ViewIncidentPage() {
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
 
                                 Related Inspection
 
@@ -186,7 +345,7 @@ export default function ViewIncidentPage() {
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
 
                                 Incident Type
 
@@ -202,7 +361,7 @@ export default function ViewIncidentPage() {
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
 
                                 Severity
 
@@ -211,7 +370,7 @@ export default function ViewIncidentPage() {
                             <div>
 
                                 <span
-                                    className={`badge ${incident.severity ===
+                                    className={`badge px-3 py-2 ${incident.severity ===
                                         "Critical"
                                         ? "bg-danger"
                                         : incident.severity ===
@@ -234,7 +393,7 @@ export default function ViewIncidentPage() {
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
 
                                 Status
 
@@ -263,7 +422,7 @@ export default function ViewIncidentPage() {
 
                         <div className="col-md-12 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
 
                                 Title
 
@@ -279,7 +438,7 @@ export default function ViewIncidentPage() {
 
                         <div className="col-md-12 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
 
                                 Location
 
@@ -295,7 +454,7 @@ export default function ViewIncidentPage() {
 
                         <div className="col-md-12 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
 
                                 Description
 
@@ -306,6 +465,7 @@ export default function ViewIncidentPage() {
                                 style={{
                                     whiteSpace:
                                         "pre-wrap",
+                                    background: "#F8FAFC",
                                 }}
                             >
 
@@ -317,7 +477,7 @@ export default function ViewIncidentPage() {
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
 
                                 Created At
 
@@ -337,7 +497,7 @@ export default function ViewIncidentPage() {
 
                         <div className="col-md-6 mb-3">
 
-                            <label className="fw-bold">
+                            <label className="fw-semibold text-muted small text-uppercase">
 
                                 Last Updated
 

@@ -1,14 +1,35 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET ALL USERS
 // ======================
 
-export async function GET() {
+export async function GET(request) {
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const users = await prisma.user.findMany({
+
+      where: {
+        companyId:
+          currentUser.companyId,
+      },
       include: {
         role: true,
       },
@@ -40,6 +61,23 @@ export async function GET() {
 
 export async function POST(request) {
   try {
+
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const body = await request.json();
 
     const {
@@ -83,6 +121,29 @@ export async function POST(request) {
         { status: 400 }
       );
     }
+    const role =
+      await prisma.role.findFirst({
+
+        where: {
+          id: parseInt(roleId),
+        },
+
+      });
+
+    if (!role) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Invalid Role",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
 
     // HASH PASSWORD
 
@@ -92,6 +153,8 @@ export async function POST(request) {
 
     const user = await prisma.user.create({
       data: {
+        companyId:
+          currentUser.companyId,
         name,
         email,
         password: hashedPassword,

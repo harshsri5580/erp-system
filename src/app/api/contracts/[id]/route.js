@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET SINGLE CONTRACT
 // ======================
@@ -10,12 +10,33 @@ export async function GET(
   context
 ) {
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const { id } =
       await context.params;
     const contract =
-      await prisma.contract.findUnique({
+      await prisma.contract.findFirst({
         where: {
+
           id: parseInt(id),
+
+          companyId:
+            currentUser.companyId,
+
         },
 
         include: {
@@ -51,9 +72,55 @@ export async function PUT(
   context
 ) {
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const { id } =
       await context.params;
+    const existingContract =
+      await prisma.contract.findFirst({
+
+        where: {
+
+          id: parseInt(id),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!existingContract) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Contract not found",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
+
     const body = await request.json();
+
 
     const {
       title,
@@ -66,6 +133,65 @@ export async function PUT(
       description,
     } = body;
 
+    const project =
+      await prisma.project.findFirst({
+
+        where: {
+
+          id:
+            parseInt(projectId),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!project) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Invalid Project",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
+
+    const vendor =
+      await prisma.vendor.findFirst({
+
+        where: {
+
+          id:
+            parseInt(vendorId),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!vendor) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Invalid Vendor",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
     const contract =
       await prisma.contract.update({
         where: {
@@ -134,8 +260,52 @@ export async function DELETE(
   context
 ) {
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const { id } =
       await context.params;
+    const existingContract =
+      await prisma.contract.findFirst({
+
+        where: {
+
+          id: parseInt(id),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!existingContract) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Contract not found",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
     await prisma.contract.delete({
       where: {
         id: parseInt(id),

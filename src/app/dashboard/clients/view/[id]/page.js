@@ -1,17 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import {
+    useParams,
+    useRouter,
+} from "next/navigation";
+
+import {
+    ArrowLeft,
+    Building2,
+} from "lucide-react";
 
 export default function ViewClientPage() {
 
     const { id } = useParams();
+    const router = useRouter();
 
     const [client, setClient] = useState(null);
 
     useEffect(() => {
-        fetchClient();
-    }, []);
+        if (id) {
+            fetchClient();
+        }
+    }, [id]);
 
     const fetchClient = async () => {
 
@@ -25,30 +36,48 @@ export default function ViewClientPage() {
     if (!client) {
 
         return (
-            <div className="p-4">
-                Loading...
+            <div className="container-fluid px-4 py-3">
+                <div className="card border-0 rounded-4">
+                    <div className="card-body text-center py-5">
+                        Loading Client Details...
+                    </div>
+                </div>
             </div>
         );
     }
 
     return (
 
-        <div className="w-100">
 
-            <div
-                className="card shadow border-0 rounded-4 w-100"
-                style={{
-                    width: "100%",
-                }}
-            >
-                <div className="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <div className="container-fluid px-4 py-3">
+            <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
 
-                    <h3 className="mb-0">
+                <div>
+
+                    <h2
+                        className="fw-bold mb-1"
+                        style={{
+                            color: "#111827",
+                        }}
+                    >
                         Client Details
-                    </h3>
+                    </h2>
+
+                    <p
+                        className="mb-0"
+                        style={{
+                            color: "#6B7280",
+                        }}
+                    >
+                        View client information
+                    </p>
+
+                </div>
+
+                <div className="d-flex align-items-center gap-2">
 
                     <span
-                        className={`badge ${client.status === "Active"
+                        className={`badge rounded-pill px-3 py-2 ${client.status === "Active"
                             ? "bg-success"
                             : "bg-secondary"
                             }`}
@@ -56,9 +85,31 @@ export default function ViewClientPage() {
                         {client.status}
                     </span>
 
+                    <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={() =>
+                            router.push("/dashboard/clients")
+                        }
+                    >
+                        <ArrowLeft size={16} />
+                    </button>
+
                 </div>
 
-                <div className="card-body">
+            </div>
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1100px",
+                    margin: "0 auto",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
+
+
+                <div className="card-body p-4 p-lg-5">
 
 
                     <div className="row">

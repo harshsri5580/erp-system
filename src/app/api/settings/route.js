@@ -1,16 +1,40 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET SETTINGS
 // ======================
 
-export async function GET() {
+export async function GET(request) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const settings =
-            await prisma.settings.findFirst();
+            await prisma.settings.findFirst({
+
+                where: {
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
 
         return NextResponse.json({
             success: true,
@@ -39,7 +63,22 @@ export async function GET() {
 export async function POST(request) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const body =
             await request.json();
 
@@ -75,7 +114,16 @@ export async function POST(request) {
         // Check Existing Settings
 
         const existingSettings =
-            await prisma.settings.findFirst();
+            await prisma.settings.findFirst({
+
+                where: {
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
 
         let settings;
 
@@ -94,7 +142,6 @@ export async function POST(request) {
                     },
 
                     data: {
-
                         companyName,
                         companyEmail,
                         companyPhone,
@@ -155,7 +202,9 @@ export async function POST(request) {
 
                 data: {
 
-                    id: 1,
+
+                    companyId:
+                        currentUser.companyId,
 
                     companyName,
                     companyEmail,

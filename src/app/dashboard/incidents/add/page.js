@@ -3,6 +3,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import {
+    ShieldAlert,
+    Save,
+    ArrowLeft,
+} from "lucide-react";
 
 export default function AddIncidentPage() {
 
@@ -153,9 +159,7 @@ export default function AddIncidentPage() {
                 !formData.projectId
             ) {
 
-                alert(
-                    "Please select project"
-                );
+                toast.error("Please select project");
 
                 return;
 
@@ -165,9 +169,7 @@ export default function AddIncidentPage() {
                 !formData.userId
             ) {
 
-                alert(
-                    "Please select reporter"
-                );
+                toast.error("Please select reporter");
 
                 return;
 
@@ -177,9 +179,7 @@ export default function AddIncidentPage() {
                 !formData.title
             ) {
 
-                alert(
-                    "Please enter incident title"
-                );
+                toast.error("Please enter incident title");
 
                 return;
 
@@ -194,19 +194,22 @@ export default function AddIncidentPage() {
                     formData
                 );
 
-                alert(
+                toast.success(
                     "Incident created successfully"
                 );
 
-                router.push(
-                    "/dashboard/incidents"
-                );
+                setTimeout(() => {
+                    router.push(
+                        "/dashboard/incidents"
+                    );
+                }, 1000);
 
             } catch (error) {
 
                 console.log(error);
 
-                alert(
+                toast.error(
+                    error?.response?.data?.message ||
                     "Failed to create incident"
                 );
 
@@ -222,15 +225,51 @@ export default function AddIncidentPage() {
 
         <div className="container-fluid">
 
-            <div className="card shadow">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    maxWidth: "1100px",
+                    margin: "0 auto",
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
-                <div className="card-body">
+                <div className="card-body p-4 p-lg-5">
+                    <div className="mb-4 pb-3 border-bottom">
 
-                    <h2 className="mb-4">
+                        <div className="d-flex justify-content-between align-items-center">
 
-                        Add Incident
+                            <div>
 
-                    </h2>
+                                <h2
+                                    className="fw-bold mb-1"
+                                    style={{
+                                        color: "#111827",
+                                    }}
+                                >
+                                    Incident Report
+                                </h2>
+
+                                <p
+                                    className="mb-0"
+                                    style={{
+                                        color: "#6B7280",
+                                    }}
+                                >
+                                    Create and record a new incident
+                                </p>
+
+                            </div>
+
+                            <ShieldAlert
+                                size={34}
+                                color="#DC2626"
+                            />
+
+                        </div>
+
+                    </div>
 
                     <form
                         onSubmit={
@@ -250,7 +289,11 @@ export default function AddIncidentPage() {
 
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    className="form-control rounded-3"
+                                    style={{
+                                        background: "#F8FAFC",
+                                        fontWeight: "600",
+                                    }}
                                     value={
                                         formData.incidentNumber
                                     }
@@ -291,7 +334,7 @@ export default function AddIncidentPage() {
 
                                 <select
                                     name="projectId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.projectId
                                     }
@@ -341,7 +384,7 @@ export default function AddIncidentPage() {
 
                                 <select
                                     name="userId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.userId
                                     }
@@ -391,7 +434,7 @@ export default function AddIncidentPage() {
 
                                 <select
                                     name="inspectionId"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.inspectionId
                                     }
@@ -485,7 +528,7 @@ export default function AddIncidentPage() {
 
                                 <select
                                     name="incidentType"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.incidentType
                                     }
@@ -524,7 +567,7 @@ export default function AddIncidentPage() {
 
                                 <select
                                     name="severity"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.severity
                                     }
@@ -563,7 +606,7 @@ export default function AddIncidentPage() {
 
                                 <select
                                     name="status"
-                                    className="form-select"
+                                    className="form-select rounded-3"
                                     value={
                                         formData.status
                                     }
@@ -612,19 +655,39 @@ export default function AddIncidentPage() {
 
                         </div>
 
-                        <button
-                            type="submit"
-                            disabled={
-                                loading
-                            }
-                            className="btn btn-primary"
-                        >
+                        <div className="d-flex gap-2 mt-4">
 
-                            {loading
-                                ? "Saving..."
-                                : "Save Incident"}
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="btn btn-dark px-4 rounded-3 d-flex align-items-center gap-2"
+                            >
 
-                        </button>
+                                <Save size={16} />
+
+                                {loading
+                                    ? "Saving..."
+                                    : "Save Incident"}
+
+                            </button>
+
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary px-4 rounded-3 d-flex align-items-center gap-2"
+                                onClick={() =>
+                                    router.push(
+                                        "/dashboard/incidents"
+                                    )
+                                }
+                            >
+
+                                <ArrowLeft size={16} />
+
+                                Back
+
+                            </button>
+
+                        </div>
 
                     </form>
 

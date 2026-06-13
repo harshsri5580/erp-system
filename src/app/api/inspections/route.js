@@ -1,22 +1,38 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET ALL INSPECTIONS
 // ======================
 
-export async function GET() {
+export async function GET(request) {
 
     try {
+        const currentUser = getUser(request);
 
+        if (!currentUser) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+        }
         const inspections =
             await prisma.inspection.findMany({
+
+                where: {
+                    companyId: currentUser.companyId,
+                },
 
                 include: {
 
                     project: true,
 
-                    user: true,
+                    // user: true,
 
                 },
 
@@ -27,13 +43,17 @@ export async function GET() {
                 },
 
             });
-
+        const formattedInspections = await Promise.all(
+            inspections.map(async (item) => ({
+                ...item,
+                user: await prisma.user.findUnique({
+                    where: { id: item.userId },
+                }),
+            }))
+        );
         return NextResponse.json({
-
             success: true,
-
-            inspections,
-
+            inspections: formattedInspections,
         });
 
     } catch (error) {
@@ -67,6 +87,23 @@ export async function GET() {
 export async function POST(request) {
 
     try {
+
+        const currentUser =
+            getUser(request);
+
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
 
         const body =
             await request.json();
@@ -115,12 +152,80 @@ export async function POST(request) {
             );
 
         }
+        const project = await prisma.project.findFirst({
+            where: {
+                id: parseInt(projectId),
+                companyId: currentUser.companyId,
+            },
+        });
 
+        if (!project) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Invalid Project",
+                },
+                {
+                    status: 404,
+                }
+            );
+        }
+        const user = await prisma.user.findFirst({
+            where: {
+                id: parseInt(userId),
+                companyId: currentUser.companyId,
+            },
+        });
+
+        if (!user) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Invalid User",
+                },
+                {
+                    status: 404,
+                }
+            );
+        }
+
+        const existingInspection =
+            await prisma.inspection.findFirst({
+
+                where: {
+
+                    inspectionNumber,
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (existingInspection) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Inspection number already exists",
+                },
+                {
+                    status: 400,
+                }
+            );
+
+        }
         const inspection =
             await prisma.inspection.create({
 
                 data: {
-
+                    company: {
+                        connect: {
+                            id: currentUser.companyId,
+                        },
+                    },
                     inspectionNumber,
 
                     inspectionDate:
@@ -153,18 +258,7 @@ export async function POST(request) {
 
                     },
 
-                    user: {
-
-                        connect: {
-
-                            id:
-                                parseInt(
-                                    userId
-                                ),
-
-                        },
-
-                    },
+                    userId: parseInt(userId),
 
                 },
 

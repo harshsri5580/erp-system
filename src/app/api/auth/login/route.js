@@ -18,6 +18,7 @@ export async function POST(req) {
 
       include: {
         role: true,
+        company: true,
       },
     });
 
@@ -50,6 +51,7 @@ export async function POST(req) {
         id: user.id,
         email: user.email,
         role: user.role.name,
+        companyId: user.companyId,
       },
       process.env.JWT_SECRET,
       {
@@ -70,6 +72,11 @@ export async function POST(req) {
 
           role: user.role.name,
 
+          companyId: user.companyId,
+
+          companyName:
+            user.company?.name || "",
+
         },
 
       });
@@ -79,7 +86,9 @@ export async function POST(req) {
       token,
       {
         httpOnly: true,
-        secure: false,
+        secure:
+          process.env.NODE_ENV ===
+          "production",
         sameSite: "lax",
         path: "/",
         maxAge: 60 * 60 * 24 * 7,

@@ -204,7 +204,7 @@ export default function ViewInventoryPage() {
 
             </div>
 
-            <div className="col-md-6 mb-4">
+            {/* <div className="col-md-6 mb-4">
 
               <h6 className="text-muted">
                 Purchase Order
@@ -217,7 +217,7 @@ export default function ViewInventoryPage() {
                 }
               </h5>
 
-            </div>
+            </div> */}
 
           </div>
 

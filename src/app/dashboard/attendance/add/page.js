@@ -3,6 +3,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import {
+  X,
+  User,
+  Calendar,
+  Clock,
+} from "lucide-react";
+
 export default function AddAttendancePage() {
   const router = useRouter();
 
@@ -48,18 +55,62 @@ export default function AddAttendancePage() {
   };
 
   return (
-    <div className="container p-4">
-      <div className="card shadow border-0 rounded-4">
-        <div className="card-body">
-          <h2 className="mb-4">Add Attendance</h2>
+    <div className="container-fluid px-4 py-3">
+      <div
+        className="card border-0 rounded-4"
+        style={{
+          maxWidth: "900px",
+          margin: "0 auto",
+          boxShadow:
+            "0 10px 30px rgba(0,0,0,0.06)",
+        }}
+      >
+        <div className="card-body p-4 p-lg-5">
+          <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+
+            <div>
+
+              <h2
+                className="fw-bold mb-1"
+                style={{
+                  color: "#111827",
+                }}
+              >
+                Add Attendance
+              </h2>
+
+              <p
+                className="mb-0"
+                style={{
+                  color: "#6B7280",
+                }}
+              >
+                Create a new attendance record
+              </p>
+
+            </div>
+
+            <button
+              type="button"
+              className="btn btn-outline-secondary rounded-3"
+              onClick={() =>
+                router.push(
+                  "/dashboard/attendance"
+                )
+              }
+            >
+              <X size={16} />
+            </button>
+
+          </div>
 
           <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label>Employee</label>
+            <div className="col-md-6 mb-3">
+              <label className="form-label fw-semibold text-dark">Employee</label>
 
               <select
                 name="userId"
-                className="form-control"
+                className="form-select rounded-3"
                 onChange={handleChange}
                 required
               >
@@ -73,46 +124,49 @@ export default function AddAttendancePage() {
               </select>
             </div>
 
-            <div className="mb-3">
-              <label>Date</label>
+            <div className="row">
 
-              <input
-                type="date"
-                name="date"
-                className="form-control"
-                onChange={handleChange}
-                required
-              />
+              <div className="col-md-6 mb-3">
+                <label className="form-label fw-semibold text-dark">Date</label>
+
+                <input
+                  type="date"
+                  name="date"
+                  className="form-control rounded-3"
+                  onChange={handleChange}
+                  required
+                />
+              </div>
             </div>
 
-            <div className="mb-3">
-              <label>Check In</label>
+            <div className="col-md-6 mb-3">
+              <label className="form-label fw-semibold text-dark">Check In</label>
 
               <input
                 type="time"
                 name="checkIn"
-                className="form-control"
+                className="form-control rounded-3"
                 onChange={handleChange}
               />
             </div>
 
-            <div className="mb-3">
-              <label>Check Out</label>
+            <div className="col-md-6 mb-3">
+              <label className="form-label fw-semibold text-dark">Check Out</label>
 
               <input
                 type="time"
                 name="checkOut"
-                className="form-control"
+                className="form-control rounded-3"
                 onChange={handleChange}
               />
             </div>
 
-            <div className="mb-3">
-              <label>Status</label>
+            <div className="col-md-6 mb-3">
+              <label className="form-label fw-semibold text-dark">Status</label>
 
               <select
                 name="status"
-                className="form-control"
+                className="form-select rounded-3"
                 onChange={handleChange}
               >
                 <option>Present</option>
@@ -122,9 +176,28 @@ export default function AddAttendancePage() {
               </select>
             </div>
 
-            <button className="btn btn-dark">
-              Save Attendance
-            </button>
+            <div className="d-flex gap-2 mt-4">
+
+              <button
+                type="submit"
+                className="btn btn-dark px-4"
+              >
+                Save Attendance
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-outline-secondary px-4"
+                onClick={() =>
+                  router.push(
+                    "/dashboard/attendance"
+                  )
+                }
+              >
+                Close
+              </button>
+
+            </div>
           </form>
         </div>
       </div>

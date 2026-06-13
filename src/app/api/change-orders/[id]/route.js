@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET SINGLE
 // ======================
@@ -11,32 +11,68 @@ export async function GET(
 ) {
 
     try {
+        const currentUser = getUser(request);
 
+        if (!currentUser) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+        }
         const { id } =
             await context.params;
 
         const changeOrder =
-            await prisma.changeorder.findUnique({
+            await prisma.changeorder.findFirst({
 
                 where: {
 
                     id:
                         parseInt(id),
-
+                    companyId:
+                        currentUser.companyId,
                 },
 
                 include: {
 
                     project: true,
 
-                    client: true,
+                    // client: true,
 
-                    user: true,
+                    // user: true,
 
                 },
 
             });
 
+        const client = await prisma.client.findUnique({
+            where: { id: changeOrder.clientId },
+        });
+
+        const user = await prisma.user.findUnique({
+            where: { id: changeOrder.userId },
+        });
+
+        changeOrder.client = client;
+        changeOrder.user = user;
+        if (!changeOrder) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Change Order not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         return NextResponse.json({
 
             success: true,
@@ -79,9 +115,50 @@ export async function PUT(
 ) {
 
     try {
+        const currentUser = getUser(request);
 
+        if (!currentUser) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+        }
         const { id } =
             await context.params;
+
+        const existingChangeOrder =
+            await prisma.changeorder.findFirst({
+
+                where: {
+
+                    id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!existingChangeOrder) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Change Order not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
 
         const body =
             await request.json();
@@ -111,7 +188,90 @@ export async function PUT(
             userId,
 
         } = body;
+        const project =
+            await prisma.project.findFirst({
 
+                where: {
+
+                    id: parseInt(projectId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!project) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Project",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+        const client =
+            await prisma.client.findFirst({
+
+                where: {
+
+                    id: parseInt(clientId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!client) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Client",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+        const user =
+            await prisma.user.findFirst({
+
+                where: {
+
+                    id: parseInt(userId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!user) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid User",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         const differenceAmount =
             Number(newAmount || 0) -
             Number(oldAmount || 0);
@@ -168,27 +328,8 @@ export async function PUT(
 
                     },
 
-                    client: {
-
-                        connect: {
-
-                            id:
-                                parseInt(clientId),
-
-                        },
-
-                    },
-
-                    user: {
-
-                        connect: {
-
-                            id:
-                                parseInt(userId),
-
-                        },
-
-                    },
+                    clientId: parseInt(clientId),
+                    userId: parseInt(userId),
 
                 },
 
@@ -239,10 +380,49 @@ export async function DELETE(
 ) {
 
     try {
+        const currentUser = getUser(request);
 
+        if (!currentUser) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+        }
         const { id } =
             await context.params;
+        const existingChangeOrder =
+            await prisma.changeorder.findFirst({
 
+                where: {
+
+                    id: parseInt(id),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!existingChangeOrder) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Change Order not found",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
         await prisma.changeorder.delete({
 
             where: {

@@ -7,6 +7,8 @@ import {
   useParams,
 } from "next/navigation";
 
+import { ArrowLeft } from "lucide-react";
+import toast from "react-hot-toast";
 export default function EditContractPage() {
 
   const router = useRouter();
@@ -124,10 +126,12 @@ export default function EditContractPage() {
     };
 
   useEffect(() => {
-    fetchContract();
-    fetchProjects();
-    fetchVendors();
-  }, []);
+    if (id) {
+      fetchContract();
+      fetchProjects();
+      fetchVendors();
+    }
+  }, [id]);
 
   // ======================
   // HANDLE CHANGE
@@ -147,9 +151,11 @@ export default function EditContractPage() {
 
   const handleSubmit =
     async (e) => {
+
       e.preventDefault();
 
       try {
+
         setLoading(true);
 
         const response =
@@ -158,48 +164,103 @@ export default function EditContractPage() {
             formData
           );
 
-        alert(
-          response.data.message
+        toast.success(
+          response.data.message ||
+          "Contract updated successfully"
         );
 
-        router.push(
-          "/dashboard/contracts"
-        );
+        setTimeout(() => {
+
+          router.push(
+            "/dashboard/contracts"
+          );
+
+        }, 1000);
+
       } catch (error) {
+
         console.log(error);
 
-        alert(
+        toast.error(
+          error?.response?.data?.message ||
           "Failed to update contract"
         );
+
       } finally {
+
         setLoading(false);
+
       }
+
     };
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid px-4 py-3">
+      <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
 
-      <div className="card shadow border-0 rounded-4">
+        <div>
 
-        <div className="card-header bg-dark text-white">
-          <h3>Edit Contract</h3>
+          <h2
+            className="fw-bold mb-1"
+            style={{
+              color: "#111827",
+            }}
+          >
+            Edit Contract
+          </h2>
+
+          <p
+            className="mb-0"
+            style={{
+              color: "#6B7280",
+            }}
+          >
+            Update contract information
+          </p>
+
         </div>
 
-        <div className="card-body">
+        <button
+          type="button"
+          className="btn btn-outline-secondary"
+          onClick={() =>
+            router.push(
+              "/dashboard/contracts"
+            )
+          }
+        >
+          <ArrowLeft size={16} />
+        </button>
+
+      </div>
+
+      <div
+        className="card border-0 rounded-4"
+        style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
+          boxShadow:
+            "0 10px 30px rgba(0,0,0,.06)",
+        }}
+      >
+
+
+
+        <div className="card-body p-4 p-lg-5">
 
           <form onSubmit={handleSubmit}>
 
             <div className="row">
 
               <div className="col-md-6 mb-3">
-                <label className="form-label">
+                <label className="form-label fw-semibold text-dark">
                   Contract Title
                 </label>
 
                 <input
                   type="text"
                   name="title"
-                  className="form-control"
+                  className="form-control rounded-3"
                   value={formData.title}
                   onChange={handleChange}
                   required
@@ -207,27 +268,27 @@ export default function EditContractPage() {
               </div>
 
               <div className="col-md-6 mb-3">
-                <label className="form-label">
+                <label className="form-label fw-semibold text-dark">
                   Contract Value
                 </label>
 
                 <input
                   type="number"
                   name="contractValue"
-                  className="form-control"
+                  className="form-control rounded-3"
                   value={formData.contractValue}
                   onChange={handleChange}
                 />
               </div>
 
               <div className="col-md-6 mb-3">
-                <label className="form-label">
+                <label className="form-label fw-semibold text-dark">
                   Project
                 </label>
 
                 <select
                   name="projectId"
-                  className="form-select"
+                  className="form-select rounded-3"
                   value={formData.projectId}
                   onChange={handleChange}
                 >
@@ -249,13 +310,13 @@ export default function EditContractPage() {
               </div>
 
               <div className="col-md-6 mb-3">
-                <label className="form-label">
+                <label className="form-label fw-semibold text-dark">
                   Vendor
                 </label>
 
                 <select
                   name="vendorId"
-                  className="form-select"
+                  className="form-select rounded-3"
                   value={formData.vendorId}
                   onChange={handleChange}
                 >
@@ -279,41 +340,41 @@ export default function EditContractPage() {
               </div>
 
               <div className="col-md-6 mb-3">
-                <label className="form-label">
+                <label className="form-label fw-semibold text-dark">
                   Start Date
                 </label>
 
                 <input
                   type="date"
                   name="startDate"
-                  className="form-control"
+                  className="form-control rounded-3"
                   value={formData.startDate}
                   onChange={handleChange}
                 />
               </div>
 
               <div className="col-md-6 mb-3">
-                <label className="form-label">
+                <label className="form-label fw-semibold text-dark">
                   End Date
                 </label>
 
                 <input
                   type="date"
                   name="endDate"
-                  className="form-control"
+                  className="form-control rounded-3"
                   value={formData.endDate}
                   onChange={handleChange}
                 />
               </div>
 
               <div className="col-md-6 mb-3">
-                <label className="form-label">
+                <label className="form-label fw-semibold text-dark">
                   Status
                 </label>
 
                 <select
                   name="status"
-                  className="form-select"
+                  className="form-select rounded-3"
                   value={formData.status}
                   onChange={handleChange}
                 >
@@ -332,13 +393,13 @@ export default function EditContractPage() {
               </div>
 
               <div className="col-md-12 mb-3">
-                <label className="form-label">
+                <label className="form-label fw-semibold text-dark">
                   Description
                 </label>
 
                 <textarea
                   name="description"
-                  className="form-control"
+                  className="form-control rounded-3"
                   rows="4"
                   value={formData.description}
                   onChange={handleChange}
@@ -349,7 +410,7 @@ export default function EditContractPage() {
 
             <button
               type="submit"
-              className="btn btn-dark"
+              className="btn btn-dark px-4"
               disabled={loading}
             >
               {loading

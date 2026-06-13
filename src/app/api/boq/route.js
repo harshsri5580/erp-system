@@ -1,14 +1,37 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET ALL BOQ
 // ======================
 
-export async function GET() {
+export async function GET(request) {
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const boqs =
       await prisma.boq.findMany({
+
+        where: {
+
+          companyId:
+            currentUser.companyId,
+
+        },
         include: {
           contract: true,
         },
@@ -41,6 +64,22 @@ export async function GET() {
 
 export async function POST(request) {
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const body = await request.json();
 
     const {
@@ -51,7 +90,35 @@ export async function POST(request) {
       rate,
       description,
     } = body;
+    const contract =
+      await prisma.contract.findFirst({
 
+        where: {
+
+          id:
+            parseInt(contractId),
+
+          companyId:
+            currentUser.companyId,
+
+        },
+
+      });
+
+    if (!contract) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Invalid Contract",
+        },
+        {
+          status: 404,
+        }
+      );
+
+    }
     // TOTAL
 
     const total =
@@ -61,6 +128,12 @@ export async function POST(request) {
     const boq =
       await prisma.boq.create({
         data: {
+
+          company: {
+            connect: {
+              id: currentUser.companyId,
+            },
+          },
           itemName,
 
           unit,

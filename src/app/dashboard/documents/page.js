@@ -3,6 +3,18 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import Swal from "sweetalert2";
+import toast from "react-hot-toast";
+
+import {
+    Plus,
+    Eye,
+    Pencil,
+    Trash2,
+    Search,
+    FileText,
+} from "lucide-react";
+
 export default function DocumentsPage() {
 
     const [documents, setDocuments] =
@@ -52,13 +64,32 @@ export default function DocumentsPage() {
     const deleteDocument =
         async (id) => {
 
-            if (
-                !confirm(
-                    "Delete document?"
-                )
-            ) {
+            const result =
+                await Swal.fire({
+
+                    title:
+                        "Delete Document?",
+
+                    text:
+                        "This document will be permanently removed.",
+
+                    icon: "warning",
+
+                    showCancelButton: true,
+
+                    confirmButtonText:
+                        "Delete",
+
+                    cancelButtonText:
+                        "Cancel",
+
+                    confirmButtonColor:
+                        "#dc3545",
+
+                });
+
+            if (!result.isConfirmed)
                 return;
-            }
 
             try {
 
@@ -70,11 +101,19 @@ export default function DocumentsPage() {
                     }
                 );
 
+                toast.success(
+                    "Document deleted successfully"
+                );
+
                 fetchDocuments();
 
             } catch (error) {
 
                 console.log(error);
+
+                toast.error(
+                    "Failed to delete document"
+                );
 
             }
 
@@ -92,7 +131,7 @@ export default function DocumentsPage() {
 
     return (
 
-        <div className="container-fluid p-4">
+        <div className="container-fluid px-4 py-3">
 
             {/* Header */}
 
@@ -100,39 +139,68 @@ export default function DocumentsPage() {
 
                 <div>
 
-                    <h2 className="page-title">
+                    <h2
+                        className="fw-bold mb-1"
+                        style={{
+                            color: "#111827",
+                        }}
+                    >
                         Documents
                     </h2>
 
-                    <p className="page-subtitle">
-                        Manage project documents
+                    <p
+                        className="mb-0"
+                        style={{
+                            color: "#6B7280",
+                        }}
+                    >
+                        Manage project documents and files
                     </p>
 
                 </div>
 
                 <Link
                     href="/dashboard/documents/add"
-                    className="btn btn-primary"
+                    className="btn btn-dark rounded-3 px-4 d-flex align-items-center gap-2"
                 >
-                    Add Document
+                    <>
+                        <Plus size={18} />
+                        Add Document
+                    </>
                 </Link>
 
             </div>
 
             {/* Card */}
 
-            <div className="card border-0 shadow-sm rounded-4">
+            <div
+                className="card border-0 rounded-4"
+                style={{
+                    boxShadow:
+                        "0 10px 30px rgba(0,0,0,.06)",
+                }}
+            >
 
                 <div className="card-body">
 
                     {/* Search */}
 
-                    <div className="mb-3">
+                    <div className="mb-4 position-relative">
+
+                        <Search
+                            size={18}
+                            style={{
+                                position: "absolute",
+                                left: "14px",
+                                top: "12px",
+                                color: "#9CA3AF",
+                            }}
+                        />
 
                         <input
                             type="text"
-                            className="form-control"
-                            placeholder="Search document..."
+                            className="form-control rounded-3 ps-5"
+                            placeholder="Search documents..."
                             value={search}
                             onChange={(e) =>
                                 setSearch(
@@ -147,9 +215,13 @@ export default function DocumentsPage() {
 
                     <div className="table-responsive">
 
-                        <table className="table align-middle">
+                        <table className="table table-hover align-middle mb-0">
 
-                            <thead className="table-dark">
+                            <thead
+                                style={{
+                                    background: "#F9FAFB",
+                                }}
+                            >
 
                                 <tr>
 
@@ -179,7 +251,7 @@ export default function DocumentsPage() {
                                             colSpan="6"
                                             className="text-center"
                                         >
-                                            Loading...
+                                            Loading Documents...
                                         </td>
 
                                     </tr>
@@ -192,7 +264,22 @@ export default function DocumentsPage() {
                                             colSpan="6"
                                             className="text-center"
                                         >
-                                            No Documents Found
+                                            <div className="py-5 text-center">
+
+                                                <FileText
+                                                    size={50}
+                                                    className="mb-3 text-secondary"
+                                                />
+
+                                                <div className="fw-semibold">
+                                                    No Documents Found
+                                                </div>
+
+                                                <div className="text-muted">
+                                                    Upload your first document
+                                                </div>
+
+                                            </div>
                                         </td>
 
                                     </tr>
@@ -215,7 +302,20 @@ export default function DocumentsPage() {
                                                 </td>
 
                                                 <td>
-                                                    {doc.category}
+
+                                                    <span
+                                                        className="
+    badge
+    bg-light
+    text-dark
+    border
+    px-3
+    py-2
+  "
+                                                    >
+                                                        {doc.category}
+                                                    </span>
+
                                                 </td>
 
                                                 <td>
@@ -237,27 +337,36 @@ export default function DocumentsPage() {
 
                                                         <Link
                                                             href={`/dashboard/documents/view/${doc.id}`}
-                                                            className="btn btn-info btn-sm"
+                                                            className="btn btn-outline-info btn-sm d-flex align-items-center gap-1"
                                                         >
-                                                            View
+                                                            <>
+                                                                <Eye size={14} />
+                                                                View
+                                                            </>
                                                         </Link>
 
                                                         <Link
                                                             href={`/dashboard/documents/edit/${doc.id}`}
-                                                            className="btn btn-warning btn-sm"
+                                                            className="btn btn-outline-warning btn-sm d-flex align-items-center gap-1"
                                                         >
-                                                            Edit
+                                                            <>
+                                                                <Pencil size={14} />
+                                                                Edit
+                                                            </>
                                                         </Link>
 
                                                         <button
-                                                            className="btn btn-danger btn-sm"
+                                                            className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
                                                             onClick={() =>
                                                                 deleteDocument(
                                                                     doc.id
                                                                 )
                                                             }
                                                         >
-                                                            Delete
+                                                            <>
+                                                                <Trash2 size={14} />
+                                                                Delete
+                                                            </>
                                                         </button>
 
                                                     </div>

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET ALL
 // ======================
@@ -8,7 +8,22 @@ import prisma from "@/lib/prisma";
 export async function GET(request) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const { searchParams } =
             new URL(request.url);
 
@@ -19,26 +34,31 @@ export async function GET(request) {
 
         const progressBillings =
             await prisma.progressbilling.findMany({
+                where: {
 
-                where:
-                    projectId
+                    companyId:
+                        currentUser.companyId,
+
+                    ...(projectId
                         ? {
                             projectId:
                                 parseInt(
                                     projectId
                                 ),
                         }
-                        : {},
+                        : {}),
+
+                },
 
                 include: {
 
                     project: true,
 
-                    client: true,
+                    // client: true,
 
-                    milestone: true,
+                    // milestone: true,
 
-                    user: true,
+                    // user: true,
 
                 },
 
@@ -84,7 +104,22 @@ export async function GET(request) {
 export async function POST(request) {
 
     try {
+        const currentUser =
+            getUser(request);
 
+        if (!currentUser) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+
+        }
         const body =
             await request.json();
 
@@ -124,9 +159,44 @@ export async function POST(request) {
             Number(contractAmount || 0) -
             totalBilled;
         if (
+            Number(percentageComplete) < 0 ||
+            Number(percentageComplete) > 100
+        ) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Percentage must be between 0 and 100",
+                },
+                {
+                    status: 400,
+                }
+            );
+
+        }
+
+        if (
+            totalBilled >
+            Number(contractAmount || 0)
+        ) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Total billed amount cannot exceed contract amount",
+                },
+                {
+                    status: 400,
+                }
+            );
+
+        }
+        if (
             !projectId ||
             !clientId ||
-            !milestoneId ||
+            // !milestoneId ||
             !userId
         ) {
 
@@ -142,11 +212,164 @@ export async function POST(request) {
             );
 
         }
+        const project =
+            await prisma.project.findFirst({
+
+                where: {
+
+                    id:
+                        parseInt(projectId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!project) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Project",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+
+        const client =
+            await prisma.client.findFirst({
+
+                where: {
+
+                    id:
+                        parseInt(clientId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!client) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid Client",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+        if (milestoneId) {
+
+            const milestone =
+                await prisma.milestone.findFirst({
+
+                    where: {
+
+                        id: parseInt(milestoneId),
+
+                        companyId:
+                            currentUser.companyId,
+
+                    },
+
+                });
+
+            if (!milestone) {
+
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message:
+                            "Invalid Milestone",
+                    },
+                    {
+                        status: 404,
+                    }
+                );
+
+            }
+
+        }
+
+        const user =
+            await prisma.user.findFirst({
+
+                where: {
+
+                    id:
+                        parseInt(userId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!user) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Invalid User",
+                },
+                {
+                    status: 404,
+                }
+            );
+
+        }
+        const existingBilling =
+            await prisma.progressbilling.findFirst({
+
+                where: {
+
+                    billingNumber,
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (existingBilling) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "Billing number already exists",
+                },
+                {
+                    status: 400,
+                }
+            );
+
+        }
         const progressBilling =
             await prisma.progressbilling.create({
 
                 data: {
-
+                    company: {
+                        connect: {
+                            id: currentUser.companyId,
+                        },
+                    },
                     billingNumber,
 
                     billingDate:
@@ -195,38 +418,13 @@ export async function POST(request) {
 
                     },
 
-                    client: {
+                    clientId: parseInt(clientId),
 
-                        connect: {
+                    ...(milestoneId
+                        ? { milestoneId: parseInt(milestoneId) }
+                        : {}),
 
-                            id:
-                                parseInt(clientId),
-
-                        },
-
-                    },
-
-                    milestone: {
-
-                        connect: {
-
-                            id:
-                                parseInt(milestoneId),
-
-                        },
-
-                    },
-
-                    user: {
-
-                        connect: {
-
-                            id:
-                                parseInt(userId),
-
-                        },
-
-                    },
+                    userId: parseInt(userId),
 
                 },
 

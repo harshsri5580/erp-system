@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 
 
 // ======================
@@ -13,14 +13,33 @@ export async function GET(
 ) {
 
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const { id } =
       await context.params;
 
     const client =
-      await prisma.client.findUnique({
+      await prisma.client.findFirst({
 
         where: {
           id: parseInt(id),
+
+          companyId:
+            currentUser.companyId,
         },
 
       });
@@ -73,6 +92,22 @@ export async function PUT(
 ) {
 
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const { id } =
       await context.params;
     const body =
@@ -91,10 +126,13 @@ export async function PUT(
     // CHECK CLIENT
 
     const existingClient =
-      await prisma.client.findUnique({
+      await prisma.client.findFirst({
 
         where: {
           id: parseInt(id),
+
+          companyId:
+            currentUser.companyId,
         },
 
       });
@@ -180,16 +218,35 @@ export async function DELETE(
 ) {
 
   try {
+    const currentUser =
+      getUser(request);
+
+    if (!currentUser) {
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+
+    }
     const { id } =
       await context.params;
 
     // CHECK CLIENT
 
     const existingClient =
-      await prisma.client.findUnique({
+      await prisma.client.findFirst({
 
         where: {
           id: parseInt(id),
+
+          companyId:
+            currentUser.companyId,
         },
 
       });

@@ -1,24 +1,40 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-
+import { getUser } from "@/lib/getUser";
 // ======================
 // GET ALL CHANGE ORDERS
 // ======================
 
-export async function GET() {
+export async function GET(request) {
 
     try {
+        const currentUser = getUser(request);
 
+        if (!currentUser) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+        }
         const changeOrders =
             await prisma.changeorder.findMany({
 
+                where: {
+                    companyId:
+                        currentUser.companyId,
+                },
                 include: {
 
                     project: true,
 
-                    client: true,
+                    // client: true,
 
-                    user: true,
+                    // user: true,
 
                 },
 
@@ -30,12 +46,18 @@ export async function GET() {
 
             });
 
+        const formattedChangeOrders = await Promise.all(
+            changeOrders.map(async (item) => ({
+                ...item,
+                client: await prisma.client.findUnique({
+                    where: { id: item.clientId },
+                }),
+            }))
+        );
+
         return NextResponse.json({
-
             success: true,
-
-            changeOrders,
-
+            changeOrders: formattedChangeOrders,
         });
 
     } catch (error) {
@@ -69,7 +91,19 @@ export async function GET() {
 export async function POST(request) {
 
     try {
+        const currentUser = getUser(request);
 
+        if (!currentUser) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Unauthorized",
+                },
+                {
+                    status: 401,
+                }
+            );
+        }
         const body =
             await request.json();
 
@@ -98,7 +132,81 @@ export async function POST(request) {
             userId,
 
         } = body;
+        const project =
+            await prisma.project.findFirst({
 
+                where: {
+
+                    id: parseInt(projectId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!project) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Invalid Project",
+                },
+                {
+                    status: 404,
+                }
+            );
+        }
+        const client =
+            await prisma.client.findFirst({
+
+                where: {
+
+                    id: parseInt(clientId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!client) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Invalid Client",
+                },
+                {
+                    status: 404,
+                }
+            );
+        }
+        const user =
+            await prisma.user.findFirst({
+
+                where: {
+
+                    id: parseInt(userId),
+
+                    companyId:
+                        currentUser.companyId,
+
+                },
+
+            });
+
+        if (!user) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Invalid User",
+                },
+                {
+                    status: 404,
+                }
+            );
+        }
         const differenceAmount =
             Number(newAmount || 0) -
             Number(oldAmount || 0);
@@ -107,7 +215,11 @@ export async function POST(request) {
             await prisma.changeorder.create({
 
                 data: {
-
+                    company: {
+                        connect: {
+                            id: currentUser.companyId,
+                        },
+                    },
                     coNumber,
 
                     title,
@@ -148,27 +260,8 @@ export async function POST(request) {
 
                     },
 
-                    client: {
-
-                        connect: {
-
-                            id:
-                                parseInt(clientId),
-
-                        },
-
-                    },
-
-                    user: {
-
-                        connect: {
-
-                            id:
-                                parseInt(userId),
-
-                        },
-
-                    },
+                    clientId: parseInt(clientId),
+                    userId: parseInt(userId),
 
                 },
 

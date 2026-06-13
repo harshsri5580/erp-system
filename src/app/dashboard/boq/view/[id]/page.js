@@ -2,11 +2,22 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import {
+  useParams,
+  useRouter,
+} from "next/navigation";
+
+import {
+  ArrowLeft,
+  FileText,
+  Package,
+  Calculator,
+} from "lucide-react";
 
 export default function ViewBOQPage() {
 
   const { id } = useParams();
+  const router = useRouter();
 
   const [boq, setBoq] =
     useState(null);
@@ -33,53 +44,110 @@ export default function ViewBOQPage() {
   };
 
   useEffect(() => {
-    fetchBOQ();
-  }, []);
+    if (id) {
+      fetchBOQ();
+    }
+  }, [id]);
 
   if (loading) {
-    return <h3>Loading...</h3>;
+    return (
+      <div className="container-fluid px-4 py-3">
+        <div className="card border-0 rounded-4">
+          <div className="card-body text-center py-5">
+            Loading BOQ Details...
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!boq) {
-    return <h3>BOQ not found</h3>;
+    return (
+      <div className="container-fluid px-4 py-3">
+        <div className="alert alert-warning">
+          BOQ record not found
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid px-4 py-3">
 
-      <div className="card shadow border-0 rounded-4">
+      <div
+        className="card border-0 rounded-4"
+        style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
+          boxShadow:
+            "0 10px 30px rgba(0,0,0,0.06)",
+        }}
+      >
 
         {/* HEADER */}
 
-        <div className="card-header bg-dark text-white">
-          <h3>BOQ Details</h3>
-        </div>
+
 
         {/* BODY */}
 
-        <div className="card-body">
+        <div className="card-body p-4 p-lg-5">
+          <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
 
+            <div>
+
+              <h2
+                className="fw-bold mb-1"
+                style={{
+                  color: "#111827",
+                }}
+              >
+                BOQ Details
+              </h2>
+
+              <p
+                className="mb-0"
+                style={{
+                  color: "#6B7280",
+                }}
+              >
+                View bill of quantity information
+              </p>
+
+            </div>
+
+            <button
+              type="button"
+              className="btn btn-outline-secondary d-flex align-items-center gap-2"
+              onClick={() =>
+                router.push("/dashboard/boq")
+              }
+            >
+              <ArrowLeft size={16} />
+              Back
+            </button>
+
+          </div>
           <div className="row">
 
             <div className="col-md-6 mb-4">
-              <h6 className="text-muted">
-                Item Name
-              </h6>
 
-              <h4>
-                {boq.itemName}
-              </h4>
+              <div className="border rounded-4 p-3 h-100">
+                <h6 className="text-muted">
+                  Item Name
+                </h6>
+
+                <h4 className="fw-bold mb-0">
+                  {boq.itemName}
+                </h4>
+              </div>
             </div>
-
             <div className="col-md-6 mb-4">
               <h6 className="text-muted">
                 Contract
               </h6>
 
-              <h5>
-                {
-                  boq.contract?.title
-                }
+              <h5 className="fw-semibold mb-0">
+                {boq.contract?.title}
               </h5>
             </div>
 
@@ -98,7 +166,12 @@ export default function ViewBOQPage() {
                 Quantity
               </h6>
 
-              <h5>
+              <h5
+                className="fw-bold mb-0"
+                style={{
+                  color: "#2563EB",
+                }}
+              >
                 {boq.quantity}
               </h5>
             </div>
@@ -108,7 +181,9 @@ export default function ViewBOQPage() {
                 Rate
               </h6>
 
-              <h5>
+              <h5
+                className="fw-bold mb-0 text-danger"
+              >
                 ₹{boq.rate}
               </h5>
             </div>
@@ -118,19 +193,24 @@ export default function ViewBOQPage() {
                 Total
               </h6>
 
-              <h4>
+              <h4
+                className="fw-bold mb-0 text-success"
+              >
                 ₹{boq.total}
               </h4>
             </div>
 
-            <div className="col-md-12">
-              <h6 className="text-muted">
+            <div className="border rounded-4 p-4">
+
+              <h6 className="text-muted mb-3">
                 Description
               </h6>
 
-              <p>
-                {boq.description}
+              <p className="mb-0">
+                {boq.description ||
+                  "No description available"}
               </p>
+
             </div>
 
           </div>
