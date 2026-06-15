@@ -19,8 +19,7 @@ export default function DashboardLayout({
       {/* MAIN CONTENT */}
 
       <div
-        className="flex-grow-1 dashboard-content"
-
+        className="dashboard-content"
       >
 
         {/* NAVBAR */}

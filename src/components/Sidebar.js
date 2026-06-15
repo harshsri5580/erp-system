@@ -42,7 +42,7 @@ export default function Sidebar() {
   const router = useRouter();
 
   const [collapsed, setCollapsed] =
-    useState(false);
+    useState(true);
   const [userRole, setUserRole] =
     useState("");
   const [companyName, setCompanyName] =
@@ -70,17 +70,7 @@ export default function Sidebar() {
     });
   };
 
-  useEffect(() => {
 
-    const content =
-      document.querySelector(".dashboard-content");
-
-    if (!content) return;
-
-    content.style.marginLeft =
-      collapsed ? "78px" : "255px";
-
-  }, [collapsed]);
 
   useEffect(() => {
 
@@ -521,6 +511,13 @@ d-flex
 flex-column
 vh-100
 "
+      onMouseEnter={() =>
+        setCollapsed(false)
+      }
+
+      onMouseLeave={() =>
+        setCollapsed(true)
+      }
       style={{
         width: collapsed ? "78px" : "255px",
 

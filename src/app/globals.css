@@ -50,7 +50,7 @@ a {
 
 .dashboard-content {
 
-  margin-left: 255px;
+  margin-left: 78px;
 
   min-height: 100vh;
 
@@ -58,7 +58,6 @@ a {
 
   transition: all 0.3s ease;
 }
-
 /* =========================
    DASHBOARD PAGE HEADINGS
 ========================= */
